@@ -1,0 +1,9 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'tictactoe.Main'
+
+jar {
+  baseName = 'rl-games'
+  version =  '1.0'
+}
