@@ -1,6 +1,6 @@
 package general;
 
-/** Interface for a two-agent game. */
+/** Interface for a game. */
 public interface Game {
   int play();
 }

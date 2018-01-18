@@ -9,7 +9,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-/** Agent that uses an epsilon-soft on-policy Monte Carlo control algorithm. */
+/**
+ * Game-playing agent that uses an epsilon-soft on-policy Monte Carlo control
+ * algorithm.
+ */
 public class MonteCarloAgent implements Agent {
 
   /** Value of epsilon used in policy improvement. */
@@ -17,14 +20,20 @@ public class MonteCarloAgent implements Agent {
 
   /**
    * Agent's policy.
-   * Represents triplets (s, a, probability of choosing action a at state s).
+   * <p>
+   * Maps a state to all possible actions from that state and maps each of these
+   * actions to the probability of choosing that action from that state under
+   * this policy.
    */
   private final HashMap<State, HashMap<Action, Double>> PI = new HashMap<>();
 
   /**
-    * Action-value function for policy PI.
-    * Represents triplets (s, a, expected return starting from s then executing a then following current policy)
-    */
+   * Action-value function for policy PI.
+   * <p>
+   * Maps a state to all actions taken from this state in all episodes so far
+   * and maps each of these actions to the expected return from starting at the
+   * state, executing the action, and then following current policy.
+   */
   private final HashMap<State, HashMap<Action, Double>> Q = new HashMap<>();
 
   /**
@@ -34,17 +43,22 @@ public class MonteCarloAgent implements Agent {
   private final HashMap<State, HashMap<Action, List<Integer>>> overallReturns =
           new HashMap<>();
 
-  /** States (and actions taken from them) in THIS episode so far. */
+  /**
+   * Maps each state encountered in the current episode so far to all actions
+   * taken from that state in the current episode so far.
+   */
   private final HashMap<State, List<Action>> episodeStates = new HashMap<>();
 
-  /** Most recent state. */
+  /**
+   * Most recent state from which an action was chosen and for which a return
+   * has not yet been given.
+   */
   private State lastState;
 
-  /** Most recent action, for which the return has not yet been given. */
+  /** Most recent action for which a return has not yet been given. */
   private Action lastAction;
 
   public MonteCarloAgent(double epsilon) {
-    //System.out.println("Monte Carlo: agent just created");
     this.epsilon = epsilon;
   }
 
@@ -89,8 +103,8 @@ public class MonteCarloAgent implements Agent {
         i = Arrays.binarySearch(cdf, Math.random());
 
         if (i < 0) {
-          // Arrays.binarySearch returns -i-1 if the insertion index is i (and the
-          // value is not already in the array
+          // Arrays.binarySearch returns -i-1 if the insertion index is i (and
+          // the value is not already in the array
           i = -i - 1;
           break;
 
@@ -108,9 +122,9 @@ public class MonteCarloAgent implements Agent {
     return lastAction;
   }
 
-  /** Give return for most recent action (stored in {@link #lastAction}). */
+  /** Handles the return received for {@link #lastAction}. */
   @Override
-  public void giveReturn(int amount) {
+  public void receiveReturn(int amount) {
     if (episodeStates.containsKey(lastState)
             && episodeStates.get(lastState).contains(lastAction)) {
       // Not the first time 'lastAction' was chosen at 'lastState' so no need
@@ -135,8 +149,8 @@ public class MonteCarloAgent implements Agent {
       overallReturns.get(lastState).put(lastAction, new ArrayList<>());
     }
 
-    // Record the return given for the first execution of lastAction at state
-    // lastState in this episode.
+    // Record the return given for the first execution of 'lastAction' at 
+    // 'lastState' in this episode.
     overallReturns.get(lastState).get(lastAction).add(amount);
   }
 

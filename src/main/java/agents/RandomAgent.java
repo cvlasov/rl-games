@@ -6,6 +6,7 @@ import general.State;
 
 import java.util.List;
 
+/** Game-playing agent that uses a random strategy to choose actions. */
 public class RandomAgent implements Agent {
 
   @Override
@@ -15,27 +16,23 @@ public class RandomAgent implements Agent {
 
   @Override
   public void initializeBeforeNewGame() {
-    //System.out.println("Random agent: initializing before new game");
     // do nothing
   }
 
   @Override
   public Action chooseAction(State s) {
-    //System.out.println("Random agent: choosing action");
     List<Action> actions = s.getActions();
     int randomIndex = (int) (Math.random() * actions.size());
     return actions.get(randomIndex);
   }
 
   @Override
-  public void giveReturn(int amount) {
-    //System.out.println("Random agent: getting return");
+  public void receiveReturn(int amount) {
     // do nothing
   }
 
   @Override
   public void gameOver() {
-    //System.out.println("Random agent: GAME OVER");
     // do nothing
   }
 }

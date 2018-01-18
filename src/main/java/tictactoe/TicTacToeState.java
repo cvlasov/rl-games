@@ -9,52 +9,59 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/** State of a Tic-Tac-Toe game. */
+/** State of a game of Tic-Tac-Toe. */
 public class TicTacToeState implements State {
 
+  /** Number of cells in a Tic-Tac-Toe grid. */
   private final int gridSize = 9;
 
   /**
-   *  Tic-tac-toe grid, where the array indices represent the board as:
-   *     0 | 1 | 2
-   *    -----------
-   *     3 | 4 | 5
-   *    -----------
-   *     6 | 7 | 8
+   * Tic-Tac-Toe grid, where the array indices represent the board as:
+   *    0 | 1 | 2
+   *   -----------
+   *    3 | 4 | 5
+   *   -----------
+   *    6 | 7 | 8
    */
   private final TokenType[] grid;
 
-  private final List<Action> actions;
+  /** List of possible actions to take from this state. */
+  private final List<Action> actions = new ArrayList<>();;
+  
+  /**
+   * Winning token type (or draw) if this is a terminal state, otherwise
+   * {@link tictactoe.TicTacToeGame#Winner.GAME_NOT_OVER}.
+   */
   private Winner winner = Winner.GAME_NOT_OVER;
 
-  /** Empty grid is the only grid that can be initialized by other classes. */
+  /** Creates a state with an empty grid. */
   public TicTacToeState() {
     grid = new TokenType[gridSize];
     Arrays.fill(grid, TokenType.NONE); // initializes empty grid
-    
-    actions = new ArrayList<>();
     computeActions();
   }
 
+  /** Creates a copy of the given state. */
   private TicTacToeState(TicTacToeState oldState) {
     grid = oldState.grid;
-    
-    actions = new ArrayList<>();
     computeActions();
   }
   
-  private TicTacToeState(TicTacToeState oldState, TicTacToeAction a) {
+  /**
+   * Creates the state that results from applying the given action at the given
+   * state.
+   */
+  private TicTacToeState(TicTacToeState oldState, TicTacToeAction action) {
     grid = new TokenType[gridSize];
     
     for (int i = 0 ; i < gridSize ; i++) {
-      if (i == a.index) {
-        grid[i] = a.tokenType;
+      if (i == action.index) {
+        grid[i] = action.tokenType;
       } else {
         grid[i] = oldState.grid[i];
       }
     }
 
-    actions = new ArrayList<>();
     computeActions();
   }
 
@@ -63,28 +70,6 @@ public class TicTacToeState implements State {
     return actions;
   }
   
-  private void computeActions() {
-    // Called only once, from the constructor
-  
-    int diff = 0; // X's turn if diff = 0, O's turn if diff = 1
-
-    for (TokenType t : grid) {
-      switch (t) {
-        case X: diff += 1; break;
-        case O: diff -= 1; break;
-        case NONE: break;
-      }
-    }
-
-    TokenType tokenType = diff == 0 ? TokenType.X : TokenType.O;
-
-    for (int i = 0; i < gridSize ; i++) {
-      if (grid[i] == TokenType.NONE) {
-        actions.add(new TicTacToeAction(i, tokenType));
-      }
-    }
-  }
-
   @Override
   public State applyAction(Action a) {
     return new TicTacToeState(this, (TicTacToeAction) a);
@@ -127,7 +112,50 @@ public class TicTacToeState implements State {
     hash +=   29 * grid[8].hashCode();
     return hash;
   }
+  
+  @Override
+  public void print() {
+    System.out.println(" " + grid[0] + " | " + grid[1] + " | " + grid[2]);
+    System.out.println("-----------");
+    System.out.println(" " + grid[3] + " | " + grid[4] + " | " + grid[5]);
+    System.out.println("-----------");
+    System.out.println(" " + grid[6] + " | " + grid[7] + " | " + grid[8]);
+    System.out.println();
+  }
+  
+  /**
+   * Populates {@link #actions} with all actions that can be taken from this
+   * state.
+   */
+  private void computeActions() {
+    // Called only once, from one of the constructors
+  
+    int diff = 0; // X's turn if diff = 0, O's turn if diff = 1
 
+    for (TokenType t : grid) {
+      switch (t) {
+        case X:    diff += 1; break;
+        case O:    diff -= 1; break;
+        case NONE: break;
+      }
+    }
+
+    TokenType tokenType = diff == 0 ? TokenType.X : TokenType.O;
+
+    for (int i = 0; i < gridSize ; i++) {
+      if (grid[i] == TokenType.NONE) {
+        actions.add(new TicTacToeAction(i, tokenType));
+      }
+    }
+  }
+
+  /**
+   * Returns whether or not this is a terminal state
+   * <p>
+   * If it is a terminal state, updates {@link #winner} accordingly.
+   *
+   * @return true if this is a terminal state, false otherwise
+   */
   public boolean checkIfTerminalState() {
     if (grid[0] != TokenType.NONE) {
       if (grid[0] == grid[1] && grid[1] == grid[2]
@@ -175,17 +203,14 @@ public class TicTacToeState implements State {
     return false;
   }
 
-  /** Can only be called after isTerminalState() */
+  /**
+   * Returns the winner of the game, if any.
+   * <p>
+   * Can only be called after {@link #isTerminalState}.
+   *
+   * @return winner of the game, if any
+   */
   public Winner getWinner() {
     return winner;
-  }
-
-  public void print() {
-    System.out.println(" " + grid[0] + " | " + grid[1] + " | " + grid[2]);
-    System.out.println("-----------");
-    System.out.println(" " + grid[3] + " | " + grid[4] + " | " + grid[5]);
-    System.out.println("-----------");
-    System.out.println(" " + grid[6] + " | " + grid[7] + " | " + grid[8]);
-    System.out.println();
   }
 }
