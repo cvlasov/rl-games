@@ -55,12 +55,10 @@ public class TicTacToeGame implements Game {
 
   /**
    *
-   *  @return winning agent (1 = agent 1, 2 = agent 2)
+   *  @return winning agent (-1 = game not over, 0 = draw, 1 = agent 1, 2 = agent 2)
    */
   @Override
   public int play() {
-    //System.out.println("Game: starting the game");
-    
     agent1.initializeBeforeNewGame();
     agent2.initializeBeforeNewGame();
     
@@ -73,7 +71,6 @@ public class TicTacToeGame implements Game {
 
     while (true) {
       // AGENT 1'S TURN
-      //System.out.println("***Agent 1's turn***");
       TicTacToeAction agent1Action =
               (TicTacToeAction) agent1.chooseAction(state);
       TicTacToeState stateAfterAgent1 =
@@ -104,20 +101,12 @@ public class TicTacToeGame implements Game {
             break;
         }
         
-        //agent1Return = -agent2Return; // since it's a zero-sum game
-        //agent1.giveReturn(agent1Return);
-        //winner = gameWinner(stateAfterAgent1.getWinner(), swapAgentOrder);
         agent1.gameOver();
         agent2.gameOver();
         break;
       
       } else {
         if (!firstTurn) {
-          //agent2Return =
-          //        calculateReturn(state, agent2Action, stateAfterAgent2,
-          //                agent1Action, stateAfterAgent1);
-          //agent2.giveReturn(agent2Return);
-          
           agent2.giveReturn(GAME_IN_PROGRESS_RETURN);
         }
       }
@@ -126,7 +115,6 @@ public class TicTacToeGame implements Game {
       state = stateAfterAgent1;
 
       // AGENT 2'S TURN
-      //System.out.println("***Agent 2's turn***");
       agent2Action = (TicTacToeAction) agent2.chooseAction(state);
       stateAfterAgent2 = (TicTacToeState) state.applyAction(agent2Action);
 
@@ -153,19 +141,11 @@ public class TicTacToeGame implements Game {
             break;
         }
         
-        //agent2Return = -agent1Return; // since it's a zero-sum game
-        //agent2.giveReturn(agent2Return);
-        //winner = gameWinner(stateAfterAgent2.getWinner(), swapAgentOrder);
         agent1.gameOver();
         agent2.gameOver();
         break;
       
       } else {
-        //agent1Return =
-        //        calculateReturn(state, agent1Action, stateAfterAgent1,
-        //                agent2Action, stateAfterAgent2);
-        //agent1.giveReturn(agent1Return);
-        
         agent1.giveReturn(GAME_IN_PROGRESS_RETURN);
       }
 
@@ -192,24 +172,5 @@ public class TicTacToeGame implements Game {
     }
 
     return returnAmount;
-  }
-
-  /**
-   *
-   * @param winner
-   * @param swapAgentOrder 0 means no swap, 1 means swap
-   * @return
-   */
-  private int gameWinner(Winner winner, int swapAgentOrder) {
-    int w = -1;
-
-    switch (winner) {
-      case GAME_NOT_OVER: w = -1; break;
-      case DRAW:          w = 0; break;
-      case X: w = (swapAgentOrder == 0 ? 1 : 2); break;
-      case O: w = (swapAgentOrder == 0 ? 2 : 1); break;
-    }
-
-    return w;
   }
 }

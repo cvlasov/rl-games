@@ -55,7 +55,6 @@ public class MonteCarloAgent implements Agent {
   
   @Override
   public void initializeBeforeNewGame() {
-    //System.out.println("Monte Carlo: initializing before new game");
     episodeStates.clear();
     lastAction = null;
     lastState = null;
@@ -66,16 +65,12 @@ public class MonteCarloAgent implements Agent {
     List<Action> actions = state.getActions();
 
     if (!PI.containsKey(state)) {
-      //System.out.println("Monte Carlo: first time state is reached");
-
       // First time this state has been reached in any episode, so the policy
       // is arbitrary (i.e. all actions are equally likely to be chosen)
       int randomIndex = (int) (Math.random() * actions.size());
       lastAction = actions.get(randomIndex);
 
     } else {
-      //System.out.println("Monte Carlo: state was reached in previous episode");
-
       // This state was encountered in a previous episode, so the policy is not
       // arbitrary
       HashMap<Action, Double> policy = PI.get(state);
@@ -109,11 +104,6 @@ public class MonteCarloAgent implements Agent {
       lastAction = actions.get(i);
     }
     
-    //state.print();
-    //System.out.print("Action: ");
-    //lastAction.print();
-    //System.out.println();
-    
     lastState = state.copy();
     return lastAction;
   }
@@ -123,16 +113,13 @@ public class MonteCarloAgent implements Agent {
   public void giveReturn(int amount) {
     if (episodeStates.containsKey(lastState)
             && episodeStates.get(lastState).contains(lastAction)) {
-      //System.out.println("Monte Carlo: not the first time lastAction was chosen at lastState in this episode");
-      
       // Not the first time 'lastAction' was chosen at 'lastState' so no need
       // to record the given return.
       return;
     }
 
     if (!episodeStates.containsKey(lastState)) {
-      //System.out.println("Monte Carlo: lastState was visited for the first time this episode\n");
-      
+      // First time 'lastState' was visited in this episode
       episodeStates.put(lastState, new ArrayList<>());
     }
 
@@ -148,8 +135,6 @@ public class MonteCarloAgent implements Agent {
       overallReturns.get(lastState).put(lastAction, new ArrayList<>());
     }
 
-    //System.out.println("Return = " + amount + "\n");
-    
     // Record the return given for the first execution of lastAction at state
     // lastState in this episode.
     overallReturns.get(lastState).get(lastAction).add(amount);
@@ -158,16 +143,10 @@ public class MonteCarloAgent implements Agent {
   @Override
   public void gameOver() {
     // POLICY EVALUATION
-    //System.out.println("\n\nMonte Carlo: POLICY EVALUATION\n");
     for (State s : overallReturns.keySet()) {
-      //s.print();
-      int count = 0;
-      
       for (Action a : overallReturns.get(s).keySet()) {
         List<Integer> returns = overallReturns.get(s).get(a);
         double average = 0.0;
-        
-        count += returns.size();
 
         for (int i : returns) {
           average += i;
@@ -178,43 +157,24 @@ public class MonteCarloAgent implements Agent {
         if (!Q.containsKey(s)) {
           Q.put(s, new HashMap<>());
         }
-
-        //System.out.print("Action [");
-        //a.print();
-        //System.out.println("] has an average return of " + average);
         
         Q.get(s).put(a, average);
       }
-      
-      //System.out.println("This state has been visited " + count + " times during all episodes so far\n\n");
     }
 
     // POLICY IMPROVEMENT
-    //System.out.println("\n\nMonte Carlo: POLICY IMPROVEMENT\n");
-    //System.out.println("Monte Carlo: states visited in this episode\n");
-    
     for (State s : episodeStates.keySet()) {
-      //s.print();
-      
       Action bestAction = null;
       double bestValue = -Double.MAX_VALUE;
       
       for (Action a : Q.get(s).keySet()) {
         double value = Q.get(s).get(a);
         
-        //System.out.print("Action [");
-        //a.print();
-        //System.out.println("] has value " + value + " (so far bestValue is " + bestValue + " - this is better? " + (value > bestValue) + ")");
-
         if (value > bestValue) {
           bestValue = value;
           bestAction = a;
         }
       }
-      
-      //System.out.print("Best action: ");
-      //if (bestAction != null) bestAction.print();
-      //System.out.println(" (value = " + bestValue + ")\n");
 
       if (!PI.containsKey(s)) {
         PI.put(s, new HashMap<>());
@@ -222,24 +182,13 @@ public class MonteCarloAgent implements Agent {
 
       double randomProb = epsilon / s.getActions().size();
       
-      //System.out.println("Possible actions from here: ");
-      
       for (Action a : s.getActions()) {
-        //a.print();
-        
         if (a.equals(bestAction)) {
           PI.get(s).put(a, 1 - epsilon + randomProb);
-          //System.out.println(" with probability (best action) " + (1 - epsilon + randomProb));
-          
         } else {
           PI.get(s).put(a, randomProb);
-          //System.out.println(" with probability (other action) " + randomProb);
         }
       }
-      
-      //System.out.println("\n");
     }
-    
-    //System.out.println("\n\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-\n\n");
   }
 }
