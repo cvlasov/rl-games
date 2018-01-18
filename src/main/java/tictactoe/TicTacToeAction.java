@@ -37,4 +37,25 @@ public class TicTacToeAction implements Action {
 
     return hash;
   }
+  
+  @Override
+  public void print() {
+    System.out.print(tokenType.toString() + " in ");
+    String s = "";
+    
+    switch (index) {
+      case 0 : s = "top-left"; break;
+      case 1 : s = "top-middle"; break;
+      case 2 : s = "top-right"; break;
+      case 3 : s = "middle-left"; break;
+      case 4 : s = "middle-middle"; break;
+      case 5 : s = "middle-right"; break;
+      case 6 : s = "bottom-left"; break;
+      case 7 : s = "bottom-middle"; break;
+      case 8 : s = "bottom-right"; break;
+      default: break;
+    }
+    
+    System.out.print(s);
+  }
 }

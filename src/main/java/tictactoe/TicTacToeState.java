@@ -24,29 +24,48 @@ public class TicTacToeState implements State {
    */
   private final TokenType[] grid;
 
-  private List<Action> actions;
+  private final List<Action> actions;
   private Winner winner = Winner.GAME_NOT_OVER;
 
   /** Empty grid is the only grid that can be initialized by other classes. */
   public TicTacToeState() {
     grid = new TokenType[gridSize];
     Arrays.fill(grid, TokenType.NONE); // initializes empty grid
+    
+    actions = new ArrayList<>();
+    computeActions();
   }
 
-  private TicTacToeState(TicTacToeState oldState, TicTacToeAction a) {
+  private TicTacToeState(TicTacToeState oldState) {
     grid = oldState.grid;
-    grid[a.index] = a.tokenType;
+    
+    actions = new ArrayList<>();
+    computeActions();
+  }
+  
+  private TicTacToeState(TicTacToeState oldState, TicTacToeAction a) {
+    grid = new TokenType[gridSize];
+    
+    for (int i = 0 ; i < gridSize ; i++) {
+      if (i == a.index) {
+        grid[i] = a.tokenType;
+      } else {
+        grid[i] = oldState.grid[i];
+      }
+    }
+
+    actions = new ArrayList<>();
+    computeActions();
   }
 
   @Override
   public List<Action> getActions() {
-    if (actions != null) {
-      return actions;
-    }
-
-    // Will only be computed once
-    actions = new ArrayList<>();
-
+    return actions;
+  }
+  
+  private void computeActions() {
+    // Called only once, from the constructor
+  
     int diff = 0; // X's turn if diff = 0, O's turn if diff = 1
 
     for (TokenType t : grid) {
@@ -64,13 +83,16 @@ public class TicTacToeState implements State {
         actions.add(new TicTacToeAction(i, tokenType));
       }
     }
-
-    return actions;
   }
 
   @Override
   public State applyAction(Action a) {
     return new TicTacToeState(this, (TicTacToeAction) a);
+  }
+  
+  @Override
+  public State copy() {
+    return new TicTacToeState(this);
   }
 
   @Override
@@ -82,12 +104,28 @@ public class TicTacToeState implements State {
       return false;
     }
     final TicTacToeState other = (TicTacToeState) o;
-    return Arrays.equals(this.grid, other.grid);
+    
+    for (int i = 0 ; i < gridSize ; i++) {
+      if (this.grid[i] != other.grid[i]) {
+        return false;
+      }
+    }
+    
+    return true;
   }
 
   @Override
   public int hashCode() {
-    return grid.hashCode();
+    int hash = 3 * grid[0].hashCode();
+    hash +=    5 * grid[1].hashCode();
+    hash +=    7 * grid[2].hashCode();
+    hash +=   11 * grid[3].hashCode();
+    hash +=   13 * grid[4].hashCode();
+    hash +=   17 * grid[5].hashCode();
+    hash +=   19 * grid[6].hashCode();
+    hash +=   23 * grid[7].hashCode();
+    hash +=   29 * grid[8].hashCode();
+    return hash;
   }
 
   public boolean checkIfTerminalState() {
