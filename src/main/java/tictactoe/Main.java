@@ -6,7 +6,7 @@ import general.Agent;
 
 import java.util.HashSet;
 
-/** Main class for making agents play Tic-Tac-Toe against east other. */
+/** Main class for making agents play Tic-Tac-Toe against each other. */
 public class Main {
 
   public static void main(String[] args) {

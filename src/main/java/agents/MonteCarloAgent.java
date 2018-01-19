@@ -40,7 +40,7 @@ public class MonteCarloAgent implements Agent {
    *  Returns for the first occurrences of all (state, action) pairs encountered
    *  in all episodes so far (including the one in progress).
    */
-  private final HashMap<State, HashMap<Action, List<Integer>>> overallReturns =
+  private final HashMap<State, HashMap<Action, List<Double>>> overallReturns =
           new HashMap<>();
 
   /**
@@ -124,7 +124,7 @@ public class MonteCarloAgent implements Agent {
 
   /** Handles the return received for {@link #lastAction}. */
   @Override
-  public void receiveReturn(int amount) {
+  public void receiveReturn(double amount) {
     if (episodeStates.containsKey(lastState)
             && episodeStates.get(lastState).contains(lastAction)) {
       // Not the first time 'lastAction' was chosen at 'lastState' so no need
@@ -159,10 +159,10 @@ public class MonteCarloAgent implements Agent {
     // POLICY EVALUATION
     for (State s : overallReturns.keySet()) {
       for (Action a : overallReturns.get(s).keySet()) {
-        List<Integer> returns = overallReturns.get(s).get(a);
+        List<Double> returns = overallReturns.get(s).get(a);
         double average = 0.0;
 
-        for (int i : returns) {
+        for (double i : returns) {
           average += i;
         }
 

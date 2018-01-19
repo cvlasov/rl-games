@@ -27,7 +27,7 @@ public class RandomAgent implements Agent {
   }
 
   @Override
-  public void receiveReturn(int amount) {
+  public void receiveReturn(double amount) {
     // do nothing
   }
 
