@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.HashSet;
 
 import org.junit.Test;
-import org.junit.Ignore;
 
 public class TicTacToeStateWithLimitedActionsTest {
 
@@ -35,9 +34,7 @@ public class TicTacToeStateWithLimitedActionsTest {
     Set<Action> actions = new HashSet<>();
     actions.add(new TicTacToeAction(0, TokenType.X));
     actions.add(new TicTacToeAction(1, TokenType.X));
-    //actions.add(new TicTacToeAction(3, TokenType.X));
     actions.add(new TicTacToeAction(4, TokenType.X));
-    //actions.add(new TicTacToeAction(8, TokenType.X));
 
     Set<Action> actualActions = new HashSet<>(state.getActions());
 

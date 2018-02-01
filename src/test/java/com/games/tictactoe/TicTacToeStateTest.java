@@ -20,7 +20,7 @@ public class TicTacToeStateTest {
 	}
 
   @Test
-	public void testInequality() {
+  public void testInequality() {
 	  TicTacToeState state1 = new TicTacToeState();
 		state1 = (TicTacToeState) state1.applyAction(new TicTacToeAction(0, TokenType.X));
 
@@ -28,16 +28,16 @@ public class TicTacToeStateTest {
 
     assertNotEquals(state1, state2);
 	}
-	
+
   @Test
-	void testHashCodeEquality() {
+	public void testHashCodeEquality() {
 	  TicTacToeState state1 = new TicTacToeState();
 		TicTacToeState state2 = new TicTacToeState();
     assertEquals(state1.hashCode(), state2.hashCode());
 	}
 
   @Test
-	void testHashCodeInequality() {
+	public void testHashCodeInequality() {
 	  TicTacToeState state1 = new TicTacToeState();
 		state1 = (TicTacToeState) state1.applyAction(new TicTacToeAction(0, TokenType.X));
 
