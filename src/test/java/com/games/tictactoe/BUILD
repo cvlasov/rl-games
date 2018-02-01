@@ -1,17 +1,30 @@
 package(default_visibility = ["//visibility:public"])
 
 java_test(
-  name = "tictactoestatetest",
+  name = "statetest",
+  size = "small",
   srcs = ["TicTacToeStateTest.java"],
   test_class = "com.games.tictactoe.TicTacToeStateTest",
   deps = [
     "//src/main/java/com/games/general:general",
     "//src/main/java/com/games/tictactoe:tictactoe",
-    "//third_party:junit5",
+    "//third_party:junit4",
   ],
 )
 
-filegroup(
-  name = "all-tests",
-  srcs = glob(["*.java"]) + ["BUILD"],
+java_test(
+  name = "statewithlimitedactionstest",
+  size = "small",
+  srcs = ["TicTacToeStateWithLimitedActionsTest.java"],
+  test_class = "com.games.tictactoe.TicTacToeStateWithLimitedActionsTest",
+  deps = [
+    "//src/main/java/com/games/general:general",
+    "//src/main/java/com/games/tictactoe:tictactoe",
+    "//third_party:junit4",
+  ],
+)
+
+java_library(
+  name = "tictactoe",
+  srcs = glob(["*.java"]),
 )
