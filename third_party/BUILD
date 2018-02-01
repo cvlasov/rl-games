@@ -4,6 +4,7 @@ java_import(
   name = "junit5",
   jars = [
     "junit-jupiter-api-5.0.3.jar",
+    ":apiguardian",
   ],
 )
 
