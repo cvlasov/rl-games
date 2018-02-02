@@ -7,5 +7,6 @@ java_binary(
   deps = [
     "//src/main/java/com/games/agents:agents",
     "//src/main/java/com/games/general:general",
+    "//third_party:opencsv",
   ],
 )

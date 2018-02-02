@@ -7,3 +7,10 @@ java_import(
     "hamcrest-core-1.3.jar",
   ],
 )
+
+java_import(
+  name = "opencsv",
+  jars = [
+    "opencsv-4.1.jar",
+  ],
+)
