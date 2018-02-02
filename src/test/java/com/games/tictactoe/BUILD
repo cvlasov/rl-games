@@ -24,11 +24,10 @@ java_test(
   ],
 )
 
-java_test(
+test_suite(
   name = "alltests",
-  size = "small",
-  runtime_deps = [
-    ":statetest",
-    ":statewithlimitedactionstest",
+  tests = [
+    "statetest",
+    "statewithlimitedactionstest",
   ],
 )
