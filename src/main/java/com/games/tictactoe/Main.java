@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 
 /** Main class for making agents play Tic-Tac-Toe against each other. */
-public class Main {
+public final class Main {
 
   private static final String RESULTS = "./learningresults.csv";
 

@@ -13,7 +13,7 @@ import java.util.List;
  * Game-playing agent that uses an epsilon-soft on-policy Monte Carlo control
  * algorithm.
  */
-public class MonteCarloAgent implements Agent {
+public final class MonteCarloAgent implements Agent {
 
   /** Value of epsilon used in policy improvement. */
   private final double epsilon;
@@ -66,7 +66,7 @@ public class MonteCarloAgent implements Agent {
   public String getName() {
     return "MonteC";
   }
-  
+
   @Override
   public void initializeBeforeNewGame() {
     episodeStates.clear();
@@ -117,7 +117,7 @@ public class MonteCarloAgent implements Agent {
 
       lastAction = actions.get(i);
     }
-    
+
     lastState = state.copy();
     return lastAction;
   }
@@ -149,7 +149,7 @@ public class MonteCarloAgent implements Agent {
       overallReturns.get(lastState).put(lastAction, new ArrayList<>());
     }
 
-    // Record the return given for the first execution of 'lastAction' at 
+    // Record the return given for the first execution of 'lastAction' at
     // 'lastState' in this episode.
     overallReturns.get(lastState).get(lastAction).add(amount);
   }
@@ -171,7 +171,7 @@ public class MonteCarloAgent implements Agent {
         if (!Q.containsKey(s)) {
           Q.put(s, new HashMap<>());
         }
-        
+
         Q.get(s).put(a, average);
       }
     }
@@ -180,10 +180,10 @@ public class MonteCarloAgent implements Agent {
     for (State s : episodeStates.keySet()) {
       Action bestAction = null;
       double bestValue = -Double.MAX_VALUE;
-      
+
       for (Action a : Q.get(s).keySet()) {
         double value = Q.get(s).get(a);
-        
+
         if (value > bestValue) {
           bestValue = value;
           bestAction = a;
@@ -195,7 +195,7 @@ public class MonteCarloAgent implements Agent {
       }
 
       double randomProb = epsilon / s.getActions().size();
-      
+
       for (Action a : s.getActions()) {
         if (a.equals(bestAction)) {
           PI.get(s).put(a, 1 - epsilon + randomProb);

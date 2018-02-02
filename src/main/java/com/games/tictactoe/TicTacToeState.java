@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** State of a game of Tic-Tac-Toe. */
-public class TicTacToeState implements State {
+final class TicTacToeState implements State {
 
   /** Number of cells in a Tic-Tac-Toe grid. */
   protected final int gridSize = 9;
@@ -27,7 +27,7 @@ public class TicTacToeState implements State {
 
   /** List of possible actions to take from this state. */
   protected final List<Action> actions = new ArrayList<>();
-  
+
   /**
    * Winning token type (or draw) if this is a terminal state, otherwise
    * {@link tictactoe.TicTacToeGame#Winner.GAME_NOT_OVER}.
@@ -46,14 +46,14 @@ public class TicTacToeState implements State {
     grid = oldState.grid;
     computeActions();
   }
-  
+
   /**
    * Creates the state that results from applying the given action at the given
    * state.
    */
   protected TicTacToeState(TicTacToeState oldState, TicTacToeAction action) {
     grid = new TokenType[gridSize];
-    
+
     for (int i = 0 ; i < gridSize ; i++) {
       if (i == action.index) {
         grid[i] = action.tokenType;
@@ -69,12 +69,12 @@ public class TicTacToeState implements State {
   public List<Action> getActions() {
     return actions;
   }
-  
+
   @Override
   public State applyAction(Action a) {
     return new TicTacToeState(this, (TicTacToeAction) a);
   }
-  
+
   @Override
   public State copy() {
     return new TicTacToeState(this);
@@ -89,13 +89,13 @@ public class TicTacToeState implements State {
       return false;
     }
     final TicTacToeState other = (TicTacToeState) o;
-    
+
     for (int i = 0 ; i < gridSize ; i++) {
       if (this.grid[i] != other.grid[i]) {
         return false;
       }
     }
-    
+
     return true;
   }
 
@@ -112,7 +112,7 @@ public class TicTacToeState implements State {
     hash +=   29 * grid[8].hashCode();
     return hash;
   }
-  
+
   @Override
   public void print() {
     System.out.println(" " + grid[0] + " | " + grid[1] + " | " + grid[2]);
@@ -122,14 +122,14 @@ public class TicTacToeState implements State {
     System.out.println(" " + grid[6] + " | " + grid[7] + " | " + grid[8]);
     System.out.println();
   }
-  
+
   /**
    * Populates {@link #actions} with all actions that can be taken from this
    * state.
    */
   protected void computeActions() {
     // Called only once, from one of the constructors
-  
+
     int diff = 0; // X's turn if diff = 0, O's turn if diff = 1
 
     for (TokenType t : grid) {

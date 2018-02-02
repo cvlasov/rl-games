@@ -4,11 +4,11 @@ import com.games.general.Action;
 import com.games.tictactoe.TicTacToeGame.TokenType;
 
 /** Action taken by a player in a game of Tic-Tac-Toe. */
-public class TicTacToeAction implements Action {
+final class TicTacToeAction implements Action {
 
   /** Index on board where the piece is to be placed. */
   public final int index;
-  
+
   /** Type of token to be placed. */
   public final TokenType tokenType;
 
@@ -41,12 +41,12 @@ public class TicTacToeAction implements Action {
 
     return hash;
   }
-  
+
   @Override
   public void print() {
     System.out.print(tokenType.toString() + " in ");
     String s = "";
-    
+
     switch (index) {
       case 0 : s = "top-left";      break;
       case 1 : s = "top-middle";    break;
@@ -59,7 +59,7 @@ public class TicTacToeAction implements Action {
       case 8 : s = "bottom-right";  break;
       default: break;
     }
-    
+
     System.out.print(s);
   }
 }

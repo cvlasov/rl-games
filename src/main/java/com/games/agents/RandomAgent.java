@@ -7,7 +7,7 @@ import com.games.general.State;
 import java.util.List;
 
 /** Game-playing agent that uses a random strategy to choose actions. */
-public class RandomAgent implements Agent {
+public final class RandomAgent implements Agent {
 
   @Override
   public String getName() {

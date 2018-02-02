@@ -7,7 +7,7 @@ import com.games.general.Agent;
  * Game of Tic-Tac-Toe where the the first player is chosen randomly. The first
  * player always uses X token and the second player uses O tokens.
  */
-public class TicTacToeGameWithLimitedActions implements Game {
+final class TicTacToeGameWithLimitedActions implements Game {
 
   /** Contents of a cell on the board. */
   enum TokenType {
@@ -36,25 +36,25 @@ public class TicTacToeGameWithLimitedActions implements Game {
 
   /** Return for an action that causes the game to end and results in a win. */
   public static final int WIN_RETURN = 1;
-  
+
   /** Return for an action that causes the game to end and results in a loss. */
   public static final int LOSS_RETURN = -1;
-  
+
   /** Return for an action that causes the game to end and results in a draw. */
   public static final int DRAW_RETURN = 0;
-  
+
   /** Return for an action that does not cause the game to end. */
   public static final int GAME_IN_PROGRESS_RETURN = 0;
-  
+
   /** Current state of the game. */
   private TicTacToeStateWithLimitedActions state;
-  
+
   /** 0 (don't swap order of agents passed to the contructor) or 1 (swap). */
   private int swapAgentOrder;
-  
+
   /** Agent that goes first and plays with {@link #TokenType.X}. */
   private Agent agent1;
-  
+
   /** Agent that goes second and plays with {@link #TokenType.O}. */
   private Agent agent2;
 
@@ -64,12 +64,12 @@ public class TicTacToeGameWithLimitedActions implements Game {
     if (swapAgentOrder == 0) {
       this.agent1 = a1;
       this.agent2 = a2;
-      
+
     } else {
       this.agent1 = a2;
       this.agent2 = a1;
     }
-    
+
     state = new TicTacToeStateWithLimitedActions();
   }
 
@@ -82,7 +82,7 @@ public class TicTacToeGameWithLimitedActions implements Game {
   public int play() {
     agent1.initializeBeforeNewGame();
     agent2.initializeBeforeNewGame();
-    
+
     boolean firstTurn = true;
     int winner = -1;
 
@@ -96,7 +96,7 @@ public class TicTacToeGameWithLimitedActions implements Game {
               (TicTacToeAction) agent1.chooseAction(state);
       TicTacToeStateWithLimitedActions stateAfterAgent1 =
               (TicTacToeStateWithLimitedActions) state.applyAction(agent1Action);
-              
+
       int agent2Return = Integer.MIN_VALUE;
 
       // If Agent 1 just made the game end
@@ -121,11 +121,11 @@ public class TicTacToeGameWithLimitedActions implements Game {
             agent2.receiveReturn(LOSS_RETURN);
             break;
         }
-        
+
         agent1.gameOver();
         agent2.gameOver();
         break;
-      
+
       } else {
         if (!firstTurn) {
           agent2.receiveReturn(GAME_IN_PROGRESS_RETURN);
@@ -161,18 +161,18 @@ public class TicTacToeGameWithLimitedActions implements Game {
             agent2.receiveReturn(WIN_RETURN);
             break;
         }
-        
+
         agent1.gameOver();
         agent2.gameOver();
         break;
-      
+
       } else {
         agent1.receiveReturn(GAME_IN_PROGRESS_RETURN);
       }
 
       state = stateAfterAgent2;
     }
-    
+
     return winner;
   }
 }

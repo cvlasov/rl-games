@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 /** State of a game of Tic-Tac-Toe. */
-public class TicTacToeStateWithLimitedActions implements State {
+final class TicTacToeStateWithLimitedActions implements State {
 
   /** Number of cells in a Tic-Tac-Toe grid. */
   public final int gridSize = 9;

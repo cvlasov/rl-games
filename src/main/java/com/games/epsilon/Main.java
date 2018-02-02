@@ -14,7 +14,7 @@ import java.util.HashSet;
  * Main class for running experiments related to the value of epsilon used
  * by a Monte Carlo agent when playing Tic-Tac-Toe.
  */
-public class Main {
+public final class Main {
 
   private static final String RESULTS = "./EpsilonResults.csv";
   private static final double EPSILON_GRANULARITY = 0.01;
