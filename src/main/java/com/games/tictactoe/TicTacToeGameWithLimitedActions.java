@@ -1,50 +1,20 @@
 package com.games.tictactoe;
 
+import static com.games.tictactoe.TicTacToeHelper.DRAW_RETURN;
+import static com.games.tictactoe.TicTacToeHelper.GAME_IN_PROGRESS_RETURN;
+import static com.games.tictactoe.TicTacToeHelper.LOSS_RETURN;
+import static com.games.tictactoe.TicTacToeHelper.WIN_RETURN;
+
 import com.games.general.Game;
 import com.games.general.Agent;
+import com.games.tictactoe.TicTacToeHelper.TokenType;
+import com.games.tictactoe.TicTacToeHelper.Winner;
 
 /**
  * Game of Tic-Tac-Toe where the the first player is chosen randomly. The first
  * player always uses X token and the second player uses O tokens.
  */
 public final class TicTacToeGameWithLimitedActions implements Game {
-
-  /** Contents of a cell on the board. */
-  enum TokenType {
-    X ("X"),
-    O ("O"),
-    NONE (" ");
-
-    private final String name;
-
-    TokenType(String s) {
-      name = s;
-    }
-
-    public String toString() {
-      return this.name;
-    }
-  }
-
-  /** Winner of the game, if any. */
-  enum Winner {
-    X,
-    O,
-    DRAW,
-    GAME_NOT_OVER
-  }
-
-  /** Return for an action that causes the game to end and results in a win. */
-  public static final int WIN_RETURN = 1;
-
-  /** Return for an action that causes the game to end and results in a loss. */
-  public static final int LOSS_RETURN = -1;
-
-  /** Return for an action that causes the game to end and results in a draw. */
-  public static final int DRAW_RETURN = 0;
-
-  /** Return for an action that does not cause the game to end. */
-  public static final int GAME_IN_PROGRESS_RETURN = 0;
 
   /** Current state of the game. */
   private TicTacToeStateWithLimitedActions state;
