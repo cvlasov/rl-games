@@ -4,6 +4,16 @@ public final class TicTacToeHelper {
 
   private TicTacToeHelper() {}  // restrict instantiation
 
+  /**
+   * Type of game being played, in terms of how state symmetry is implemented,
+   * if at all.
+   */
+  enum GameType {
+    NORMAL,
+    LIMITED_ACTIONS,
+    SYMMETRIC_EQUALITY
+  }
+
   /** Contents of a cell on the board. */
   enum TokenType {
     X ("X"),

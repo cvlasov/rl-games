@@ -33,7 +33,7 @@ public final class Main {
       throws IOException {
     int[] wins1 = new int[3]; // index 0 is draw, 1 is agent1, 2 is agent2
     int[] wins2 = new int[3]; // index 0 is draw, 1 is agent1, 2 is agent2
-    TicTacToeGame game1;
+    TicTacToeNormalGame game1;
     TicTacToeGameWithLimitedActions game2;
 
     try (
@@ -58,7 +58,7 @@ public final class Main {
       csvWriter.writeNext(headerRecord);
 
       for (int gamesSoFar = 1 ; gamesSoFar <= numGames ; gamesSoFar++) {
-        game1 = new TicTacToeGame(agent1, agent2);
+        game1 = new TicTacToeNormalGame(agent1, agent2);
         game2 = new TicTacToeGameWithLimitedActions(agent3, agent4);
         int winner1 = game1.play();
         int winner2 = game2.play();
@@ -101,10 +101,10 @@ public final class Main {
    */
   private static void runExperiment(Agent agent1, Agent agent2, int numGames) {
     int[] wins = new int[3]; // index 0 is draw, 1 is agent1, 2 is agent2
-    TicTacToeGame game;
+    TicTacToeNormalGame game;
 
     for (int i = 0 ; i < numGames ; i++) {
-      game = new TicTacToeGame(agent1, agent2);
+      game = new TicTacToeNormalGame(agent1, agent2);
       int winner = game.play();
 
       if (winner == -1) {

@@ -5,8 +5,8 @@ import static com.games.tictactoe.TicTacToeHelper.GAME_IN_PROGRESS_RETURN;
 import static com.games.tictactoe.TicTacToeHelper.LOSS_RETURN;
 import static com.games.tictactoe.TicTacToeHelper.WIN_RETURN;
 
-import com.games.general.Game;
 import com.games.general.Agent;
+import com.games.general.Game;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 import com.games.tictactoe.TicTacToeHelper.Winner;
 
@@ -14,21 +14,21 @@ import com.games.tictactoe.TicTacToeHelper.Winner;
  * Game of Tic-Tac-Toe where the the first player is chosen randomly. The first
  * player always uses X token and the second player uses O tokens.
  */
-public final class TicTacToeGame implements Game {
+public abstract class TicTacToeGame implements Game {
 
   /** Current state of the game. */
-  private TicTacToeNormalState state;
+  protected TicTacToeState state;
 
   /** 0 (don't swap order of agents passed to the contructor) or 1 (swap). */
-  private int swapAgentOrder;
+  protected int swapAgentOrder;
 
   /** Agent that goes first and plays with {@link #TokenType.X}. */
-  private Agent agent1;
+  protected Agent agent1;
 
   /** Agent that goes second and plays with {@link #TokenType.O}. */
-  private Agent agent2;
+  protected Agent agent2;
 
-  public TicTacToeGame(Agent a1, Agent a2) {
+  protected TicTacToeGame(Agent a1, Agent a2) {
     swapAgentOrder = (int) (Math.random() * 2);
 
     if (swapAgentOrder == 0) {
@@ -40,7 +40,8 @@ public final class TicTacToeGame implements Game {
       this.agent2 = a1;
     }
 
-    state = new TicTacToeNormalState();
+    // Subclasses must instantiate "state" to the appropriate subclass of
+    // TicTacToeState
   }
 
   /**
@@ -57,15 +58,15 @@ public final class TicTacToeGame implements Game {
     int winner = -1;
 
     TicTacToeAction agent2Action = null;
-    TicTacToeNormalState stateAfterAgent2 = null;
+    TicTacToeState stateAfterAgent2 = null;
     int agent1Return;
 
     while (true) {
       // AGENT 1'S TURN
       TicTacToeAction agent1Action =
               (TicTacToeAction) agent1.chooseAction(state);
-      TicTacToeNormalState stateAfterAgent1 =
-              (TicTacToeNormalState) state.applyAction(agent1Action);
+      TicTacToeState stateAfterAgent1 =
+              (TicTacToeState) state.applyAction(agent1Action);
 
       int agent2Return = Integer.MIN_VALUE;
 
@@ -107,7 +108,7 @@ public final class TicTacToeGame implements Game {
 
       // AGENT 2'S TURN
       agent2Action = (TicTacToeAction) agent2.chooseAction(state);
-      stateAfterAgent2 = (TicTacToeNormalState) state.applyAction(agent2Action);
+      stateAfterAgent2 = (TicTacToeState) state.applyAction(agent2Action);
 
       // If Agent 2 just made the game end
       if (stateAfterAgent2.checkIfTerminalState()) {

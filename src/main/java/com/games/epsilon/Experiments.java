@@ -2,7 +2,7 @@ package com.games.epsilon;
 
 import com.games.agents.MonteCarloAgent;
 import com.games.agents.RandomAgent;
-import com.games.tictactoe.TicTacToeGame;
+import com.games.tictactoe.TicTacToeNormalGame;
 import com.games.tictactoe.TicTacToeResults;
 
 /**
@@ -22,13 +22,13 @@ final class Experiments {
    */
   static TicTacToeResults playTicTacToe(double epsilon, int numGames) {
     int[] wins = new int[3]; // index 0 is draw, 1 is agent1, 2 is agent2
-    TicTacToeGame game;
+    TicTacToeNormalGame game;
 
     MonteCarloAgent monteCarloAgent = new MonteCarloAgent(epsilon);
     RandomAgent randomAgent = new RandomAgent();
 
     for (int i = 0 ; i < numGames ; i++) {
-      game = new TicTacToeGame(monteCarloAgent, randomAgent);
+      game = new TicTacToeNormalGame(monteCarloAgent, randomAgent);
       int winner = game.play();
 
       if (winner == -1) {
