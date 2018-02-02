@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 java_binary(
-  name = "findepsilon",
+  name = "epsilon",
   srcs = glob(["*.java"]),
   main_class = "com.games.findepsilon.Main",
   deps = [
