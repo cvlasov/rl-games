@@ -3,8 +3,8 @@ package(default_visibility = ["//visibility:public"])
 java_test(
   name = "statetest",
   size = "small",
-  srcs = ["TicTacToeStateTest.java"],
-  test_class = "com.games.tictactoe.TicTacToeStateTest",
+  srcs = ["TicTacToeNormalStateTest.java"],
+  test_class = "com.games.tictactoe.TicTacToeNormalStateTest",
   deps = [
     "//src/main/java/com/games/general:general",
     "//src/main/java/com/games/tictactoe:tictactoe",

@@ -17,7 +17,7 @@ import com.games.tictactoe.TicTacToeHelper.Winner;
 public final class TicTacToeGame implements Game {
 
   /** Current state of the game. */
-  private TicTacToeState state;
+  private TicTacToeNormalState state;
 
   /** 0 (don't swap order of agents passed to the contructor) or 1 (swap). */
   private int swapAgentOrder;
@@ -40,7 +40,7 @@ public final class TicTacToeGame implements Game {
       this.agent2 = a1;
     }
 
-    state = new TicTacToeState();
+    state = new TicTacToeNormalState();
   }
 
   /**
@@ -57,15 +57,15 @@ public final class TicTacToeGame implements Game {
     int winner = -1;
 
     TicTacToeAction agent2Action = null;
-    TicTacToeState stateAfterAgent2 = null;
+    TicTacToeNormalState stateAfterAgent2 = null;
     int agent1Return;
 
     while (true) {
       // AGENT 1'S TURN
       TicTacToeAction agent1Action =
               (TicTacToeAction) agent1.chooseAction(state);
-      TicTacToeState stateAfterAgent1 =
-              (TicTacToeState) state.applyAction(agent1Action);
+      TicTacToeNormalState stateAfterAgent1 =
+              (TicTacToeNormalState) state.applyAction(agent1Action);
 
       int agent2Return = Integer.MIN_VALUE;
 
@@ -107,7 +107,7 @@ public final class TicTacToeGame implements Game {
 
       // AGENT 2'S TURN
       agent2Action = (TicTacToeAction) agent2.chooseAction(state);
-      stateAfterAgent2 = (TicTacToeState) state.applyAction(agent2Action);
+      stateAfterAgent2 = (TicTacToeNormalState) state.applyAction(agent2Action);
 
       // If Agent 2 just made the game end
       if (stateAfterAgent2.checkIfTerminalState()) {

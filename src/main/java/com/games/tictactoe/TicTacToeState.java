@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** State of a game of Tic-Tac-Toe. */
-public final class TicTacToeState implements State {
+public abstract class TicTacToeState implements State {
 
   /**
    * Tic-Tac-Toe grid, where the array indices represent the board as:
@@ -22,20 +22,20 @@ public final class TicTacToeState implements State {
    *   -----------
    *    6 | 7 | 8
    */
-  private final TokenType[] grid;
+  protected final TokenType[] grid;
 
   /** List of possible actions to take from this state. */
-  private List<Action> actions = null;
+  protected List<Action> actions = null;
 
   /**
    * Winning token type (or draw) if this is a terminal state, otherwise
    * {@link TicTacToeHelper#Winner.GAME_NOT_OVER}. Null if
    * {@link #checkIfTerminalState()} has not yet been called.
    */
-  private Winner winner = null;
+  protected Winner winner = null;
 
   /** Creates a state with an empty grid. */
-  public TicTacToeState() {
+  protected TicTacToeState() {
     grid = new TokenType[GRID_SIZE];
     Arrays.fill(grid, TokenType.NONE); // initializes empty grid
     computeActions();
@@ -68,16 +68,6 @@ public final class TicTacToeState implements State {
   @Override
   public List<Action> getActions() {
     return actions;
-  }
-
-  @Override
-  public State applyAction(Action a) {
-    return new TicTacToeState(this, (TicTacToeAction) a);
-  }
-
-  @Override
-  public State copy() {
-    return new TicTacToeState(this);
   }
 
   @Override
@@ -133,8 +123,6 @@ public final class TicTacToeState implements State {
     // Actions are only computed once
     if (actions != null) return;
 
-    actions = new ArrayList<>();
-
     int diff = 0; // X's turn if diff = 0, O's turn if diff = 1
 
     for (TokenType t : grid) {
@@ -146,6 +134,7 @@ public final class TicTacToeState implements State {
     }
 
     TokenType tokenType = diff == 0 ? TokenType.X : TokenType.O;
+    actions = new ArrayList<>();
 
     for (int i = 0; i < GRID_SIZE ; i++) {
       if (grid[i] == TokenType.NONE) {
@@ -174,11 +163,11 @@ public final class TicTacToeState implements State {
 
     if (grid[0] != TokenType.NONE) {
       if (grid[0] == grid[1] && grid[1] == grid[2]
-              || grid[0] == grid[4] && grid[4] == grid[8]
-              || grid[0] == grid[3] && grid[3] == grid[6]) {
+          || grid[0] == grid[4] && grid[4] == grid[8]
+          || grid[0] == grid[3] && grid[3] == grid[6]) {
         switch (grid[0]) {
-          case X: winner = Winner.X; return true;
-          case O: winner = Winner.O; return true;
+          case X:    winner = Winner.X; return true;
+          case O:    winner = Winner.O; return true;
           case NONE: break;  // will not reach this case
         }
       }
@@ -186,11 +175,11 @@ public final class TicTacToeState implements State {
 
     if (grid[4] != TokenType.NONE) {
       if (grid[3] == grid[4] && grid[4] == grid[5]
-              || grid[1] == grid[4] && grid[4] == grid[7]
-              || grid[2] == grid[4] && grid[4] == grid[6]) {
+          || grid[1] == grid[4] && grid[4] == grid[7]
+          || grid[2] == grid[4] && grid[4] == grid[6]) {
         switch (grid[4]) {
-          case X: winner = Winner.X; return true;
-          case O: winner = Winner.O; return true;
+          case X:    winner = Winner.X; return true;
+          case O:    winner = Winner.O; return true;
           case NONE: break;  // will not reach this case
         }
       }
@@ -198,10 +187,10 @@ public final class TicTacToeState implements State {
 
     if (grid[8] != TokenType.NONE) {
       if (grid[6] == grid[7] && grid[7] == grid[8]
-              || grid[2] == grid[5] && grid[5] == grid[8]) {
+          || grid[2] == grid[5] && grid[5] == grid[8]) {
         switch (grid[8]) {
-          case X: winner = Winner.X; return true;
-          case O: winner = Winner.O; return true;
+          case X:    winner = Winner.X; return true;
+          case O:    winner = Winner.O; return true;
           case NONE: break;  // will not reach this case
         }
       }
