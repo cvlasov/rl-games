@@ -1,19 +1,18 @@
 package com.games.tictactoe;
 
+import static com.games.tictactoe.TicTacToeHelper.GRID_SIZE;
+
 import com.games.general.Action;
 import com.games.general.State;
-import com.games.tictactoe.TicTacToeGame.TokenType;
-import com.games.tictactoe.TicTacToeGame.Winner;
+import com.games.tictactoe.TicTacToeHelper.TokenType;
+import com.games.tictactoe.TicTacToeHelper.Winner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /** State of a game of Tic-Tac-Toe. */
-final class TicTacToeState implements State {
-
-  /** Number of cells in a Tic-Tac-Toe grid. */
-  protected final int gridSize = 9;
+public final class TicTacToeState implements State {
 
   /**
    * Tic-Tac-Toe grid, where the array indices represent the board as:
@@ -26,17 +25,18 @@ final class TicTacToeState implements State {
   private final TokenType[] grid;
 
   /** List of possible actions to take from this state. */
-  protected final List<Action> actions = new ArrayList<>();
+  private List<Action> actions = null;
 
   /**
    * Winning token type (or draw) if this is a terminal state, otherwise
-   * {@link tictactoe.TicTacToeGame#Winner.GAME_NOT_OVER}.
+   * {@link TicTacToeHelper#Winner.GAME_NOT_OVER}. Null if
+   * {@link #checkIfTerminalState()} has not yet been called.
    */
-  protected Winner winner = Winner.GAME_NOT_OVER;
+  private Winner winner = null;
 
   /** Creates a state with an empty grid. */
   public TicTacToeState() {
-    grid = new TokenType[gridSize];
+    grid = new TokenType[GRID_SIZE];
     Arrays.fill(grid, TokenType.NONE); // initializes empty grid
     computeActions();
   }
@@ -52,9 +52,9 @@ final class TicTacToeState implements State {
    * state.
    */
   protected TicTacToeState(TicTacToeState oldState, TicTacToeAction action) {
-    grid = new TokenType[gridSize];
+    grid = new TokenType[GRID_SIZE];
 
-    for (int i = 0 ; i < gridSize ; i++) {
+    for (int i = 0 ; i < GRID_SIZE ; i++) {
       if (i == action.index) {
         grid[i] = action.tokenType;
       } else {
@@ -85,12 +85,14 @@ final class TicTacToeState implements State {
     if (o == null) {
       return false;
     }
+
     if (!TicTacToeState.class.isAssignableFrom(o.getClass())) {
       return false;
     }
+
     final TicTacToeState other = (TicTacToeState) o;
 
-    for (int i = 0 ; i < gridSize ; i++) {
+    for (int i = 0 ; i < GRID_SIZE ; i++) {
       if (this.grid[i] != other.grid[i]) {
         return false;
       }
@@ -128,7 +130,10 @@ final class TicTacToeState implements State {
    * state.
    */
   protected void computeActions() {
-    // Called only once, from one of the constructors
+    // Actions are only computed once
+    if (actions != null) return;
+
+    actions = new ArrayList<>();
 
     int diff = 0; // X's turn if diff = 0, O's turn if diff = 1
 
@@ -142,7 +147,7 @@ final class TicTacToeState implements State {
 
     TokenType tokenType = diff == 0 ? TokenType.X : TokenType.O;
 
-    for (int i = 0; i < gridSize ; i++) {
+    for (int i = 0; i < GRID_SIZE ; i++) {
       if (grid[i] == TokenType.NONE) {
         actions.add(new TicTacToeAction(i, tokenType));
       }
@@ -157,6 +162,16 @@ final class TicTacToeState implements State {
    * @return true if this is a terminal state, false otherwise
    */
   public boolean checkIfTerminalState() {
+    // Only check once, so use previously computed result if called again
+    if (winner != null) {
+      switch (winner) {
+        case X:             // fall through
+        case O:             // fall through
+        case DRAW:          return true;
+        case GAME_NOT_OVER: return false;
+      }
+    }
+
     if (grid[0] != TokenType.NONE) {
       if (grid[0] == grid[1] && grid[1] == grid[2]
               || grid[0] == grid[4] && grid[4] == grid[8]
@@ -168,6 +183,7 @@ final class TicTacToeState implements State {
         }
       }
     }
+
     if (grid[4] != TokenType.NONE) {
       if (grid[3] == grid[4] && grid[4] == grid[5]
               || grid[1] == grid[4] && grid[4] == grid[7]
@@ -179,6 +195,7 @@ final class TicTacToeState implements State {
         }
       }
     }
+
     if (grid[8] != TokenType.NONE) {
       if (grid[6] == grid[7] && grid[7] == grid[8]
               || grid[2] == grid[5] && grid[5] == grid[8]) {
@@ -198,11 +215,12 @@ final class TicTacToeState implements State {
       }
     }
 
-    if (occupiedSquares == gridSize) {
+    if (occupiedSquares == GRID_SIZE) {
       winner = Winner.DRAW;
       return true;
     }
 
+    winner = Winner.GAME_NOT_OVER;
     return false;
   }
 

@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import com.games.general.State;
 import com.games.general.Action;
 import com.games.tictactoe.TicTacToeAction;
-import com.games.tictactoe.TicTacToeGame.TokenType;
+import com.games.tictactoe.TicTacToeHelper.TokenType;
 
 import java.util.Set;
 import java.util.HashSet;

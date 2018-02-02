@@ -7,7 +7,7 @@ import com.games.general.Agent;
  * Game of Tic-Tac-Toe where the the first player is chosen randomly. The first
  * player always uses X token and the second player uses O tokens.
  */
-final class TicTacToeGameWithSymmetry implements Game {
+public final class TicTacToeGameWithSymmetry implements Game {
 
   /** Contents of a cell on the board. */
   enum TokenType {

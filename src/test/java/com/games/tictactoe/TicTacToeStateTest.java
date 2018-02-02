@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import com.games.tictactoe.TicTacToeAction;
-import com.games.tictactoe.TicTacToeGame.TokenType;
+import com.games.tictactoe.TicTacToeHelper.TokenType;
 
 import org.junit.Test;
 

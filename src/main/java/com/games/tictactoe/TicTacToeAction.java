@@ -1,10 +1,10 @@
 package com.games.tictactoe;
 
 import com.games.general.Action;
-import com.games.tictactoe.TicTacToeGame.TokenType;
+import com.games.tictactoe.TicTacToeHelper.TokenType;
 
 /** Action taken by a player in a game of Tic-Tac-Toe. */
-final class TicTacToeAction implements Action {
+public final class TicTacToeAction implements Action {
 
   /** Index on board where the piece is to be placed. */
   public final int index;

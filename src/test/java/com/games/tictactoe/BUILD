@@ -24,7 +24,11 @@ java_test(
   ],
 )
 
-java_library(
-  name = "tictactoe",
-  srcs = glob(["*.java"]),
+java_test(
+  name = "alltests",
+  size = "small",
+  runtime_deps = [
+    ":statetest",
+    ":statewithlimitedactionstest",
+  ],
 )
