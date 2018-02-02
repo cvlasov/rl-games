@@ -14,10 +14,10 @@ import com.games.tictactoe.TicTacToeHelper.Winner;
  * Game of Tic-Tac-Toe where the the first player is chosen randomly. The first
  * player always uses X token and the second player uses O tokens.
  */
-public final class TicTacToeGameWithSymmetry implements Game {
+public final class TicTacToeGameWithSymmetricEquality implements Game {
 
   /** Current state of the game. */
-  private TicTacToeStateWithSymmetry state;
+  private TicTacToeStateWithSymmetricEquality state;
 
   /** 0 (don't swap order of agents passed to the contructor) or 1 (swap). */
   private int swapAgentOrder;
@@ -28,7 +28,7 @@ public final class TicTacToeGameWithSymmetry implements Game {
   /** Agent that goes second and plays with {@link #TokenType.O}. */
   private Agent agent2;
 
-  public TicTacToeGameWithSymmetry(Agent a1, Agent a2) {
+  public TicTacToeGameWithSymmetricEquality(Agent a1, Agent a2) {
     swapAgentOrder = (int) (Math.random() * 2);
 
     if (swapAgentOrder == 0) {
@@ -40,7 +40,7 @@ public final class TicTacToeGameWithSymmetry implements Game {
       this.agent2 = a1;
     }
 
-    state = new TicTacToeStateWithSymmetry();
+    state = new TicTacToeStateWithSymmetricEquality();
   }
 
   /**
@@ -57,15 +57,15 @@ public final class TicTacToeGameWithSymmetry implements Game {
     int winner = -1;
 
     TicTacToeAction agent2Action = null;
-    TicTacToeStateWithSymmetry stateAfterAgent2 = null;
+    TicTacToeStateWithSymmetricEquality stateAfterAgent2 = null;
     int agent1Return;
 
     while (true) {
       // AGENT 1'S TURN
       TicTacToeAction agent1Action =
-              (TicTacToeAction) agent1.chooseAction(state);
-      TicTacToeStateWithSymmetry stateAfterAgent1 =
-              (TicTacToeStateWithSymmetry) state.applyAction(agent1Action);
+          (TicTacToeAction) agent1.chooseAction(state);
+      TicTacToeStateWithSymmetricEquality stateAfterAgent1 =
+          (TicTacToeStateWithSymmetricEquality) state.applyAction(agent1Action);
 
       int agent2Return = Integer.MIN_VALUE;
 
@@ -107,7 +107,8 @@ public final class TicTacToeGameWithSymmetry implements Game {
 
       // AGENT 2'S TURN
       agent2Action = (TicTacToeAction) agent2.chooseAction(state);
-      stateAfterAgent2 = (TicTacToeStateWithSymmetry) state.applyAction(agent2Action);
+      stateAfterAgent2 =
+          (TicTacToeStateWithSymmetricEquality) state.applyAction(agent2Action);
 
       // If Agent 2 just made the game end
       if (stateAfterAgent2.checkIfTerminalState()) {

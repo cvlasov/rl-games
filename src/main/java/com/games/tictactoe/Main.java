@@ -120,12 +120,13 @@ public final class Main {
     System.out.println();
   }
 
-  private static void runExperimentWithSymmetry(Agent agent1, Agent agent2, int numGames) {
+  private static void runExperimentWithSymmetricActions(
+      Agent agent1, Agent agent2, int numGames) {
     int[] wins = new int[3]; // index 0 is draw, 1 is agent1, 2 is agent2
-    TicTacToeGameWithSymmetry game;
+    TicTacToeGameWithSymmetricEquality game;
 
     for (int i = 0 ; i < numGames ; i++) {
-      game = new TicTacToeGameWithSymmetry(agent1, agent2);
+      game = new TicTacToeGameWithSymmetricEquality(agent1, agent2);
       int winner = game.play();
 
       if (winner == -1) {
@@ -141,7 +142,8 @@ public final class Main {
     System.out.println();
   }
 
-    private static void runExperimentWithLimitedActions(Agent agent1, Agent agent2, int numGames) {
+  private static void runExperimentWithLimitedActions(
+        Agent agent1, Agent agent2, int numGames) {
     int[] wins = new int[3]; // index 0 is draw, 1 is agent1, 2 is agent2
     TicTacToeGameWithLimitedActions game;
 

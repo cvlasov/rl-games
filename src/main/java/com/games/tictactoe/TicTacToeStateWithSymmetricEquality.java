@@ -8,30 +8,31 @@ import com.games.general.State;
  * they are symmetrical along the vertical or horizontal axis or along either
  * diagonal.
  */
-public final class TicTacToeStateWithSymmetry extends TicTacToeState {
+public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
 
-  public TicTacToeStateWithSymmetry() {
+  public TicTacToeStateWithSymmetricEquality() {
     super();
   }
 
-  private TicTacToeStateWithSymmetry(TicTacToeStateWithSymmetry oldState) {
+  private TicTacToeStateWithSymmetricEquality(
+      TicTacToeStateWithSymmetricEquality oldState) {
     super(oldState);
   }
 
-  private TicTacToeStateWithSymmetry(
-      TicTacToeStateWithSymmetry oldState,
+  private TicTacToeStateWithSymmetricEquality(
+      TicTacToeStateWithSymmetricEquality oldState,
       TicTacToeAction action) {
     super(oldState, action);
   }
 
   @Override  // from interface State
   public State applyAction(Action a) {
-    return new TicTacToeStateWithSymmetry(this, (TicTacToeAction) a);
+    return new TicTacToeStateWithSymmetricEquality(this, (TicTacToeAction) a);
   }
 
   @Override  // from interface State
   public State copy() {
-    return new TicTacToeStateWithSymmetry(this);
+    return new TicTacToeStateWithSymmetricEquality(this);
   }
 
   @Override
