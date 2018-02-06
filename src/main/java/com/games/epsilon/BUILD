@@ -3,7 +3,7 @@ package(default_visibility = ["//visibility:public"])
 java_binary(
   name = "epsilon",
   srcs = glob(["*.java"]),
-  main_class = "com.games.findepsilon.Main",
+  main_class = "com.games.epsilon.Main",
   deps = [
     "//src/main/java/com/games/agents:agents",
     "//src/main/java/com/games/general:general",

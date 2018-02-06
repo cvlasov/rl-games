@@ -37,7 +37,8 @@ public final class Main {
            epsilon < 1.0 ;
            epsilon += EPSILON_GRANULARITY) {
         TicTacToeResults results =
-            Experiments.playTicTacToe(epsilon, 10000 /* number of games */);
+            Experiments.playTicTacToeWithLimitedActions(
+                epsilon, 10000 /* number of games */);
 
         // Write results to file
         csvWriter.writeNext(new String[] {
