@@ -1,6 +1,10 @@
 package com.games.tictactoe;
 
 import static com.games.tictactoe.TicTacToeHelper.GRID_SIZE;
+import static com.games.tictactoe.TicTacToeHelper.flipGridAlongMajorDiagonal;
+import static com.games.tictactoe.TicTacToeHelper.flipGridAlongMinorDiagonal;
+import static com.games.tictactoe.TicTacToeHelper.flipGridHorizontally;
+import static com.games.tictactoe.TicTacToeHelper.flipGridVertically;
 
 import com.games.general.Action;
 import com.games.general.State;
@@ -75,13 +79,13 @@ public final class TicTacToeStateWithLimitedActions extends TicTacToeState {
       List<TokenType> nextGridState = new ArrayList<>(this.grid);
       nextGridState.set(action.index, action.tokenType);
 
-      List<TokenType> verticalFlip = getVerticalFlipGrid(nextGridState);
-      List<TokenType> horizontalFlip = getHorizontalFlipGrid(nextGridState);
-      List<TokenType> doubleFlip = getHorizontalFlipGrid(verticalFlip);
+      List<TokenType> verticalFlip = flipGridVertically(nextGridState);
+      List<TokenType> horizontalFlip = flipGridHorizontally(nextGridState);
+      List<TokenType> doubleFlip = flipGridHorizontally(verticalFlip);
       List<TokenType> majorDiagonalFlip =
-          getMajorDiagonalFlipGrid(nextGridState);
+          flipGridAlongMajorDiagonal(nextGridState);
       List<TokenType> minorDiagonalFlip =
-          getMinorDiagonalFlipGrid(nextGridState);
+          flipGridAlongMinorDiagonal(nextGridState);
 
       if (possibleNextStates.contains(nextGridState)
           || possibleNextStates.contains(verticalFlip)
@@ -97,61 +101,5 @@ public final class TicTacToeStateWithLimitedActions extends TicTacToeState {
     }
 
     actions = possibleActions;
-  }
-
-  private List<TokenType> getVerticalFlipGrid(List<TokenType> g) {
-    List<TokenType> verticalFlipGrid = new ArrayList<>();
-    verticalFlipGrid.add(g.get(6));
-    verticalFlipGrid.add(g.get(7));
-    verticalFlipGrid.add(g.get(8));
-    verticalFlipGrid.add(g.get(3));
-    verticalFlipGrid.add(g.get(4));
-    verticalFlipGrid.add(g.get(5));
-    verticalFlipGrid.add(g.get(0));
-    verticalFlipGrid.add(g.get(1));
-    verticalFlipGrid.add(g.get(2));
-    return verticalFlipGrid;
-  }
-
-  private List<TokenType> getHorizontalFlipGrid(List<TokenType> g) {
-    List<TokenType> horizontalFlipGrid = new ArrayList<>(GRID_SIZE);
-    horizontalFlipGrid.add(g.get(2));
-    horizontalFlipGrid.add(g.get(1));
-    horizontalFlipGrid.add(g.get(0));
-    horizontalFlipGrid.add(g.get(5));
-    horizontalFlipGrid.add(g.get(4));
-    horizontalFlipGrid.add(g.get(3));
-    horizontalFlipGrid.add(g.get(8));
-    horizontalFlipGrid.add(g.get(7));
-    horizontalFlipGrid.add(g.get(6));
-    return horizontalFlipGrid;
-  }
-
-  private List<TokenType> getMajorDiagonalFlipGrid(List<TokenType> g) {
-    List<TokenType> majorDiagonalFlipGrid = new ArrayList<>(GRID_SIZE);
-    majorDiagonalFlipGrid.add(g.get(0));
-    majorDiagonalFlipGrid.add(g.get(3));
-    majorDiagonalFlipGrid.add(g.get(6));
-    majorDiagonalFlipGrid.add(g.get(1));
-    majorDiagonalFlipGrid.add(g.get(4));
-    majorDiagonalFlipGrid.add(g.get(7));
-    majorDiagonalFlipGrid.add(g.get(2));
-    majorDiagonalFlipGrid.add(g.get(5));
-    majorDiagonalFlipGrid.add(g.get(8));
-    return majorDiagonalFlipGrid;
-  }
-
-  private List<TokenType> getMinorDiagonalFlipGrid(List<TokenType> g) {
-    List<TokenType> minorDiagonalFlipGrid = new ArrayList<>(GRID_SIZE);
-    minorDiagonalFlipGrid.add(g.get(8));
-    minorDiagonalFlipGrid.add(g.get(5));
-    minorDiagonalFlipGrid.add(g.get(2));
-    minorDiagonalFlipGrid.add(g.get(7));
-    minorDiagonalFlipGrid.add(g.get(4));
-    minorDiagonalFlipGrid.add(g.get(1));
-    minorDiagonalFlipGrid.add(g.get(6));
-    minorDiagonalFlipGrid.add(g.get(3));
-    minorDiagonalFlipGrid.add(g.get(0));
-    return minorDiagonalFlipGrid;
   }
 }
