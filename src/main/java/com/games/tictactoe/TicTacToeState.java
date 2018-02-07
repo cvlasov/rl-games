@@ -9,20 +9,21 @@ import com.games.tictactoe.TicTacToeHelper.Winner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /** State of a game of Tic-Tac-Toe. */
 public abstract class TicTacToeState implements State {
 
   /**
-   * Tic-Tac-Toe grid, where the array indices represent the board as:
+   * Tic-Tac-Toe grid, where the list indices represent the board as:
    *    0 | 1 | 2
    *   -----------
    *    3 | 4 | 5
    *   -----------
    *    6 | 7 | 8
    */
-  protected final TokenType[] grid;
+  protected final List<TokenType> grid;
 
   /** List of possible actions to take from this state. */
   protected List<Action> actions = null;
@@ -36,14 +37,13 @@ public abstract class TicTacToeState implements State {
 
   /** Creates a state with an empty grid. */
   protected TicTacToeState() {
-    grid = new TokenType[GRID_SIZE];
-    Arrays.fill(grid, TokenType.NONE); // initializes empty grid
+    grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
     computeActions();
   }
 
   /** Creates a copy of the given state. */
   protected TicTacToeState(TicTacToeState oldState) {
-    grid = oldState.grid;
+    grid = new ArrayList<>(oldState.grid);
     computeActions();
   }
 
@@ -52,16 +52,8 @@ public abstract class TicTacToeState implements State {
    * state.
    */
   protected TicTacToeState(TicTacToeState oldState, TicTacToeAction action) {
-    grid = new TokenType[GRID_SIZE];
-
-    for (int i = 0 ; i < GRID_SIZE ; i++) {
-      if (i == action.index) {
-        grid[i] = action.tokenType;
-      } else {
-        grid[i] = oldState.grid[i];
-      }
-    }
-
+    grid = new ArrayList<>(oldState.grid);
+    grid.set(action.index, action.tokenType);
     computeActions();
   }
 
@@ -83,7 +75,7 @@ public abstract class TicTacToeState implements State {
     final TicTacToeState other = (TicTacToeState) o;
 
     for (int i = 0 ; i < GRID_SIZE ; i++) {
-      if (this.grid[i] != other.grid[i]) {
+      if (this.grid.get(i) != other.grid.get(i)) {
         return false;
       }
     }
@@ -93,25 +85,25 @@ public abstract class TicTacToeState implements State {
 
   @Override
   public int hashCode() {
-    int hash = 3 * grid[0].hashCode();
-    hash +=    5 * grid[1].hashCode();
-    hash +=    7 * grid[2].hashCode();
-    hash +=   11 * grid[3].hashCode();
-    hash +=   13 * grid[4].hashCode();
-    hash +=   17 * grid[5].hashCode();
-    hash +=   19 * grid[6].hashCode();
-    hash +=   23 * grid[7].hashCode();
-    hash +=   29 * grid[8].hashCode();
+    int hash = 3 * grid.get(0).hashCode();
+    hash +=    5 * grid.get(1).hashCode();
+    hash +=    7 * grid.get(2).hashCode();
+    hash +=   11 * grid.get(3).hashCode();
+    hash +=   13 * grid.get(4).hashCode();
+    hash +=   17 * grid.get(5).hashCode();
+    hash +=   19 * grid.get(6).hashCode();
+    hash +=   23 * grid.get(7).hashCode();
+    hash +=   29 * grid.get(8).hashCode();
     return hash;
   }
 
   @Override
   public void print() {
-    System.out.println(" " + grid[0] + " | " + grid[1] + " | " + grid[2]);
+    System.out.println(" " + grid.get(0) + " | " + grid.get(1) + " | " + grid.get(2));
     System.out.println("-----------");
-    System.out.println(" " + grid[3] + " | " + grid[4] + " | " + grid[5]);
+    System.out.println(" " + grid.get(3) + " | " + grid.get(4) + " | " + grid.get(5));
     System.out.println("-----------");
-    System.out.println(" " + grid[6] + " | " + grid[7] + " | " + grid[8]);
+    System.out.println(" " + grid.get(6) + " | " + grid.get(7) + " | " + grid.get(8));
     System.out.println();
   }
 
@@ -137,7 +129,7 @@ public abstract class TicTacToeState implements State {
     actions = new ArrayList<>();
 
     for (int i = 0; i < GRID_SIZE ; i++) {
-      if (grid[i] == TokenType.NONE) {
+      if (grid.get(i) == TokenType.NONE) {
         actions.add(new TicTacToeAction(i, tokenType));
       }
     }
@@ -161,11 +153,11 @@ public abstract class TicTacToeState implements State {
       }
     }
 
-    if (grid[0] != TokenType.NONE) {
-      if (grid[0] == grid[1] && grid[1] == grid[2]
-          || grid[0] == grid[4] && grid[4] == grid[8]
-          || grid[0] == grid[3] && grid[3] == grid[6]) {
-        switch (grid[0]) {
+    if (grid.get(0) != TokenType.NONE) {
+      if (grid.get(0) == grid.get(1) && grid.get(1) == grid.get(2)
+          || grid.get(0) == grid.get(4) && grid.get(4) == grid.get(8)
+          || grid.get(0) == grid.get(3) && grid.get(3) == grid.get(6)) {
+        switch (grid.get(0)) {
           case X:    winner = Winner.X; return true;
           case O:    winner = Winner.O; return true;
           case NONE: break;  // will not reach this case
@@ -173,11 +165,11 @@ public abstract class TicTacToeState implements State {
       }
     }
 
-    if (grid[4] != TokenType.NONE) {
-      if (grid[3] == grid[4] && grid[4] == grid[5]
-          || grid[1] == grid[4] && grid[4] == grid[7]
-          || grid[2] == grid[4] && grid[4] == grid[6]) {
-        switch (grid[4]) {
+    if (grid.get(4) != TokenType.NONE) {
+      if (grid.get(3) == grid.get(4) && grid.get(4) == grid.get(5)
+          || grid.get(1) == grid.get(4) && grid.get(4) == grid.get(7)
+          || grid.get(2) == grid.get(4) && grid.get(4) == grid.get(6)) {
+        switch (grid.get(4)) {
           case X:    winner = Winner.X; return true;
           case O:    winner = Winner.O; return true;
           case NONE: break;  // will not reach this case
@@ -185,10 +177,10 @@ public abstract class TicTacToeState implements State {
       }
     }
 
-    if (grid[8] != TokenType.NONE) {
-      if (grid[6] == grid[7] && grid[7] == grid[8]
-          || grid[2] == grid[5] && grid[5] == grid[8]) {
-        switch (grid[8]) {
+    if (grid.get(8) != TokenType.NONE) {
+      if (grid.get(6) == grid.get(7) && grid.get(7) == grid.get(8)
+          || grid.get(2) == grid.get(5) && grid.get(5) == grid.get(8)) {
+        switch (grid.get(8)) {
           case X:    winner = Winner.X; return true;
           case O:    winner = Winner.O; return true;
           case NONE: break;  // will not reach this case
