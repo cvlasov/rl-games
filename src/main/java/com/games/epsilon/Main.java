@@ -16,8 +16,9 @@ import java.util.HashSet;
  */
 public final class Main {
 
-  private static final String RESULTS = "./EpsilonResults.csv";
+  private static final String RESULTS = "./NormalEpsilonResults(50kGames).csv";
   private static final double EPSILON_GRANULARITY = 0.01;
+  private static final int NUM_GAMES = 50000;
 
   public static void main(String[] args) throws IOException {
     try (
@@ -37,8 +38,7 @@ public final class Main {
            epsilon < 1.0 ;
            epsilon += EPSILON_GRANULARITY) {
         TicTacToeResults results =
-            Experiments.playTicTacToeWithLimitedActions(
-                epsilon, 10000 /* number of games */);
+            Experiments.playTicTacToe(epsilon, NUM_GAMES);
 
         // Write results to file
         csvWriter.writeNext(new String[] {

@@ -15,7 +15,7 @@ import java.util.HashSet;
 /** Main class for making agents play Tic-Tac-Toe against each other. */
 public final class Main {
 
-  private static final String RESULTS = "./learningresults.csv";
+  private static final String RESULTS = "./NormalVsLimitedActionsResults(e0.14).csv";
 
   public static void main(String[] args) throws IOException {
     MonteCarloAgent mc1 = new MonteCarloAgent(0.14 /* epsilon */);

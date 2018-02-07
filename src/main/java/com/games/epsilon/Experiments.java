@@ -64,7 +64,7 @@ final class Experiments {
     MonteCarloAgent monteCarloAgent = new MonteCarloAgent(epsilon);
     RandomAgent randomAgent = new RandomAgent();
 
-    for (int i = 0 ; i < numGames ; i++) {
+    for (int i = 1 ; i <= numGames ; i++) {
       game = new TicTacToeGameWithLimitedActions(monteCarloAgent, randomAgent);
       int winner = game.play();
 
