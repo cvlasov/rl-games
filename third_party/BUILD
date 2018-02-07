@@ -1,6 +1,13 @@
 package(default_visibility = ["//visibility:public"])
 
 java_import(
+  name = "guava",
+  jars = [
+    "guava-24.0-jre.jar",
+  ]
+)
+
+java_import(
   name = "junit4",
   jars = [
     "junit-4.12.jar",
