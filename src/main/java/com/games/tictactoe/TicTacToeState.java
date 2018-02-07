@@ -85,26 +85,12 @@ public abstract class TicTacToeState implements State {
 
   @Override
   public int hashCode() {
-    int hash = 3 * grid.get(0).hashCode();
-    hash +=    5 * grid.get(1).hashCode();
-    hash +=    7 * grid.get(2).hashCode();
-    hash +=   11 * grid.get(3).hashCode();
-    hash +=   13 * grid.get(4).hashCode();
-    hash +=   17 * grid.get(5).hashCode();
-    hash +=   19 * grid.get(6).hashCode();
-    hash +=   23 * grid.get(7).hashCode();
-    hash +=   29 * grid.get(8).hashCode();
-    return hash;
+    return TicTacToeHelper.standardHashCode(this.grid);
   }
 
   @Override
   public void print() {
-    System.out.println(" " + grid.get(0) + " | " + grid.get(1) + " | " + grid.get(2));
-    System.out.println("-----------");
-    System.out.println(" " + grid.get(3) + " | " + grid.get(4) + " | " + grid.get(5));
-    System.out.println("-----------");
-    System.out.println(" " + grid.get(6) + " | " + grid.get(7) + " | " + grid.get(8));
-    System.out.println();
+    TicTacToeHelper.print(this.grid);
   }
 
   /**
