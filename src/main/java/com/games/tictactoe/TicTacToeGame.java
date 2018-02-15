@@ -72,29 +72,7 @@ public abstract class TicTacToeGame implements Game {
 
       // If Agent 1 just made the game end
       if (stateAfterAgent1.checkIfTerminalState()) {
-        switch (stateAfterAgent1.getWinner()) {
-          case GAME_NOT_OVER:
-            winner = -1;
-            break;
-          case DRAW:
-            winner = 0;
-            agent1.receiveReturn(DRAW_RETURN);
-            agent2.receiveReturn(DRAW_RETURN);
-            break;
-          case X:
-            winner = (swapAgentOrder == 0 ? 1 : 2);
-            agent1.receiveReturn(WIN_RETURN);
-            agent2.receiveReturn(LOSS_RETURN);
-            break;
-          case O:
-            winner = (swapAgentOrder == 0 ? 2 : 1);
-            agent1.receiveReturn(WIN_RETURN);
-            agent2.receiveReturn(LOSS_RETURN);
-            break;
-        }
-
-        agent1.gameOver();
-        agent2.gameOver();
+        winner = gameOver(stateAfterAgent1);
         break;
 
       } else {
@@ -112,29 +90,7 @@ public abstract class TicTacToeGame implements Game {
 
       // If Agent 2 just made the game end
       if (stateAfterAgent2.checkIfTerminalState()) {
-        switch (stateAfterAgent2.getWinner()) {
-          case GAME_NOT_OVER:
-            winner = -1;
-            break;
-          case DRAW:
-            winner = 0;
-            agent1.receiveReturn(DRAW_RETURN);
-            agent2.receiveReturn(DRAW_RETURN);
-            break;
-          case X:
-            winner = (swapAgentOrder == 0 ? 1 : 2);
-            agent1.receiveReturn(LOSS_RETURN);
-            agent2.receiveReturn(WIN_RETURN);
-            break;
-          case O:
-            winner = (swapAgentOrder == 0 ? 2 : 1);
-            agent1.receiveReturn(LOSS_RETURN);
-            agent2.receiveReturn(WIN_RETURN);
-            break;
-        }
-
-        agent1.gameOver();
-        agent2.gameOver();
+        winner = gameOver(stateAfterAgent2);
         break;
 
       } else {
@@ -144,6 +100,34 @@ public abstract class TicTacToeGame implements Game {
       state = stateAfterAgent2;
     }
 
+    return winner;
+  }
+
+  protected int gameOver(TicTacToeState terminalState) {
+    int winner = -1;
+
+    switch (terminalState.getWinner()) {
+      case GAME_NOT_OVER:
+        break;
+      case DRAW:
+        winner = 0;
+        agent1.receiveReturn(DRAW_RETURN);
+        agent2.receiveReturn(DRAW_RETURN);
+        break;
+      case X:
+        winner = (swapAgentOrder == 0 ? 1 : 2);
+        agent1.receiveReturn(WIN_RETURN);
+        agent2.receiveReturn(LOSS_RETURN);
+        break;
+      case O:
+        winner = (swapAgentOrder == 0 ? 2 : 1);
+        agent1.receiveReturn(LOSS_RETURN);
+        agent2.receiveReturn(WIN_RETURN);
+        break;
+    }
+
+    agent1.gameOver();
+    agent2.gameOver();
     return winner;
   }
 }
