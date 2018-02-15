@@ -1,15 +1,19 @@
 package com.games.tictactoe;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static com.games.tictactoe.TicTacToeHelper.GRID_SIZE;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 import com.games.general.State;
 import com.games.general.Action;
 import com.games.tictactoe.TicTacToeAction;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -28,17 +32,14 @@ public class TicTacToeStateWithLimitedActionsTest {
      *    |   |
      */
 
-    TicTacToeStateWithLimitedActions state =
-        new TicTacToeStateWithLimitedActions();
+    List<TokenType> grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
 
-    Set<Action> actions = new HashSet<>();
-    actions.add(new TicTacToeAction(0, TokenType.X));
-    actions.add(new TicTacToeAction(1, TokenType.X));
-    actions.add(new TicTacToeAction(4, TokenType.X));
+    Set<Action> expectedActions = new HashSet<>();
+    expectedActions.add(new TicTacToeAction(0, TokenType.X));
+    expectedActions.add(new TicTacToeAction(1, TokenType.X));
+    expectedActions.add(new TicTacToeAction(4, TokenType.X));
 
-    Set<Action> actualActions = new HashSet<>(state.getActions());
-
-    assertEquals(actions, actualActions);
+    checkSameActions(expectedActions, grid);
   }
 
   @Test
@@ -52,20 +53,17 @@ public class TicTacToeStateWithLimitedActionsTest {
      *  * | * |
      */
 
-    TicTacToeStateWithLimitedActions state =
-        new TicTacToeStateWithLimitedActions();
-    state = (TicTacToeStateWithLimitedActions) state.applyAction(new TicTacToeAction(1, TokenType.X));
+    List<TokenType> grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    grid.set(1, TokenType.X);
 
-    Set<Action> actions = new HashSet<>();
-    actions.add(new TicTacToeAction(0, TokenType.O));
-    actions.add(new TicTacToeAction(3, TokenType.O));
-    actions.add(new TicTacToeAction(4, TokenType.O));
-    actions.add(new TicTacToeAction(6, TokenType.O));
-    actions.add(new TicTacToeAction(7, TokenType.O));
+    Set<Action> expectedActions = new HashSet<>();
+    expectedActions.add(new TicTacToeAction(0, TokenType.O));
+    expectedActions.add(new TicTacToeAction(3, TokenType.O));
+    expectedActions.add(new TicTacToeAction(4, TokenType.O));
+    expectedActions.add(new TicTacToeAction(6, TokenType.O));
+    expectedActions.add(new TicTacToeAction(7, TokenType.O));
 
-    Set<Action> actualActions = new HashSet<>(state.getActions());
-
-    assertEquals(actions, actualActions);
+    checkSameActions(expectedActions, grid);
   }
 
   @Test
@@ -79,21 +77,25 @@ public class TicTacToeStateWithLimitedActionsTest {
      *  X | O | X
      */
 
+    List<TokenType> grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    grid.set(0, TokenType.O);
+    grid.set(1, TokenType.X);
+    grid.set(2, TokenType.X);
+    grid.set(3, TokenType.O);
+    grid.set(4, TokenType.X);
+    grid.set(5, TokenType.O);
+    grid.set(6, TokenType.X);
+    grid.set(7, TokenType.O);
+    grid.set(8, TokenType.X);
+
+    Set<Action> expectedActions = new HashSet<>();
+    checkSameActions(expectedActions, grid);
+  }
+
+  private void checkSameActions(Set<Action> expectedActions, List<TokenType> grid) {
     TicTacToeStateWithLimitedActions state =
-        new TicTacToeStateWithLimitedActions();
-    state = (TicTacToeStateWithLimitedActions) state.applyAction(new TicTacToeAction(1, TokenType.X));
-    state = (TicTacToeStateWithLimitedActions) state.applyAction(new TicTacToeAction(3, TokenType.O));
-    state = (TicTacToeStateWithLimitedActions) state.applyAction(new TicTacToeAction(8, TokenType.X));
-    state = (TicTacToeStateWithLimitedActions) state.applyAction(new TicTacToeAction(0, TokenType.O));
-    state = (TicTacToeStateWithLimitedActions) state.applyAction(new TicTacToeAction(6, TokenType.X));
-    state = (TicTacToeStateWithLimitedActions) state.applyAction(new TicTacToeAction(5, TokenType.O));
-    state = (TicTacToeStateWithLimitedActions) state.applyAction(new TicTacToeAction(4, TokenType.X));
-    state = (TicTacToeStateWithLimitedActions) state.applyAction(new TicTacToeAction(7, TokenType.O));
-    state = (TicTacToeStateWithLimitedActions) state.applyAction(new TicTacToeAction(2, TokenType.X));
-
-    Set<Action> actions = new HashSet<>();
+        new TicTacToeStateWithLimitedActions(grid);
     Set<Action> actualActions = new HashSet<>(state.getActions());
-
-    assertEquals(actions, actualActions);
+    assertThat(actualActions, equalTo(expectedActions));
   }
 }

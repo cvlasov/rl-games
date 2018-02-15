@@ -9,6 +9,7 @@ import static com.games.tictactoe.TicTacToeHelper.flipGridVertically;
 import com.games.general.Action;
 import com.games.general.State;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
+import com.google.common.annotations.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,6 +36,15 @@ public final class TicTacToeStateWithLimitedActions extends TicTacToeState {
       TicTacToeStateWithLimitedActions oldState,
       TicTacToeAction action) {
     super(oldState, action);
+  }
+
+  @VisibleForTesting
+  TicTacToeStateWithLimitedActions(List<TokenType> g) {
+    super();
+    this.grid.clear();
+    this.grid.addAll(g);
+    this.actions = null;
+    computeActions();
   }
 
   @Override  // from interface State

@@ -49,7 +49,7 @@ java_test(
 )
 
 test_suite(
-  name = "alltests",
+  name = "all",
   tests = [
     "helper",
     "limitedactionsstate",
