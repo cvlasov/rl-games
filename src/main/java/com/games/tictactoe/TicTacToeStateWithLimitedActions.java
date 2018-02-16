@@ -40,11 +40,7 @@ public final class TicTacToeStateWithLimitedActions extends TicTacToeState {
 
   @VisibleForTesting
   TicTacToeStateWithLimitedActions(List<TokenType> g) {
-    super();
-    this.grid.clear();
-    this.grid.addAll(g);
-    this.actions = null;
-    this.winner = null;
+    grid = new ArrayList<>(g);
     computeActions();
     isTerminalState();  // ignore result
   }
