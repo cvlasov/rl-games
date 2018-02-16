@@ -69,7 +69,7 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
     computeSymmetricalStates();
     convertToCanonicalForm();
     computeActions();
-    checkIfTerminalState();
+    isTerminalState();
   }
 
   private void computeSymmetricalStates() {

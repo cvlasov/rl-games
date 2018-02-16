@@ -89,7 +89,7 @@ public abstract class TicTacToeGame implements Game {
       int agent2Return = Integer.MIN_VALUE;
 
       // If Agent 1 just made the game end
-      if (stateAfterAgent1.checkIfTerminalState()) {
+      if (stateAfterAgent1.isTerminalState()) {
         winner = gameOver(stateAfterAgent1);
         break;
 
@@ -107,7 +107,7 @@ public abstract class TicTacToeGame implements Game {
       stateAfterAgent2 = (TicTacToeState) state.applyAction(agent2Action);
 
       // If Agent 2 just made the game end
-      if (stateAfterAgent2.checkIfTerminalState()) {
+      if (stateAfterAgent2.isTerminalState()) {
         winner = gameOver(stateAfterAgent2);
         break;
 

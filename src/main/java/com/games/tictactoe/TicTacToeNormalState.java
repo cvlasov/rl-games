@@ -33,7 +33,7 @@ public final class TicTacToeNormalState extends TicTacToeState {
     this.actions = null;
     this.winner = null;
     computeActions();
-    checkIfTerminalState();
+    isTerminalState();  // ignore result
   }
 
   @Override  // from interface State
