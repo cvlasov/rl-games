@@ -4,6 +4,7 @@ import static com.games.tictactoe.TicTacToeHelper.flipGridAlongMajorDiagonal;
 import static com.games.tictactoe.TicTacToeHelper.flipGridAlongMinorDiagonal;
 import static com.games.tictactoe.TicTacToeHelper.flipGridHorizontally;
 import static com.games.tictactoe.TicTacToeHelper.flipGridVertically;
+import static com.games.tictactoe.TicTacToeHelper.GRID_SIZE;
 
 import com.games.general.Action;
 import com.games.general.State;
@@ -12,6 +13,7 @@ import com.google.common.annotations.VisibleForTesting;
 
 import java.lang.Math;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,28 +31,27 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
   Set<List<TokenType>> symmetricalGrids = new HashSet<>();
 
   public TicTacToeStateWithSymmetricEquality() {
-    super();
+    grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
     initialize();
   }
 
   private TicTacToeStateWithSymmetricEquality(
       TicTacToeStateWithSymmetricEquality oldState) {
-    super(oldState);
+    grid = new ArrayList<>(oldState.grid);
     initialize();
   }
 
   private TicTacToeStateWithSymmetricEquality(
       TicTacToeStateWithSymmetricEquality oldState,
       TicTacToeAction action) {
-    super(oldState, action);
+    grid = new ArrayList<>(oldState.grid);
+    grid.set(action.index, action.tokenType);
     initialize();
   }
 
   @VisibleForTesting
   TicTacToeStateWithSymmetricEquality(List<TokenType> g) {
-    super();
-    this.grid.clear();
-    this.grid.addAll(g);
+    grid = new ArrayList<>(g);
     initialize();
   }
 
@@ -64,47 +65,36 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
     return new TicTacToeStateWithSymmetricEquality(this);
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (o == null) {
-      return false;
-    }
-
-    if (!TicTacToeStateWithSymmetricEquality.class.isAssignableFrom(o.getClass())) {
-      return false;
-    }
-
-    final TicTacToeStateWithSymmetricEquality other =
-        (TicTacToeStateWithSymmetricEquality) o;
-    return this.id == other.getId();
-  }
-
-  public int getId() {
-    return id;
-  }
-
   private void initialize() {
     computeSymmetricalStates();
-    computeID();
+    convertToCanonicalForm();
+    computeActions();
+    checkIfTerminalState();
   }
 
   private void computeSymmetricalStates() {
-    symmetricalGrids.add(this.grid);
     symmetricalGrids.add(flipGridVertically(this.grid));
     symmetricalGrids.add(flipGridHorizontally(this.grid));
     symmetricalGrids.add(flipGridHorizontally(flipGridVertically(this.grid)));
     symmetricalGrids.add(flipGridAlongMajorDiagonal(this.grid));
+    symmetricalGrids.add(flipGridHorizontally(flipGridAlongMajorDiagonal(this.grid)));
     symmetricalGrids.add(flipGridAlongMinorDiagonal(this.grid));
+    symmetricalGrids.add(flipGridHorizontally(flipGridAlongMinorDiagonal(this.grid)));
   }
 
-  /**
-   * Computes the ID of a state to be the minimum (standard) hashcode of
-   * any of its symmetrical states (including itself). In this way, all states
-   * that are symmetrical to each other will have the same ID.
-   */
-  private void computeID() {
+  private void convertToCanonicalForm() {
+    List<TokenType> canonicalGrid = new ArrayList<>(this.grid);
+    int minHashCode = TicTacToeHelper.standardHashCode(this.grid);
+
     for (List<TokenType> g : symmetricalGrids) {
-      id = Math.min(id, TicTacToeHelper.standardHashCode(g));
+      int h = TicTacToeHelper.standardHashCode(g);
+
+      if (h < minHashCode) {
+        canonicalGrid = g;
+        minHashCode = h;
+      }
     }
+
+    this.grid = new ArrayList<>(canonicalGrid);
   }
 }

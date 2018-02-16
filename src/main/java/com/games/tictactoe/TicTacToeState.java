@@ -23,7 +23,7 @@ public abstract class TicTacToeState implements State {
    *   -----------
    *    6 | 7 | 8
    */
-  protected final List<TokenType> grid;
+  protected List<TokenType> grid;
 
   /** List of possible actions to take from this state. */
   protected List<Action> actions = null;

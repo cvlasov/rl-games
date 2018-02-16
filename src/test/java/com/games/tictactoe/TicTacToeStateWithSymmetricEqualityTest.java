@@ -1,5 +1,9 @@
 package com.games.tictactoe;
 
+import static com.games.tictactoe.TicTacToeHelper.flipGridVertically;
+import static com.games.tictactoe.TicTacToeHelper.flipGridHorizontally;
+import static com.games.tictactoe.TicTacToeHelper.flipGridAlongMajorDiagonal;
+import static com.games.tictactoe.TicTacToeHelper.flipGridAlongMinorDiagonal;
 import static com.games.tictactoe.TicTacToeHelper.GRID_SIZE;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
@@ -11,24 +15,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TicTacToeStateWithSymmetricEqualityTest {
-
-  // private List<TokenType> grid;
-  // private List<TokenType> gridFlippedVertically;
-  // private List<TokenType> gridFlippedHorizontally;
-  // private List<TokenType> gridFlippedVerticallyAndHorizontally;
-  // private List<TokenType> gridFlippedAlongMajorDiagonal;
-  // private List<TokenType> gridFlippedAlongMinorDiagonal;
-  // private List<TokenType> emptyGrid;
 
   private TicTacToeStateWithSymmetricEquality originalState;
   private TicTacToeStateWithSymmetricEquality stateFlippedVertically;
   private TicTacToeStateWithSymmetricEquality stateFlippedHorizontally;
   private TicTacToeStateWithSymmetricEquality stateFlippedVerticallyAndHorizontally;
   private TicTacToeStateWithSymmetricEquality stateFlippedAlongMajorDiagonal;
+  private TicTacToeStateWithSymmetricEquality stateFlippedAlongMajorDiagonalAndHorizontally;
   private TicTacToeStateWithSymmetricEquality stateFlippedAlongMinorDiagonal;
+  private TicTacToeStateWithSymmetricEquality stateFlippedAlongMinorDiagonalAndHorizontally;
   private TicTacToeStateWithSymmetricEquality emptyState;
 
   public TicTacToeStateWithSymmetricEqualityTest() {
@@ -47,97 +46,35 @@ public class TicTacToeStateWithSymmetricEqualityTest {
 
     originalState = new TicTacToeStateWithSymmetricEquality(originalGrid);
 
-    /*
-     *  X |   |
-     * -----------
-     *  O |   |
-     * -----------
-     *    | X |
-     */
-    List<TokenType> gridFlippedVertically =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    gridFlippedVertically.set(0, TokenType.X);
-    gridFlippedVertically.set(3, TokenType.O);
-    gridFlippedVertically.set(7, TokenType.X);
-
     stateFlippedVertically =
-        new TicTacToeStateWithSymmetricEquality(gridFlippedVertically);
-
-    /*
-     *    | X |
-     * -----------
-     *    |   | O
-     * -----------
-     *    |   | X
-     */
-    List<TokenType> gridFlippedHorizontally =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    gridFlippedHorizontally.set(1, TokenType.X);
-    gridFlippedHorizontally.set(5, TokenType.O);
-    gridFlippedHorizontally.set(8, TokenType.X);
+        new TicTacToeStateWithSymmetricEquality(
+            flipGridVertically(originalGrid));
 
     stateFlippedHorizontally =
-        new TicTacToeStateWithSymmetricEquality(gridFlippedHorizontally);
-
-    /*
-     *    |   | X
-     * -----------
-     *    |   | O
-     * -----------
-     *    | X |
-     */
-    List<TokenType> gridFlippedVerticallyAndHorizontally =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    gridFlippedVerticallyAndHorizontally.set(2, TokenType.X);
-    gridFlippedVerticallyAndHorizontally.set(5, TokenType.O);
-    gridFlippedVerticallyAndHorizontally.set(7, TokenType.X);
+        new TicTacToeStateWithSymmetricEquality(
+            flipGridHorizontally(originalGrid));
 
     stateFlippedVerticallyAndHorizontally =
-        new TicTacToeStateWithSymmetricEquality(gridFlippedVerticallyAndHorizontally);
-
-    /*
-     *    | O | X
-     * -----------
-     *  X |   |
-     * -----------
-     *    |   |
-     */
-    List<TokenType> gridFlippedAlongMajorDiagonal =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    gridFlippedAlongMajorDiagonal.set(3, TokenType.X);
-    gridFlippedAlongMajorDiagonal.set(1, TokenType.O);
-    gridFlippedAlongMajorDiagonal.set(2, TokenType.X);
+        new TicTacToeStateWithSymmetricEquality(
+            flipGridHorizontally(flipGridVertically(originalGrid)));
 
     stateFlippedAlongMajorDiagonal =
-        new TicTacToeStateWithSymmetricEquality(gridFlippedAlongMajorDiagonal);
+        new TicTacToeStateWithSymmetricEquality(
+            flipGridAlongMajorDiagonal(originalGrid));
 
-    /*
-     *    |   |
-     * -----------
-     *    |   | X
-     * -----------
-     *  X | O |
-     */
-    List<TokenType> gridFlippedAlongMinorDiagonal =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    gridFlippedAlongMinorDiagonal.set(5, TokenType.X);
-    gridFlippedAlongMinorDiagonal.set(7, TokenType.O);
-    gridFlippedAlongMinorDiagonal.set(6, TokenType.X);
+    stateFlippedAlongMajorDiagonalAndHorizontally =
+        new TicTacToeStateWithSymmetricEquality(
+            flipGridHorizontally(flipGridAlongMajorDiagonal(originalGrid)));
 
     stateFlippedAlongMinorDiagonal =
-        new TicTacToeStateWithSymmetricEquality(gridFlippedAlongMinorDiagonal);
+      new TicTacToeStateWithSymmetricEquality(
+          flipGridAlongMinorDiagonal(originalGrid));
 
-    /*
-     *    |   |
-     * -----------
-     *    |   |
-     * -----------
-     *    |   |
-     */
-    List<TokenType> emptyGrid =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    stateFlippedAlongMinorDiagonalAndHorizontally =
+      new TicTacToeStateWithSymmetricEquality(
+          flipGridHorizontally(flipGridAlongMinorDiagonal(originalGrid)));
 
-    emptyState = new TicTacToeStateWithSymmetricEquality(emptyGrid);
+    emptyState = new TicTacToeStateWithSymmetricEquality();
   }
 
   @Test
@@ -161,8 +98,18 @@ public class TicTacToeStateWithSymmetricEqualityTest {
   }
 
   @Test
+  public void testMajorDiagonalAndHorizontalSymmetryEquality() {
+    assertThat(originalState, equalTo(stateFlippedAlongMajorDiagonalAndHorizontally));
+  }
+
+  @Test
   public void testMinorDiagonalSymmetryEquality() {
     assertThat(originalState, equalTo(stateFlippedAlongMinorDiagonal));
+  }
+
+  @Test
+  public void testMinorDiagonalAndHorizontalSymmetryEquality() {
+    assertThat(originalState, equalTo(stateFlippedAlongMinorDiagonalAndHorizontally));
   }
 
   @Test
@@ -238,30 +185,4 @@ public class TicTacToeStateWithSymmetricEqualityTest {
 
     assertThat(emptyState, not(equalTo(fullState)));
   }
-
-  // TODO: implement tests below
-  // @Test
-  // public void testEqualIdWithVerticalSymmetry() {
-  //
-  // }
-  //
-  // @Test
-  // public void testEqualIdWithHorizontalSymmetry() {
-  //
-  // }
-  //
-  // @Test
-  // public void testEqualIdWithVerticalAndHorizontalSymmetry() {
-  //
-  // }
-  //
-  // @Test
-  // public void testEqualIdWithMainDiagonalSymmetry() {
-  //
-  // }
-  //
-  // @Test
-  // public void testEqualIdWithMinorDiagonalSymmetry() {
-  //
-  // }
 }
