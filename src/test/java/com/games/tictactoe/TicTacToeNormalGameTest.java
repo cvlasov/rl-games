@@ -25,20 +25,13 @@ public class TicTacToeNormalGameTest {
   private Agent mockAgent1 = mock(Agent.class);
   private Agent mockAgent2 = mock(Agent.class);
 
-  private List<TokenType> emptyGrid;
-  private List<TokenType> winningXGrid;
-  private List<TokenType> winningOGrid;
-  private List<TokenType> drawGrid;
-
-  private TicTacToeNormalState emptyState;
   private TicTacToeNormalState winningXState;
   private TicTacToeNormalState winningOState;
   private TicTacToeNormalState drawState;
 
   public TicTacToeNormalGameTest() {
-    emptyGrid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-
-    winningXGrid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    List<TokenType> winningXGrid =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
     winningXGrid.set(0, TokenType.O);
     winningXGrid.set(1, TokenType.X);
     winningXGrid.set(2, TokenType.X);
@@ -49,7 +42,8 @@ public class TicTacToeNormalGameTest {
     winningXGrid.set(7, TokenType.O);
     winningXGrid.set(8, TokenType.X);
 
-    winningOGrid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    List<TokenType> winningOGrid =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
     winningOGrid.set(0, TokenType.O);
     winningOGrid.set(1, TokenType.O);
     winningOGrid.set(2, TokenType.O);
@@ -59,7 +53,8 @@ public class TicTacToeNormalGameTest {
     winningOGrid.set(6, TokenType.X);
     winningOGrid.set(7, TokenType.X);
 
-    drawGrid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    List<TokenType> drawGrid =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
     drawGrid.set(0, TokenType.X);
     drawGrid.set(1, TokenType.O);
     drawGrid.set(2, TokenType.X);
@@ -70,12 +65,10 @@ public class TicTacToeNormalGameTest {
     drawGrid.set(7, TokenType.X);
     drawGrid.set(8, TokenType.O);
 
-    emptyState = new TicTacToeNormalState(emptyGrid);
     winningXState = new TicTacToeNormalState(winningXGrid);
     winningOState = new TicTacToeNormalState(winningOGrid);
     drawState = new TicTacToeNormalState(drawGrid);
 
-    emptyState.checkIfTerminalState();
     winningXState.checkIfTerminalState();
     winningOState.checkIfTerminalState();
     drawState.checkIfTerminalState();

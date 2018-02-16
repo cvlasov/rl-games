@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TicTacToeStateWithSymmetricEqualityTest {
@@ -99,7 +98,8 @@ public class TicTacToeStateWithSymmetricEqualityTest {
 
   @Test
   public void testMajorDiagonalAndHorizontalSymmetryEquality() {
-    assertThat(originalState, equalTo(stateFlippedAlongMajorDiagonalAndHorizontally));
+    assertThat(originalState,
+               equalTo(stateFlippedAlongMajorDiagonalAndHorizontally));
   }
 
   @Test
@@ -109,7 +109,8 @@ public class TicTacToeStateWithSymmetricEqualityTest {
 
   @Test
   public void testMinorDiagonalAndHorizontalSymmetryEquality() {
-    assertThat(originalState, equalTo(stateFlippedAlongMinorDiagonalAndHorizontally));
+    assertThat(originalState,
+               equalTo(stateFlippedAlongMinorDiagonalAndHorizontally));
   }
 
   @Test

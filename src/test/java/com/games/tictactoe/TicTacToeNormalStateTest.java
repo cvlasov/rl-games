@@ -2,9 +2,8 @@ package com.games.tictactoe;
 
 import static com.games.tictactoe.TicTacToeHelper.GRID_SIZE;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -17,7 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TicTacToeNormalStateTest {
@@ -28,7 +26,7 @@ public class TicTacToeNormalStateTest {
 	public void testEquality() {
 	  TicTacToeNormalState state1 = new TicTacToeNormalState();
 		TicTacToeNormalState state2 = new TicTacToeNormalState();
-    assertEquals(state1, state2);
+    assertThat(state1, equalTo(state2));
 	}
 
   @Test
@@ -38,14 +36,14 @@ public class TicTacToeNormalStateTest {
 
 	  TicTacToeNormalState state1 = new TicTacToeNormalState(grid);
 		TicTacToeNormalState state2 = new TicTacToeNormalState();
-    assertNotEquals(state1, state2);
+    assertThat(state1, not(equalTo(state2)));
 	}
 
   @Test
 	public void testHashCodeEquality() {
 	  TicTacToeNormalState state1 = new TicTacToeNormalState();
 		TicTacToeNormalState state2 = new TicTacToeNormalState();
-    assertEquals(state1.hashCode(), state2.hashCode());
+    assertThat(state1.hashCode(), equalTo(state2.hashCode()));
 	}
 
   @Test
@@ -55,7 +53,7 @@ public class TicTacToeNormalStateTest {
 
 	  TicTacToeNormalState state1 = new TicTacToeNormalState(grid);
 		TicTacToeNormalState state2 = new TicTacToeNormalState();
-    assertNotEquals(state1.hashCode(), state2.hashCode());
+    assertThat(state1.hashCode(), not(equalTo(state2.hashCode())));
 	}
 
   @Test

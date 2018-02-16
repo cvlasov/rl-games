@@ -14,135 +14,104 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TicTacToeHelperTest {
 
-  public TicTacToeHelperTest() {}
+  private List<TokenType> originalGrid;
+  private List<TokenType> gridFlippedVertically;
+  private List<TokenType> gridFlippedHorizontally;
+  private List<TokenType> gridFlippedAlongMajorDiagonal;
+  private List<TokenType> gridFlippedAlongMinorDiagonal;
+
+  public TicTacToeHelperTest() {
+    /*
+     *    | X |
+     * -----------
+     *  O |   |
+     * -----------
+     *  X |   |
+     */
+    originalGrid =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    originalGrid.set(1, TokenType.X);
+    originalGrid.set(3, TokenType.O);
+    originalGrid.set(6, TokenType.X);
+
+    /*
+     *  X |   |
+     * -----------
+     *  O |   |
+     * -----------
+     *    | X |
+     */
+    gridFlippedVertically =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    gridFlippedVertically.set(0, TokenType.X);
+    gridFlippedVertically.set(3, TokenType.O);
+    gridFlippedVertically.set(7, TokenType.X);
+
+    /*
+     *    | X |
+     * -----------
+     *    |   | O
+     * -----------
+     *    |   | X
+     */
+    gridFlippedHorizontally =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    gridFlippedHorizontally.set(1, TokenType.X);
+    gridFlippedHorizontally.set(5, TokenType.O);
+    gridFlippedHorizontally.set(8, TokenType.X);
+
+    /*
+     *    | O | X
+     * -----------
+     *  X |   |
+     * -----------
+     *    |   |
+     */
+    gridFlippedAlongMajorDiagonal =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    gridFlippedAlongMajorDiagonal.set(3, TokenType.X);
+    gridFlippedAlongMajorDiagonal.set(1, TokenType.O);
+    gridFlippedAlongMajorDiagonal.set(2, TokenType.X);
+
+    /*
+     *    |   |
+     * -----------
+     *    |   | X
+     * -----------
+     *  X | O |
+     */
+    gridFlippedAlongMinorDiagonal =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    gridFlippedAlongMinorDiagonal.set(5, TokenType.X);
+    gridFlippedAlongMinorDiagonal.set(7, TokenType.O);
+    gridFlippedAlongMinorDiagonal.set(6, TokenType.X);
+  }
 
   @Test
   public void testVerticalGridFlip() {
-    /*
-     * Testing equality between:
-     *    | X |           X |   |
-     * -----------       -----------
-     *  O |   |     and   O |   |
-     * -----------       -----------
-     *  X |   |             | X |
-     *  (original)        (expected)
-     */
-
-    List<TokenType> grid1 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid1.set(1, TokenType.X);
-    grid1.set(3, TokenType.O);
-    grid1.set(6, TokenType.X);
-
-    List<TokenType> grid2 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid2.set(0, TokenType.X);
-    grid2.set(3, TokenType.O);
-    grid2.set(7, TokenType.X);
-
-    assertThat(flipGridVertically(grid1), equalTo(grid2));
+    assertThat(flipGridVertically(originalGrid),
+               equalTo(gridFlippedVertically));
   }
 
   @Test
   public void testHorizontalGridFlip() {
-    /*
-     * Testing equality between:
-     *    | X |             | X |
-     * -----------       -----------
-     *  O |   |     and     |   | O
-     * -----------       -----------
-     *  X |   |             |   | X
-
-     */
-
-    List<TokenType> grid1 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid1.set(1, TokenType.X);
-    grid1.set(3, TokenType.O);
-    grid1.set(6, TokenType.X);
-
-    List<TokenType> grid2 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid2.set(1, TokenType.X);
-    grid2.set(5, TokenType.O);
-    grid2.set(8, TokenType.X);
-
-    assertThat(flipGridHorizontally(grid1), equalTo(grid2));
-  }
-
-  @Test
-  public void testVerticalAndHorizontalGridFlip() {
-    /*
-     * Testing equality between:
-     *    | X |             |   | X
-     * -----------       -----------
-     *  O |   |     and     |   | O
-     * -----------       -----------
-     *  X |   |             | X |
-
-     */
-
-    List<TokenType> grid1 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid1.set(1, TokenType.X);
-    grid1.set(3, TokenType.O);
-    grid1.set(6, TokenType.X);
-
-    List<TokenType> grid2 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid2.set(2, TokenType.X);
-    grid2.set(5, TokenType.O);
-    grid2.set(7, TokenType.X);
-
-    assertThat(flipGridVertically(flipGridHorizontally(grid1)), equalTo(grid2));
+    assertThat(flipGridHorizontally(originalGrid),
+               equalTo(gridFlippedHorizontally));
   }
 
   @Test
   public void testMajorDiagonalGridFlip() {
-    /*
-     * Testing equality between:
-     *    | X |             | O | X
-     * -----------       -----------
-     *  O |   |     and   X |   |
-     * -----------       -----------
-     *  X |   |             |   |
-
-     */
-
-    List<TokenType> grid1 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid1.set(1, TokenType.X);
-    grid1.set(3, TokenType.O);
-    grid1.set(6, TokenType.X);
-
-    List<TokenType> grid2 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid2.set(3, TokenType.X);
-    grid2.set(1, TokenType.O);
-    grid2.set(2, TokenType.X);
-
-    assertThat(flipGridAlongMajorDiagonal(grid1), equalTo(grid2));
+    assertThat(flipGridAlongMajorDiagonal(originalGrid),
+               equalTo(gridFlippedAlongMajorDiagonal));
   }
 
   @Test
   public void testMinorDiagonalGridFlip() {
-    /*
-     * Testing equality between:
-     *    | X |             |   |
-     * -----------       -----------
-     *  O |   |     and     |   | X
-     * -----------       -----------
-     *  X |   |           X | O |
-
-     */
-
-    List<TokenType> grid1 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid1.set(1, TokenType.X);
-    grid1.set(3, TokenType.O);
-    grid1.set(6, TokenType.X);
-
-    List<TokenType> grid2 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid2.set(5, TokenType.X);
-    grid2.set(7, TokenType.O);
-    grid2.set(6, TokenType.X);
-
-    assertThat(flipGridAlongMinorDiagonal(grid1), equalTo(grid2));
+    assertThat(flipGridAlongMinorDiagonal(originalGrid),
+               equalTo(gridFlippedAlongMinorDiagonal));
   }
 }
