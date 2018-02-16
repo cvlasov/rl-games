@@ -45,7 +45,6 @@ public abstract class TicTacToeGame implements Game {
     // TicTacToeState
   }
 
-  @VisibleForTesting
   protected TicTacToeGame(Agent a1, Agent a2, int swapAgentOrder) {
     this.swapAgentOrder = swapAgentOrder;
 
