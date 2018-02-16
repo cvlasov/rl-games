@@ -25,10 +25,7 @@ import java.util.Set;
  */
 public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
 
-  private int id = Integer.MAX_VALUE;
-
-  @VisibleForTesting
-  Set<List<TokenType>> symmetricalGrids = new HashSet<>();
+  private Set<List<TokenType>> symmetricalGrids = new HashSet<>();
 
   public TicTacToeStateWithSymmetricEquality() {
     grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
