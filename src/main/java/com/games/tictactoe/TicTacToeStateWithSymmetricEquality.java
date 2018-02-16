@@ -30,20 +30,20 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
 
   public TicTacToeStateWithSymmetricEquality() {
     super();
-    setUp();
+    initialize();
   }
 
   private TicTacToeStateWithSymmetricEquality(
       TicTacToeStateWithSymmetricEquality oldState) {
     super(oldState);
-    setUp();
+    initialize();
   }
 
   private TicTacToeStateWithSymmetricEquality(
       TicTacToeStateWithSymmetricEquality oldState,
       TicTacToeAction action) {
     super(oldState, action);
-    setUp();
+    initialize();
   }
 
   @VisibleForTesting
@@ -51,7 +51,7 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
     super();
     this.grid.clear();
     this.grid.addAll(g);
-    setUp();
+    initialize();
   }
 
   @Override  // from interface State
@@ -83,7 +83,7 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
     return id;
   }
 
-  private void setUp() {
+  private void initialize() {
     computeSymmetricalStates();
     computeID();
   }

@@ -44,7 +44,9 @@ public final class TicTacToeStateWithLimitedActions extends TicTacToeState {
     this.grid.clear();
     this.grid.addAll(g);
     this.actions = null;
+    this.winner = null;
     computeActions();
+    checkIfTerminalState(); // ignore result
   }
 
   @Override  // from interface State
