@@ -16,6 +16,16 @@ java_import(
 )
 
 java_import(
+  name = "mockito",
+  jars = [
+    "byte-buddy-1.7.10.jar",
+    "byte-buddy-agent-1.7.10.jar",
+    "mockito-core-2.15.0.jar",
+    "objenesis-2.6.jar",
+  ],
+)
+
+java_import(
   name = "opencsv",
   jars = [
     "opencsv-4.1.jar",
