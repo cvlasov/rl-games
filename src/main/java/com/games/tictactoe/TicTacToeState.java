@@ -39,12 +39,14 @@ public abstract class TicTacToeState implements State {
   protected TicTacToeState() {
     grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
     computeActions();
+    checkIfTerminalState();
   }
 
   /** Creates a copy of the given state. */
   protected TicTacToeState(TicTacToeState oldState) {
     grid = new ArrayList<>(oldState.grid);
     computeActions();
+    checkIfTerminalState();
   }
 
   /**
@@ -55,6 +57,7 @@ public abstract class TicTacToeState implements State {
     grid = new ArrayList<>(oldState.grid);
     grid.set(action.index, action.tokenType);
     computeActions();
+    checkIfTerminalState();
   }
 
   @Override
@@ -94,40 +97,13 @@ public abstract class TicTacToeState implements State {
   }
 
   /**
-   * Populates {@link #actions} with all actions that can be taken from this
-   * state.
-   */
-  protected void computeActions() {
-    // Actions are only computed once
-    if (actions != null) return;
-
-    int diff = 0; // X's turn if diff = 0, O's turn if diff = 1
-
-    for (TokenType t : grid) {
-      switch (t) {
-        case X:    diff += 1; break;
-        case O:    diff -= 1; break;
-        case NONE: break;
-      }
-    }
-
-    TokenType tokenType = diff == 0 ? TokenType.X : TokenType.O;
-    actions = new ArrayList<>();
-
-    for (int i = 0; i < GRID_SIZE ; i++) {
-      if (grid.get(i) == TokenType.NONE) {
-        actions.add(new TicTacToeAction(i, tokenType));
-      }
-    }
-  }
-
-  /**
    * Returns whether or not this is a terminal state
    * <p>
    * If it is a terminal state, updates {@link #winner} accordingly.
    *
    * @return true if this is a terminal state, false otherwise
    */
+  @Override
   public boolean checkIfTerminalState() {
     // Only check once, so use previously computed result if called again
     if (winner != null) {
@@ -194,11 +170,39 @@ public abstract class TicTacToeState implements State {
   /**
    * Returns the winner of the game, if any.
    * <p>
-   * Can only be called after {@link #isTerminalState}.
+   * Can only be called after {@link #checkIfTerminalState()}.
    *
    * @return winner of the game, if any
    */
-  public Winner getWinner() {
+  Winner getWinner() {
     return winner;
+  }
+
+  /**
+   * Populates {@link #actions} with all actions that can be taken from this
+   * state.
+   */
+  protected void computeActions() {
+    // Actions are only computed once
+    if (actions != null) return;
+
+    int diff = 0; // X's turn if diff = 0, O's turn if diff = 1
+
+    for (TokenType t : grid) {
+      switch (t) {
+        case X:    diff += 1; break;
+        case O:    diff -= 1; break;
+        case NONE: break;
+      }
+    }
+
+    TokenType tokenType = diff == 0 ? TokenType.X : TokenType.O;
+    actions = new ArrayList<>();
+
+    for (int i = 0; i < GRID_SIZE ; i++) {
+      if (grid.get(i) == TokenType.NONE) {
+        actions.add(new TicTacToeAction(i, tokenType));
+      }
+    }
   }
 }

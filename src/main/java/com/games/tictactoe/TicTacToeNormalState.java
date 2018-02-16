@@ -2,6 +2,12 @@ package com.games.tictactoe;
 
 import com.games.general.Action;
 import com.games.general.State;
+import com.games.tictactoe.TicTacToeHelper.TokenType;
+
+import com.google.common.annotations.VisibleForTesting;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class TicTacToeNormalState extends TicTacToeState {
 
@@ -17,6 +23,17 @@ public final class TicTacToeNormalState extends TicTacToeState {
       TicTacToeNormalState oldState,
       TicTacToeAction action) {
     super(oldState, action);
+  }
+
+  @VisibleForTesting
+  TicTacToeNormalState(List<TokenType> g) {
+    super();
+    this.grid.clear();
+    this.grid.addAll(g);
+    this.actions = null;
+    this.winner = null;
+    computeActions();
+    checkIfTerminalState();
   }
 
   @Override  // from interface State
