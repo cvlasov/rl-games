@@ -15,126 +15,154 @@ import org.junit.Test;
 
 public class TicTacToeStateWithSymmetricEqualityTest {
 
-  public TicTacToeStateWithSymmetricEqualityTest() {}
+  // private List<TokenType> grid;
+  // private List<TokenType> gridFlippedVertically;
+  // private List<TokenType> gridFlippedHorizontally;
+  // private List<TokenType> gridFlippedVerticallyAndHorizontally;
+  // private List<TokenType> gridFlippedAlongMajorDiagonal;
+  // private List<TokenType> gridFlippedAlongMinorDiagonal;
+  // private List<TokenType> emptyGrid;
+
+  private TicTacToeStateWithSymmetricEquality originalState;
+  private TicTacToeStateWithSymmetricEquality stateFlippedVertically;
+  private TicTacToeStateWithSymmetricEquality stateFlippedHorizontally;
+  private TicTacToeStateWithSymmetricEquality stateFlippedVerticallyAndHorizontally;
+  private TicTacToeStateWithSymmetricEquality stateFlippedAlongMajorDiagonal;
+  private TicTacToeStateWithSymmetricEquality stateFlippedAlongMinorDiagonal;
+  private TicTacToeStateWithSymmetricEquality emptyState;
+
+  public TicTacToeStateWithSymmetricEqualityTest() {
+    /*
+     *    | X |
+     * -----------
+     *  O |   |
+     * -----------
+     *  X |   |
+     */
+    List<TokenType> originalGrid =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    originalGrid.set(1, TokenType.X);
+    originalGrid.set(3, TokenType.O);
+    originalGrid.set(6, TokenType.X);
+
+    originalState = new TicTacToeStateWithSymmetricEquality(originalGrid);
+
+    /*
+     *  X |   |
+     * -----------
+     *  O |   |
+     * -----------
+     *    | X |
+     */
+    List<TokenType> gridFlippedVertically =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    gridFlippedVertically.set(0, TokenType.X);
+    gridFlippedVertically.set(3, TokenType.O);
+    gridFlippedVertically.set(7, TokenType.X);
+
+    stateFlippedVertically =
+        new TicTacToeStateWithSymmetricEquality(gridFlippedVertically);
+
+    /*
+     *    | X |
+     * -----------
+     *    |   | O
+     * -----------
+     *    |   | X
+     */
+    List<TokenType> gridFlippedHorizontally =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    gridFlippedHorizontally.set(1, TokenType.X);
+    gridFlippedHorizontally.set(5, TokenType.O);
+    gridFlippedHorizontally.set(8, TokenType.X);
+
+    stateFlippedHorizontally =
+        new TicTacToeStateWithSymmetricEquality(gridFlippedHorizontally);
+
+    /*
+     *    |   | X
+     * -----------
+     *    |   | O
+     * -----------
+     *    | X |
+     */
+    List<TokenType> gridFlippedVerticallyAndHorizontally =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    gridFlippedVerticallyAndHorizontally.set(2, TokenType.X);
+    gridFlippedVerticallyAndHorizontally.set(5, TokenType.O);
+    gridFlippedVerticallyAndHorizontally.set(7, TokenType.X);
+
+    stateFlippedVerticallyAndHorizontally =
+        new TicTacToeStateWithSymmetricEquality(gridFlippedVerticallyAndHorizontally);
+
+    /*
+     *    | O | X
+     * -----------
+     *  X |   |
+     * -----------
+     *    |   |
+     */
+    List<TokenType> gridFlippedAlongMajorDiagonal =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    gridFlippedAlongMajorDiagonal.set(3, TokenType.X);
+    gridFlippedAlongMajorDiagonal.set(1, TokenType.O);
+    gridFlippedAlongMajorDiagonal.set(2, TokenType.X);
+
+    stateFlippedAlongMajorDiagonal =
+        new TicTacToeStateWithSymmetricEquality(gridFlippedAlongMajorDiagonal);
+
+    /*
+     *    |   |
+     * -----------
+     *    |   | X
+     * -----------
+     *  X | O |
+     */
+    List<TokenType> gridFlippedAlongMinorDiagonal =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    gridFlippedAlongMinorDiagonal.set(5, TokenType.X);
+    gridFlippedAlongMinorDiagonal.set(7, TokenType.O);
+    gridFlippedAlongMinorDiagonal.set(6, TokenType.X);
+
+    stateFlippedAlongMinorDiagonal =
+        new TicTacToeStateWithSymmetricEquality(gridFlippedAlongMinorDiagonal);
+
+    /*
+     *    |   |
+     * -----------
+     *    |   |
+     * -----------
+     *    |   |
+     */
+    List<TokenType> emptyGrid =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+
+    emptyState = new TicTacToeStateWithSymmetricEquality(emptyGrid);
+  }
 
   @Test
   public void testVerticalSymmetryEquality() {
-    /*
-     * Testing equality between:
-     *    | X |           X |   |
-     * -----------       -----------
-     *  O |   |     and   O |   |
-     * -----------       -----------
-     *  X |   |             | X |
-     */
-
-    List<TokenType> grid1 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid1.set(1, TokenType.X);
-    grid1.set(3, TokenType.O);
-    grid1.set(6, TokenType.X);
-
-    List<TokenType> grid2 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid2.set(0, TokenType.X);
-    grid2.set(3, TokenType.O);
-    grid2.set(7, TokenType.X);
-
-    checkEquality(grid1, grid2);
+    assertThat(originalState, equalTo(stateFlippedVertically));
   }
 
   @Test
   public void testHorizontalSymmetryEquality() {
-    /*
-     * Testing equality between:
-     *    | X |             | X |
-     * -----------       -----------
-     *  O |   |     and     |   | O
-     * -----------       -----------
-     *  X |   |             |   | X
-     */
-
-    List<TokenType> grid1 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid1.set(1, TokenType.X);
-    grid1.set(3, TokenType.O);
-    grid1.set(6, TokenType.X);
-
-    List<TokenType> grid2 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid2.set(1, TokenType.X);
-    grid2.set(5, TokenType.O);
-    grid2.set(8, TokenType.X);
-
-    checkEquality(grid1, grid2);
+    assertThat(originalState, equalTo(stateFlippedHorizontally));
   }
 
   @Test
   public void testVerticalAndHorizontalSymmetryEquality() {
-    /*
-     * Testing equality between:
-     *    | X |             |   | X
-     * -----------       -----------
-     *  O |   |     and     |   | O
-     * -----------       -----------
-     *  X |   |             | X |
-     */
-
-    List<TokenType> grid1 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid1.set(1, TokenType.X);
-    grid1.set(3, TokenType.O);
-    grid1.set(6, TokenType.X);
-
-    List<TokenType> grid2 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid2.set(2, TokenType.X);
-    grid2.set(5, TokenType.O);
-    grid2.set(7, TokenType.X);
-
-    checkEquality(grid1, grid2);
+    assertThat(originalState, equalTo(stateFlippedVerticallyAndHorizontally));
   }
 
   @Test
   public void testMajorDiagonalSymmetryEquality() {
-    /*
-     * Testing equality between:
-     *    | X |             | O | X
-     * -----------       -----------
-     *  O |   |     and   X |   |
-     * -----------       -----------
-     *  X |   |             |   |
-     */
-
-    List<TokenType> grid1 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid1.set(1, TokenType.X);
-    grid1.set(3, TokenType.O);
-    grid1.set(6, TokenType.X);
-
-    List<TokenType> grid2 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid2.set(3, TokenType.X);
-    grid2.set(1, TokenType.O);
-    grid2.set(2, TokenType.X);
-
-    checkEquality(grid1, grid2);
+    assertThat(originalState, equalTo(stateFlippedAlongMajorDiagonal));
   }
 
   @Test
   public void testMinorDiagonalSymmetryEquality() {
-    /*
-     * Testing equality between:
-     *    | X |             |   |
-     * -----------       -----------
-     *  O |   |     and     |   | X
-     * -----------       -----------
-     *  X |   |           X | O |
-     */
-
-    List<TokenType> grid1 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid1.set(1, TokenType.X);
-    grid1.set(3, TokenType.O);
-    grid1.set(6, TokenType.X);
-
-    List<TokenType> grid2 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid2.set(5, TokenType.X);
-    grid2.set(7, TokenType.O);
-    grid2.set(6, TokenType.X);
-
-    checkEquality(grid1, grid2);
+    assertThat(originalState, equalTo(stateFlippedAlongMinorDiagonal));
   }
 
   @Test
@@ -148,17 +176,16 @@ public class TicTacToeStateWithSymmetricEqualityTest {
      *  X |   |           X |   |
      */
 
-    List<TokenType> grid1 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid1.set(1, TokenType.X);
-    grid1.set(3, TokenType.O);
-    grid1.set(6, TokenType.X);
+    List<TokenType> nonSymmetricalGrid =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    nonSymmetricalGrid.set(4, TokenType.X);
+    nonSymmetricalGrid.set(3, TokenType.O);
+    nonSymmetricalGrid.set(6, TokenType.X);
 
-    List<TokenType> grid2 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid2.set(4, TokenType.X);
-    grid2.set(3, TokenType.O);
-    grid2.set(6, TokenType.X);
+    TicTacToeStateWithSymmetricEquality nonSymmetricalState =
+        new TicTacToeStateWithSymmetricEquality(nonSymmetricalGrid);
 
-    checkInequality(grid1, grid2);
+    assertThat(originalState, not(equalTo(nonSymmetricalState)));
   }
 
   @Test
@@ -172,12 +199,14 @@ public class TicTacToeStateWithSymmetricEqualityTest {
      *    |   |             |   |
      */
 
-    List<TokenType> grid1 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    List<TokenType> nonEmptyGrid =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    nonEmptyGrid.set(4, TokenType.X);
 
-    List<TokenType> grid2 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid2.set(4, TokenType.X);
+    TicTacToeStateWithSymmetricEquality nonEmptyState =
+        new TicTacToeStateWithSymmetricEquality(nonEmptyGrid);
 
-    checkInequality(grid1, grid2);
+    assertThat(emptyState, not(equalTo(nonEmptyState)));
   }
 
   @Test
@@ -192,39 +221,47 @@ public class TicTacToeStateWithSymmetricEqualityTest {
 
      */
 
-    List<TokenType> grid1 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    List<TokenType> fullGrid =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    fullGrid.set(0, TokenType.X);
+    fullGrid.set(1, TokenType.X);
+    fullGrid.set(2, TokenType.X);
+    fullGrid.set(3, TokenType.O);
+    fullGrid.set(4, TokenType.X);
+    fullGrid.set(5, TokenType.O);
+    fullGrid.set(6, TokenType.X);
+    fullGrid.set(7, TokenType.O);
+    fullGrid.set(8, TokenType.O);
 
-    List<TokenType> grid2 = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid2.set(0, TokenType.X);
-    grid2.set(1, TokenType.X);
-    grid2.set(2, TokenType.X);
-    grid2.set(3, TokenType.O);
-    grid2.set(4, TokenType.X);
-    grid2.set(5, TokenType.O);
-    grid2.set(6, TokenType.X);
-    grid2.set(7, TokenType.O);
-    grid2.set(8, TokenType.O);
+    TicTacToeStateWithSymmetricEquality fullState =
+        new TicTacToeStateWithSymmetricEquality(fullGrid);
 
-    checkInequality(grid1, grid2);
+    assertThat(emptyState, not(equalTo(fullState)));
   }
 
-  private void checkEquality(List<TokenType> grid1, List<TokenType> grid2) {
-    TicTacToeStateWithSymmetricEquality state1 =
-        new TicTacToeStateWithSymmetricEquality(grid1);
-
-    TicTacToeStateWithSymmetricEquality state2 =
-        new TicTacToeStateWithSymmetricEquality(grid2);
-
-    assertThat(state1, equalTo(state2));
-  }
-
-  private void checkInequality(List<TokenType> grid1, List<TokenType> grid2) {
-    TicTacToeStateWithSymmetricEquality state1 =
-        new TicTacToeStateWithSymmetricEquality(grid1);
-
-    TicTacToeStateWithSymmetricEquality state2 =
-        new TicTacToeStateWithSymmetricEquality(grid2);
-
-    assertThat(state1, not(equalTo(state2)));
-  }
+  // TODO: implement tests below
+  // @Test
+  // public void testEqualIdWithVerticalSymmetry() {
+  //
+  // }
+  //
+  // @Test
+  // public void testEqualIdWithHorizontalSymmetry() {
+  //
+  // }
+  //
+  // @Test
+  // public void testEqualIdWithVerticalAndHorizontalSymmetry() {
+  //
+  // }
+  //
+  // @Test
+  // public void testEqualIdWithMainDiagonalSymmetry() {
+  //
+  // }
+  //
+  // @Test
+  // public void testEqualIdWithMinorDiagonalSymmetry() {
+  //
+  // }
 }
