@@ -9,6 +9,7 @@ import com.games.general.Agent;
 import com.games.general.Game;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 import com.games.tictactoe.TicTacToeHelper.Winner;
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Game of Tic-Tac-Toe where the the first player is chosen randomly. The first
@@ -30,6 +31,23 @@ public abstract class TicTacToeGame implements Game {
 
   protected TicTacToeGame(Agent a1, Agent a2) {
     swapAgentOrder = (int) (Math.random() * 2);
+
+    if (swapAgentOrder == 0) {
+      this.agent1 = a1;
+      this.agent2 = a2;
+
+    } else {
+      this.agent1 = a2;
+      this.agent2 = a1;
+    }
+
+    // Subclasses must instantiate "state" to the appropriate subclass of
+    // TicTacToeState
+  }
+
+  @VisibleForTesting
+  protected TicTacToeGame(Agent a1, Agent a2, int swapAgentOrder) {
+    this.swapAgentOrder = swapAgentOrder;
 
     if (swapAgentOrder == 0) {
       this.agent1 = a1;
@@ -103,7 +121,13 @@ public abstract class TicTacToeGame implements Game {
     return winner;
   }
 
-  protected int gameOver(TicTacToeState terminalState) {
+ /**
+  * Determines which agent (if any) is the winner at the given state.
+  *
+  * @return winning agent (-1 = not over, 0 = draw, 1 = agent 1, 2 = agent 2)
+  */
+  @VisibleForTesting
+  int gameOver(TicTacToeState terminalState) {
     int winner = -1;
 
     switch (terminalState.getWinner()) {

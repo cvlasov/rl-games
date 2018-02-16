@@ -25,6 +25,20 @@ java_test(
 )
 
 java_test(
+  name = "normalgame",
+  size = "small",
+  srcs = ["TicTacToeNormalGameTest.java"],
+  test_class = "com.games.tictactoe.TicTacToeNormalGameTest",
+  deps = [
+    "//src/main/java/com/games/agents:agents",
+    "//src/main/java/com/games/general:general",
+    "//src/main/java/com/games/tictactoe:tictactoe",
+    "//third_party:junit4",
+    "//third_party:mockito",
+  ],
+)
+
+java_test(
   name = "normalstate",
   size = "small",
   srcs = ["TicTacToeNormalStateTest.java"],
@@ -45,15 +59,5 @@ java_test(
     "//src/main/java/com/games/general:general",
     "//src/main/java/com/games/tictactoe:tictactoe",
     "//third_party:junit4",
-  ],
-)
-
-test_suite(
-  name = "all",
-  tests = [
-    "helper",
-    "limitedactionsstate",
-    "normalstate",
-    "symmetricequalitystate",
   ],
 )
