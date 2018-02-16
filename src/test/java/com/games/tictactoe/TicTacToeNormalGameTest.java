@@ -69,9 +69,9 @@ public class TicTacToeNormalGameTest {
     winningOState = new TicTacToeNormalState(winningOGrid);
     drawState = new TicTacToeNormalState(drawGrid);
 
-    winningXState.checkIfTerminalState();
-    winningOState.checkIfTerminalState();
-    drawState.checkIfTerminalState();
+    winningXState.isTerminalState();
+    winningOState.isTerminalState();
+    drawState.isTerminalState();
   }
 
   @Test

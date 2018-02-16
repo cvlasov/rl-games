@@ -57,7 +57,7 @@ public class TicTacToeNormalStateTest {
 	}
 
   @Test
-  public void testCheckIfTerminalStateIsTrueForXWin() {
+  public void testIsTerminalStateIsTrueForXWin() {
     /*
      * This is a terminal state since X won:
      *  O | X | X
@@ -79,11 +79,11 @@ public class TicTacToeNormalStateTest {
     grid.set(8, TokenType.X);
 
     TicTacToeNormalState state = new TicTacToeNormalState(grid);
-    assertTrue(state.checkIfTerminalState());
+    assertTrue(state.isTerminalState());
   }
 
   @Test
-  public void testCheckIfTerminalStateIsTrueForOWin() {
+  public void testIsTerminalStateIsTrueForOWin() {
     /*
      * This is a terminal state since O won:
      *  O | X |
@@ -102,11 +102,11 @@ public class TicTacToeNormalStateTest {
     grid.set(8, TokenType.O);
 
     TicTacToeNormalState state = new TicTacToeNormalState(grid);
-    assertTrue(state.checkIfTerminalState());
+    assertTrue(state.isTerminalState());
   }
 
   @Test
-  public void testCheckIfTerminalStateIsTrueForDraw() {
+  public void testIsTerminalStateIsTrueForDraw() {
     /*
      * This is a terminal state since it's a draw:
      *  O | X | X
@@ -128,11 +128,11 @@ public class TicTacToeNormalStateTest {
     grid.set(8, TokenType.X);
 
     TicTacToeNormalState state = new TicTacToeNormalState(grid);
-    assertTrue(state.checkIfTerminalState());
+    assertTrue(state.isTerminalState());
   }
 
   @Test
-  public void testCheckIfTerminalStateIsFalseForUnfinishedGame() {
+  public void testIsTerminalStateIsFalseForUnfinishedGame() {
     /*
      * This is NOT a terminal state:
      *  O |   |
@@ -147,7 +147,7 @@ public class TicTacToeNormalStateTest {
     grid.set(5, TokenType.X);
 
     TicTacToeNormalState state = new TicTacToeNormalState(grid);
-    assertFalse(state.checkIfTerminalState());
+    assertFalse(state.isTerminalState());
   }
 
   @Test
