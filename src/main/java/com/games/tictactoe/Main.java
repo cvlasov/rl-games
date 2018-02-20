@@ -186,7 +186,8 @@ public final class Main {
       Agent limitedActionsAgent2,
       Agent symmetricEqualityAgent1,
       Agent symmetricEqualityAgent2,
-      int numGames)
+      int numGames,
+      int resultInterval)
       throws IOException {
 
     // index 0 is draw, 1 is agent1, 2 is agent2
@@ -244,7 +245,7 @@ public final class Main {
         limitedActionsWins[limitedActionsWinner]++;
         symmetricEqualityWins[symmetricEqualityWinner]++;
 
-        if (gamesSoFar % 1000 == 0) {
+        if (gamesSoFar % resultInterval == 0) {
           csvWriter.writeNext(new String[] {
             String.valueOf(gamesSoFar),
             String.valueOf(normalWins[1]),
