@@ -1,4 +1,4 @@
-package com.games.tictactoe;
+package com.games.experiments;
 
 import static com.games.tictactoe.TicTacToeHelper.GameType;
 
@@ -14,10 +14,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /** Main class for making agents play Tic-Tac-Toe against each other. */
-public final class Main {
+public final class TicTacToeExperiments {
 
   private static final String COMBINED_RESULTS =
-      "./CombinedResults(e0.07).csv";
+      "./CombinedResults(e0.1).csv";
 
   private static final String NORMAL_RESULTS =
       "./NormalResults(e0.1).csv";
@@ -31,11 +31,26 @@ public final class Main {
   public static void main(String[] args) throws IOException {
     MonteCarloAgent mc1 = new MonteCarloAgent(0.1 /* epsilon */);
     RandomAgent r1 = new RandomAgent();
-    produceExperimentResults(GameType.NORMAL,
-                             mc1,
-                             r1,
-                             50000, /* number of games */
-                             10000  /* result interval */);
+
+    produceCombinedResults(new MonteCarloAgent(0.1),
+                           new RandomAgent(),
+                           new MonteCarloAgent(0.1),
+                           new RandomAgent(),
+                           new MonteCarloAgent(0.1),
+                           new RandomAgent(),
+                           500000,  /* number of games */
+                           10000    /* result interval */);
+
+    // runExperiment(GameType.SYMMETRIC_EQUALITY,
+    //               mc1,
+    //               r1,
+    //               10000 /* number of games */);
+    //
+    // produceExperimentResults(GameType.SYMMETRIC_EQUALITY,
+    //                          mc1,
+    //                          r1,
+    //                          100, /* number of games */
+    //                          10   /* result interval */);
   }
 
   /**

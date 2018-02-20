@@ -1,4 +1,4 @@
-package com.games.epsilon;
+package com.games.experiments;
 
 import com.opencsv.CSVWriter;
 

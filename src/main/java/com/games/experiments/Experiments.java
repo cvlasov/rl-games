@@ -1,4 +1,4 @@
-package com.games.epsilon;
+package com.games.experiments;
 
 import com.games.agents.MonteCarloAgent;
 import com.games.agents.RandomAgent;
