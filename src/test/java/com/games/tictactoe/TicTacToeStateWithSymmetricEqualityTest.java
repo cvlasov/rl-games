@@ -114,7 +114,7 @@ public class TicTacToeStateWithSymmetricEqualityTest {
   }
 
   @Test
-  public void testLackOfSymmetryInequality1() {
+  public void testLackOfSymmetryInequality() {
     /*
      * Testing inequality between:
      *    | X |             |   |
@@ -134,56 +134,5 @@ public class TicTacToeStateWithSymmetricEqualityTest {
         new TicTacToeStateWithSymmetricEquality(nonSymmetricalGrid);
 
     assertThat(originalState, not(equalTo(nonSymmetricalState)));
-  }
-
-  @Test
-  public void testLackOfSymmetryInequality2() {
-    /*
-     * Testing inequality between:
-     *    |   |             |   |
-     * -----------       -----------
-     *    |   |     and     | x |
-     * -----------       -----------
-     *    |   |             |   |
-     */
-
-    List<TokenType> nonEmptyGrid =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    nonEmptyGrid.set(4, TokenType.X);
-
-    TicTacToeStateWithSymmetricEquality nonEmptyState =
-        new TicTacToeStateWithSymmetricEquality(nonEmptyGrid);
-
-    assertThat(emptyState, not(equalTo(nonEmptyState)));
-  }
-
-  @Test
-  public void testLackOfSymmetryInequality3() {
-    /*
-     * Testing inequality between:
-     *    |   |           X | X | X
-     * -----------       -----------
-     *    |   |     and   O | x | O
-     * -----------       -----------
-     *    |   |           X | O | O
-
-     */
-
-    List<TokenType> fullGrid =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    fullGrid.set(0, TokenType.X);
-    fullGrid.set(1, TokenType.X);
-    fullGrid.set(2, TokenType.X);
-    fullGrid.set(3, TokenType.O);
-    fullGrid.set(4, TokenType.X);
-    fullGrid.set(5, TokenType.O);
-    fullGrid.set(6, TokenType.X);
-    fullGrid.set(7, TokenType.O);
-    fullGrid.set(8, TokenType.O);
-
-    TicTacToeStateWithSymmetricEquality fullState =
-        new TicTacToeStateWithSymmetricEquality(fullGrid);
-
-    assertThat(emptyState, not(equalTo(fullState)));
   }
 }
