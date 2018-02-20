@@ -27,13 +27,13 @@ public final class TicTacToeNormalState extends TicTacToeState {
 
   @VisibleForTesting
   TicTacToeNormalState(List<TokenType> g) {
-    super();
-    this.grid.clear();
-    this.grid.addAll(g);
+    // TicTacToeState no-param constructor is automatically called, so reset
     this.actions = null;
     this.winner = null;
+
+    grid = new ArrayList<>(g);
     computeActions();
-    isTerminalState();  // ignore result
+    isTerminalState();
   }
 
   @Override  // from interface State

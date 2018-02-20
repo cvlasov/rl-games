@@ -40,9 +40,13 @@ public final class TicTacToeStateWithLimitedActions extends TicTacToeState {
 
   @VisibleForTesting
   TicTacToeStateWithLimitedActions(List<TokenType> g) {
+    // TicTacToeState no-param constructor is automatically called, so reset
+    this.actions = null;
+    this.winner = null;
+
     grid = new ArrayList<>(g);
     computeActions();
-    isTerminalState();  // ignore result
+    isTerminalState();
   }
 
   @Override  // from interface State

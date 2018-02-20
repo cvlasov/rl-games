@@ -63,6 +63,10 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
   }
 
   private void initialize() {
+    // TicTacToeState no-param constructor is automatically called, so reset
+    this.actions = null;
+    this.winner = null;
+    
     computeSymmetricalStates();
     convertToCanonicalForm();
     computeActions();
