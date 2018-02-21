@@ -11,14 +11,14 @@ public final class TicTacToeHelper {
    * Type of game being played, in terms of how state symmetry is implemented,
    * if at all.
    */
-  enum GameType {
+  public enum GameType {
     NORMAL,
     LIMITED_ACTIONS,
     SYMMETRIC_EQUALITY
   }
 
   /** Contents of a cell on the board. */
-  enum TokenType {
+  public enum TokenType {
     X ("X"),
     O ("O"),
     NONE (" ");
@@ -35,7 +35,7 @@ public final class TicTacToeHelper {
   }
 
   /** Winner of the game, if any. */
-  enum Winner {
+  public enum Winner {
     X,
     O,
     DRAW,

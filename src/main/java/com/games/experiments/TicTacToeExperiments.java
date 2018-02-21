@@ -5,6 +5,10 @@ import static com.games.tictactoe.TicTacToeHelper.GameType;
 import com.games.agents.MonteCarloAgent;
 import com.games.agents.RandomAgent;
 import com.games.general.Agent;
+import com.games.tictactoe.TicTacToeGame;
+import com.games.tictactoe.TicTacToeGameWithLimitedActions;
+import com.games.tictactoe.TicTacToeGameWithSymmetricEquality;
+import com.games.tictactoe.TicTacToeNormalGame;
 
 import com.opencsv.CSVWriter;
 
