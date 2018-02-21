@@ -7,6 +7,5 @@ java_library(
     "//src/main/java/com/games/agents:agents",
     "//src/main/java/com/games/general:general",
     "//third_party:guava",
-    "//third_party:opencsv",
   ],
 )
