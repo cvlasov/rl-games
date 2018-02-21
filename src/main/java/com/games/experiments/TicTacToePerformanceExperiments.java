@@ -18,43 +18,37 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /** Main class for making agents play Tic-Tac-Toe against each other. */
-public final class TicTacToeExperiments {
+public final class TicTacToePerformanceExperiments {
 
-  private static final String COMBINED_RESULTS =
-      "./CombinedResults(e0.1).csv";
+  private static final String COMBINED_PERFORMANCE_RESULTS =
+      "./CombinedPerformanceResults_e0.1.csv";
 
-  private static final String NORMAL_RESULTS =
-      "./NormalResults(e0.1).csv";
+  private static final String NORMAL_PERFORMANCE_RESULTS =
+      "./NormalPerformanceResults_e0.1.csv";
 
-  private static final String LIMITED_ACTIONS_RESULTS =
-      "./LimitedActionsResults(e0.07).csv";
+  private static final String LIMITED_ACTIONS_PERFORMANCE_RESULTS =
+      "./LimitedActionsPerformanceResults_e0.1.csv";
 
-  private static final String SYMMETRIC_EQUALITY_RESULTS =
-      "./LimitedActionsResults(e0.07).csv";
+  private static final String SYMMETRIC_EQUALITY_PERFORMANCE_RESULTS =
+      "./SymmetricEqualityPerformanceResults_e0.1.csv";
 
   public static void main(String[] args) throws IOException {
-    MonteCarloAgent mc1 = new MonteCarloAgent(0.1 /* epsilon */);
-    RandomAgent r1 = new RandomAgent();
+    savePerformanceResultsForAllGameTypesInCSV(
+        new MonteCarloAgent(0.1),
+        new RandomAgent(),
+        new MonteCarloAgent(0.1),
+        new RandomAgent(),
+        new MonteCarloAgent(0.1),
+        new RandomAgent(),
+        500000,  /* number of games */
+        10000    /* result interval */);
 
-    produceCombinedResults(new MonteCarloAgent(0.1),
-                           new RandomAgent(),
-                           new MonteCarloAgent(0.1),
-                           new RandomAgent(),
-                           new MonteCarloAgent(0.1),
-                           new RandomAgent(),
-                           500000,  /* number of games */
-                           10000    /* result interval */);
-
-    // runExperiment(GameType.SYMMETRIC_EQUALITY,
-    //               mc1,
-    //               r1,
-    //               10000 /* number of games */);
-    //
-    // produceExperimentResults(GameType.SYMMETRIC_EQUALITY,
-    //                          mc1,
-    //                          r1,
-    //                          100, /* number of games */
-    //                          10   /* result interval */);
+    // savePerformanceResultsForSingleGameTypeInCSV(
+    //     GameType.SYMMETRIC_EQUALITY,
+    //     new MonteCarloAgent(0.1),
+    //     new RandomAgent(),
+    //     100, /* number of games */
+    //     10   /* result interval */);
   }
 
   /**
@@ -66,7 +60,7 @@ public final class TicTacToeExperiments {
    * @param agent2   second player
    * @param numGames number of games the agents will play against each other
    */
-  private static void runExperiment(
+  private static void printPerformanceResultsForSingleGameType(
       GameType gameType,
       Agent agent1,
       Agent agent2,
@@ -106,7 +100,7 @@ public final class TicTacToeExperiments {
    * @param numGames       number of games the agents play against each other
    * @param resultInterval number of games between datapoints saved to CSV file
    */
-  private static void produceExperimentResults(
+  private static void savePerformanceResultsForSingleGameTypeInCSV(
       GameType gameType,
       Agent agent1,
       Agent agent2,
@@ -118,16 +112,20 @@ public final class TicTacToeExperiments {
 
     try (
       Writer writer =
-            (gameType == GameType.NORMAL) ? Files.newBufferedWriter(Paths.get(NORMAL_RESULTS))
-          : (gameType == GameType.LIMITED_ACTIONS) ? Files.newBufferedWriter(Paths.get(LIMITED_ACTIONS_RESULTS))
-          : (gameType == GameType.SYMMETRIC_EQUALITY) ? Files.newBufferedWriter(Paths.get(SYMMETRIC_EQUALITY_RESULTS))
+            (gameType == GameType.NORMAL) ?
+                Files.newBufferedWriter(Paths.get(NORMAL_PERFORMANCE_RESULTS))
+          : (gameType == GameType.LIMITED_ACTIONS) ?
+                Files.newBufferedWriter(Paths.get(LIMITED_ACTIONS_PERFORMANCE_RESULTS))
+          : (gameType == GameType.SYMMETRIC_EQUALITY) ?
+                Files.newBufferedWriter(Paths.get(SYMMETRIC_EQUALITY_PERFORMANCE_RESULTS))
           : null;
 
-      CSVWriter csvWriter = new CSVWriter(writer,
-              CSVWriter.DEFAULT_SEPARATOR,
-              CSVWriter.NO_QUOTE_CHARACTER,
-              CSVWriter.DEFAULT_ESCAPE_CHARACTER,
-              CSVWriter.DEFAULT_LINE_END);
+      CSVWriter csvWriter = new CSVWriter(
+          writer,
+          CSVWriter.DEFAULT_SEPARATOR,
+          CSVWriter.NO_QUOTE_CHARACTER,
+          CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+          CSVWriter.DEFAULT_LINE_END);
     ) {
       // Headers of the CSV file
       String[] headerRecord = null;
@@ -198,7 +196,7 @@ public final class TicTacToeExperiments {
    * @param numGames                  number of games each pair of agents will
    *                                  play against each other
    */
-  private static void produceCombinedResults(
+  private static void savePerformanceResultsForAllGameTypesInCSV(
       Agent normalAgent1,
       Agent normalAgent2,
       Agent limitedActionsAgent1,
@@ -219,7 +217,7 @@ public final class TicTacToeExperiments {
     TicTacToeGameWithSymmetricEquality symmetricEqualityGame;
 
     try (
-      Writer writer = Files.newBufferedWriter(Paths.get(COMBINED_RESULTS));
+      Writer writer = Files.newBufferedWriter(Paths.get(COMBINED_PERFORMANCE_RESULTS));
 
       CSVWriter csvWriter = new CSVWriter(writer,
               CSVWriter.DEFAULT_SEPARATOR,
@@ -241,14 +239,15 @@ public final class TicTacToeExperiments {
                                "SymmetricEqualityLoss",
                                "SymmetricEqualityDraw",
                                "SymmetricEqualityWinRate"};
+
       csvWriter.writeNext(headerRecord);
 
       for (int gamesSoFar = 1 ; gamesSoFar <= numGames ; gamesSoFar++) {
         normalGame = new TicTacToeNormalGame(normalAgent1, normalAgent2);
-        limitedActionsGame =
-            new TicTacToeGameWithLimitedActions(limitedActionsAgent1, limitedActionsAgent2);
-        symmetricEqualityGame =
-            new TicTacToeGameWithSymmetricEquality(symmetricEqualityAgent1, symmetricEqualityAgent1);
+        limitedActionsGame = new TicTacToeGameWithLimitedActions(
+            limitedActionsAgent1, limitedActionsAgent2);
+        symmetricEqualityGame = new TicTacToeGameWithSymmetricEquality(
+            symmetricEqualityAgent1, symmetricEqualityAgent1);
 
         int normalWinner = normalGame.play();
         int limitedActionsWinner = limitedActionsGame.play();
