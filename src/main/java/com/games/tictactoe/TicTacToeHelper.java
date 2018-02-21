@@ -1,5 +1,7 @@
 package com.games.tictactoe;
 
+import com.games.general.Action;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +66,16 @@ public final class TicTacToeHelper {
     System.out.println("-----------");
     System.out.println(" " + grid.get(6) + " | " + grid.get(7) + " | " + grid.get(8));
     System.out.println();
+  }
+
+  public static void printActions(TicTacToeState state) {
+    System.out.println("Actions available from");
+    state.print();
+
+    for (Action a : state.getActions()) {
+      a.print();
+      System.out.println();
+    }
   }
 
   /**

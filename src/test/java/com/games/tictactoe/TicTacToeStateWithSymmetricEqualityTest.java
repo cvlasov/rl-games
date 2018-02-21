@@ -13,6 +13,7 @@ import com.games.tictactoe.TicTacToeHelper.TokenType;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Test;
@@ -134,5 +135,79 @@ public class TicTacToeStateWithSymmetricEqualityTest {
         new TicTacToeStateWithSymmetricEquality(nonSymmetricalGrid);
 
     assertThat(originalState, not(equalTo(nonSymmetricalState)));
+  }
+
+  @Test
+  public void testVerticalSymmetryGivesSameActions() {
+    assertThat(
+        new HashSet<>(originalState.getActions()),
+        equalTo(new HashSet<> (stateFlippedVertically.getActions())));
+  }
+
+  @Test
+  public void testHorizontalSymmetryGivesSameActions() {
+    assertThat(
+        new HashSet<>(originalState.getActions()),
+        equalTo(new HashSet<>(stateFlippedHorizontally.getActions())));
+  }
+
+  @Test
+  public void testVerticalAndHorizontalSymmetryGivesSameActions() {
+    assertThat(
+        new HashSet<>(originalState.getActions()),
+        equalTo(new HashSet<>(stateFlippedVerticallyAndHorizontally.getActions())));
+  }
+
+  @Test
+  public void testMajorDiagonalSymmetryGivesSameActions() {
+    assertThat(
+        new HashSet<>(originalState.getActions()),
+        equalTo(new HashSet<>(stateFlippedAlongMajorDiagonal.getActions())));
+  }
+
+  @Test
+  public void testMajorDiagonalAndHorizontalSymmetryGivesSameActions() {
+    assertThat(
+        new HashSet<>(originalState.getActions()),
+        equalTo(new HashSet<>(stateFlippedAlongMajorDiagonalAndHorizontally.getActions())));
+  }
+
+  @Test
+  public void testMinorDiagonalSymmetryGivesSameActions() {
+    assertThat(
+        new HashSet<>(originalState.getActions()),
+        equalTo(new HashSet<>(stateFlippedAlongMinorDiagonal.getActions())));
+  }
+
+  @Test
+  public void testMinorDiagonalAndHorizontalSymmetryGivesSameActions() {
+    assertThat(
+        new HashSet<>(originalState.getActions()),
+        equalTo(new HashSet<>(stateFlippedAlongMinorDiagonalAndHorizontally.getActions())));
+  }
+
+  @Test
+  public void testLackOfSymmetryGivesDifferentActions() {
+    /*
+     * Testing inequality between:
+     *    | X |             |   |
+     * -----------       -----------
+     *  O |   |     and   O | x |
+     * -----------       -----------
+     *  X |   |           X |   |
+     */
+
+    List<TokenType> nonSymmetricalGrid =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    nonSymmetricalGrid.set(4, TokenType.X);
+    nonSymmetricalGrid.set(3, TokenType.O);
+    nonSymmetricalGrid.set(6, TokenType.X);
+
+    TicTacToeStateWithSymmetricEquality nonSymmetricalState =
+        new TicTacToeStateWithSymmetricEquality(nonSymmetricalGrid);
+
+    assertThat(
+        new HashSet<>(originalState.getActions()),
+        not(equalTo(new HashSet<>(nonSymmetricalState.getActions()))));
   }
 }

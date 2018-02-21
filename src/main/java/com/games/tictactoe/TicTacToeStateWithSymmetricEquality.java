@@ -28,12 +28,20 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
   private Set<List<TokenType>> symmetricalGrids = new HashSet<>();
 
   public TicTacToeStateWithSymmetricEquality() {
+    // TicTacToeState no-param constructor is automatically called, so reset
+    this.actions = null;
+    this.winner = null;
+
     grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
     initialize();
   }
 
   private TicTacToeStateWithSymmetricEquality(
       TicTacToeStateWithSymmetricEquality oldState) {
+    // TicTacToeState no-param constructor is automatically called, so reset
+    this.actions = null;
+    this.winner = null;
+
     grid = new ArrayList<>(oldState.grid);
     initialize();
   }
@@ -41,6 +49,10 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
   private TicTacToeStateWithSymmetricEquality(
       TicTacToeStateWithSymmetricEquality oldState,
       TicTacToeAction action) {
+    // TicTacToeState no-param constructor is automatically called, so reset
+    this.actions = null;
+    this.winner = null;
+
     grid = new ArrayList<>(oldState.grid);
     grid.set(action.index, action.tokenType);
     initialize();
@@ -48,6 +60,10 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
 
   @VisibleForTesting
   TicTacToeStateWithSymmetricEquality(List<TokenType> g) {
+    // TicTacToeState no-param constructor is automatically called, so reset
+    this.actions = null;
+    this.winner = null;
+
     grid = new ArrayList<>(g);
     initialize();
   }
@@ -66,7 +82,7 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
     // TicTacToeState no-param constructor is automatically called, so reset
     this.actions = null;
     this.winner = null;
-    
+
     computeSymmetricalStates();
     convertToCanonicalForm();
     computeActions();
