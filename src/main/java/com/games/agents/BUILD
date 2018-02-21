@@ -5,5 +5,6 @@ java_library(
   srcs = glob(["*.java"]),
   deps = [
     "//src/main/java/com/games/general:general",
+    "//third_party:guava",
   ],
 )

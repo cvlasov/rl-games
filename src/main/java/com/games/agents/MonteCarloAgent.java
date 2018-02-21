@@ -4,6 +4,8 @@ import com.games.general.Action;
 import com.games.general.Agent;
 import com.games.general.State;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,7 +16,7 @@ import java.util.List;
  * Game-playing agent that uses an epsilon-soft on-policy Monte Carlo control
  * algorithm.
  */
-public final class MonteCarloAgent implements Agent {
+public class MonteCarloAgent implements Agent {
 
   boolean debug = false;
 
@@ -181,6 +183,11 @@ public final class MonteCarloAgent implements Agent {
   public void gameOver() {
     policyEvaluation();
     policyImprovement();
+  }
+
+  @VisibleForTesting
+  HashMap<State, List<Action>> getEpisodeStates() {
+    return episodeStates;
   }
 
   // Recalculate action-value function for states that were visited in the most
