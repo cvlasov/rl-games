@@ -20,9 +20,6 @@ import java.nio.file.Paths;
 /** Main class for making agents play Tic-Tac-Toe against each other. */
 public final class TicTacToeEpsilonExperiments {
 
-  private static final String COMBINED_EPSILON_RESULTS =
-      "./CombinedEpsilonResults_500kGames.csv";
-
   private static final String NORMAL_EPSILON_RESULTS =
       "./NormalEpsilonResults_500kGames.csv";
 
@@ -36,13 +33,13 @@ public final class TicTacToeEpsilonExperiments {
     saveEpsilonResultsForSingleGameTypeInCSV(
         GameType.NORMAL,
         0.01,    /* epsilon granularity */
-        500000  /* number of games */);
+        500*1000  /* number of games */);
   }
 
   /**
-   * Makes the two given agents play the given type of game against each other
-   * the given number of times for all values of epsilon from 0 to 1 (not
-   * inclusive) and prints the results to the console.
+   * Makes a Monte Carlo agent each the given type of games against a random
+   * agent the given number of times, repeating for each value of epsilon from
+   * 0 to 1 (not inclusive) and saves the results in a CSV file.
    *
    * @param gameType           type of Tic-Tac-Toe game to play
    * @param epsilonGranularity difference between consecutive epsilon values
@@ -132,24 +129,5 @@ public final class TicTacToeEpsilonExperiments {
           String.valueOf(wins[0])});
        }
      }
-  }
-
-  /**
-   * Computes the proportion of the games that agent 1 won.
-   *
-   * @param wins array of size three containing the number of draws and the
-   *             number of times each agent won
-   * @returns agent 1's win rate
-   */
-  private static double getWinRate(int[] wins /* must be of size 3 */) {
-    return (double) wins[1] / (wins[0] + wins[1] + wins[2]);
-  }
-
-  /** Prints the number of draws and wins for each player to the console. */
-  private static void printResults(Agent agent1, Agent agent2, int[] wins) {
-    System.out.println("Draw   : " + wins[0]);
-    System.out.println(agent1.getName() + " : " + wins[1]);
-    System.out.println(agent2.getName() + " : " + wins[2]);
-    System.out.println();
   }
 }
