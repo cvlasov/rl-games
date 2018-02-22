@@ -254,6 +254,16 @@ public class ChungToiState implements State {
     ChungToiHelper.print(this.grid);
   }
 
+  /**
+   * Returns the winner of the game, if any.
+   * <p>
+   * Can only be called after {@link #isTerminalState()}.
+   *
+   * @return winner of the game, if any
+   */
+  Winner getWinner() {
+    return winner;
+  }
 
   // PRIVATE HELPER METHODS
 
