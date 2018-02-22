@@ -1,17 +1,18 @@
 package com.games.chungtoi;
 
+import com.games.chungtoi.ChungToiHelper.TokenType;
 import com.games.general.Action;
 
 public class ChungToiPutAction implements Action {
 
   /** Token to put on the board. */
-  public final ChungToiToken token;
+  public final TokenType tokenType;
 
   /** Place on the board to put the token. */
   public final int index;
 
-  public ChungToiPutAction(ChungToiToken token, int index) {
-    this.token = token;
+  public ChungToiPutAction(TokenType type, int index) {
+    this.tokenType = type;
     this.index = index;
   }
 
@@ -26,26 +27,29 @@ public class ChungToiPutAction implements Action {
     }
 
     final ChungToiPutAction other = (ChungToiPutAction) o;
-    return this.token.equals(other.token) && this.index == other.index;
+    return this.tokenType == other.tokenType && this.index == other.index;
   }
 
   @Override
   public int hashCode() {
-    return index + token.hashCode();
+    int hash = index;
+
+    switch (tokenType) {
+      case X_NORMAL:   hash += 11; break;
+      case X_DIAGONAL: hash += 13; break;
+      case O_NORMAL:   hash += 17; break;
+      case O_DIAGONAL: hash += 19; break;
+      case NONE:       hash += 23; break;
+    }
+
+    return hash;
   }
 
   @Override
   public void print() {
     StringBuilder builder = new StringBuilder();
-
-    switch (token.orientation) {
-      case CARDINAL: builder.append("cardinal "); break;
-      case DIAGONAL: builder.append("diagonal "); break;
-    }
-
-    builder.append(token.type.toString() + " in "
+    builder.append(tokenType.toString() + " in "
                    + ChungToiHelper.getBoardIndexName(index));
-
     System.out.print(builder.toString());
   }
 }

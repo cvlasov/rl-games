@@ -1,6 +1,5 @@
 package com.games.chungtoi;
 
-import static com.games.chungtoi.ChungToiHelper.TokenOrientation;
 import static com.games.chungtoi.ChungToiHelper.TokenType;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
