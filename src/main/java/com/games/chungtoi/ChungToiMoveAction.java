@@ -50,7 +50,7 @@ public class ChungToiMoveAction implements Action {
     }
 
     if (startIndex != endIndex && rotateToken) {
-      builder.append(" and then");
+      builder.append(" and then ");
     }
 
     if (rotateToken) {
