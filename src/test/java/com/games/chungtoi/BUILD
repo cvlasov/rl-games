@@ -37,10 +37,10 @@ java_test(
 )
 
 java_test(
-  name = "token",
+  name = "state",
   size = "small",
-  srcs = ["ChungToiTokenTest.java"],
-  test_class = "com.games.chungtoi.ChungToiTokenTest",
+  srcs = ["ChungToiStateTest.java"],
+  test_class = "com.games.chungtoi.ChungToiStateTest",
   deps = [
     "//src/main/java/com/games/general:general",
     "//src/main/java/com/games/chungtoi:chungtoi",
