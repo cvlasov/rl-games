@@ -68,24 +68,6 @@ public class MonteCarloAgent implements Agent {
     this.epsilon = epsilon;
   }
 
-  @VisibleForTesting
-  MonteCarloAgent(double epsilon, Map<State, List<Action>> episodeStates) {
-    this.epsilon = epsilon;
-    this.episodeStates.clear();
-    this.episodeStates.putAll(episodeStates);
-  }
-
-  @VisibleForTesting
-  MonteCarloAgent(double epsilon,
-                  Map<State, List<Action>> episodeStates,
-                  HashMap<State, HashMap<Action, List<Double>>> overallReturns) {
-    this.epsilon = epsilon;
-    this.episodeStates.clear();
-    this.episodeStates.putAll(episodeStates);
-    this.overallReturns.clear();
-    this.overallReturns.putAll(overallReturns);
-  }
-
   @Override
   public String getName() {
     return "MonteC";

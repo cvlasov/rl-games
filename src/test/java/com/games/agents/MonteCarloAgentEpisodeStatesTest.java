@@ -1,28 +1,18 @@
 package com.games.agents;
 
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.collection.IsMapContaining.hasKey;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import com.games.agents.MonteCarloAgent;
-import com.games.chungtoi.ChungToiHelper;
-import com.games.chungtoi.ChungToiPutAction;
 import com.games.chungtoi.ChungToiState;
 import com.games.general.Action;
 import com.games.general.State;
-import com.games.tictactoe.TicTacToeAction;
-import com.games.tictactoe.TicTacToeHelper;
 import com.games.tictactoe.TicTacToeNormalState;
 import com.games.tictactoe.TicTacToeState;
 
-import java.lang.Math;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 
@@ -34,8 +24,6 @@ public class MonteCarloAgentEpisodeStatesTest {
   }
 
   public MonteCarloAgentEpisodeStatesTest() {}
-
-  // TESTS RELATED TO episodeStates
 
   @Test
   public void testEpisodeStatesContainsAllChungToiStatesEncountered() {
@@ -115,105 +103,106 @@ public class MonteCarloAgentEpisodeStatesTest {
     Action action = mc.chooseAction(state);
     mc.receiveReturn(0);
 
-    List<Action> expectedActions = new ArrayList<>();
-    expectedActions.add(action);
-
-    assertThat(mc.getEpisodeStates(), hasEntry(state, expectedActions));
+    assertThat(mc.getEpisodeStates(), hasKey(state));
+    assertThat(mc.getEpisodeStates().get(state), contains(action));
   }
 
   @Test
-  public void testNewActionFromOldChungToiStateAddedToEpisodeStates() {
-    testNewActionFromOldStateAddedToEpisodeStates(Game.CHUNG_TOI);
+  public void testNewActionFromSameChungToiStateAddedToEpisodeStates() {
+    testActionFromSameState(Game.CHUNG_TOI, false);
   }
 
   @Test
-  public void testNewActioFromOldTicTacToeStateAddedToEpisodeStates() {
-    testNewActionFromOldStateAddedToEpisodeStates(Game.TIC_TAC_TOE);
+  public void testNewActionFromSameTicTacToeStateAddedToEpisodeStates() {
+    testActionFromSameState(Game.TIC_TAC_TOE, false);
   }
 
-  private void testNewActionFromOldStateAddedToEpisodeStates(Game game) {
-    Map<State, List<Action>> episodeStates = new HashMap<>();
+  @Test
+  public void testSameActionFromSameChungToiStateNotAddedToEpisodeStates() {
+    testActionFromSameState(Game.CHUNG_TOI, true);
+  }
 
-    State oldState = null;
-    Action oldAction = null;
+  @Test
+  public void testSameActionFromSameTicTacToeStateNotAddedToEpisodeStates() {
+    testActionFromSameState(Game.TIC_TAC_TOE, true);
+  }
 
-    switch (game) {
-      case CHUNG_TOI:
-        oldState = new ChungToiState();
-        oldAction = new ChungToiPutAction(ChungToiHelper.TokenType.X_NORMAL, 0);
-        break;
-      case TIC_TAC_TOE:
-        oldState = new TicTacToeNormalState();
-        oldAction = new TicTacToeAction(0, TicTacToeHelper.TokenType.X);
-        break;
-    }
-
-    List<Action> oldActions = new ArrayList<>();
-    oldActions.add(oldAction);
-    episodeStates.put(oldState, oldActions);
-
-    MonteCarloAgent mc = new MonteCarloAgent(0.1, episodeStates);
+  private void testActionFromSameState(Game game, boolean sameAction) {
+    MonteCarloAgent mc = new MonteCarloAgent(0.1);
     mc.initializeBeforeNewGame();
 
-    Action newAction = oldAction;
+    State state = null;
 
-    // Choose a different action
-    while (newAction.equals(oldAction)) {
-      newAction = mc.chooseAction(oldState);
+    switch (game) {
+      case CHUNG_TOI:   state = new ChungToiState(); break;
+      case TIC_TAC_TOE: state = new TicTacToeNormalState(); break;
+    }
+
+    Action originalAction = mc.chooseAction(state);
+    mc.receiveReturn(0);
+
+    Action newAction = mc.chooseAction(state);
+
+    if (sameAction) {
+      // Choose same action
+      while (!newAction.equals(originalAction)) {
+        newAction = mc.chooseAction(state);
+      }
+    } else {
+      // Choose different action
+      while (newAction.equals(originalAction)) {
+        newAction = mc.chooseAction(state);
+      }
     }
 
     mc.receiveReturn(0);
 
-    assertThat(mc.getEpisodeStates(), hasKey(oldState));
-    assertThat(mc.getEpisodeStates().get(oldState),
-               contains(oldAction, newAction) /* in this order */);
-  }
+    assertThat(mc.getEpisodeStates(), hasKey(state));
 
-  @Test
-  public void testOldActionFromOldChungToiStateNotAddedToEpisodeStates() {
-    testOldActionFromOldStateNotAddedToEpisodeStates(Game.CHUNG_TOI);
-  }
-
-  @Test
-  public void testOldActioFromOldTicTacToeStateNotAddedToEpisodeStates() {
-    testOldActionFromOldStateNotAddedToEpisodeStates(Game.TIC_TAC_TOE);
-  }
-
-  private void testOldActionFromOldStateNotAddedToEpisodeStates(Game game) {
-    Map<State, List<Action>> episodeStates = new HashMap<>();
-
-    State oldState = null;
-    Action oldAction = null;
-
-    switch (game) {
-      case CHUNG_TOI:
-        oldState = new ChungToiState();
-        oldAction = new ChungToiPutAction(ChungToiHelper.TokenType.X_NORMAL, 0);
-        break;
-      case TIC_TAC_TOE:
-        oldState = new TicTacToeNormalState();
-        oldAction = new TicTacToeAction(0, TicTacToeHelper.TokenType.X);
-        break;
+    if (sameAction) {
+      assertThat(mc.getEpisodeStates().get(state),
+                 contains(originalAction) /* NOT newAction as well */);
+    } else {
+      assertThat(mc.getEpisodeStates().get(state),
+                 contains(originalAction, newAction) /* in this order */);
     }
+  }
 
-    List<Action> oldActions = new ArrayList<>();
-    oldActions.add(oldAction);
-    episodeStates.put(oldState, oldActions);
+  @Test
+  public void testActionFromPreviousChungToiGameAddedToEpisodeStates() {
+    testActionFromPreviousGameAddedToEpisodeStates(Game.CHUNG_TOI);
+  }
 
-    MonteCarloAgent mc = new MonteCarloAgent(0.1, episodeStates);
+  @Test
+  public void testActionFromPreviousTicTacToeGameAddedToEpisodeStates() {
+    testActionFromPreviousGameAddedToEpisodeStates(Game.TIC_TAC_TOE);
+  }
+
+  private void testActionFromPreviousGameAddedToEpisodeStates(Game game) {
+    MonteCarloAgent mc = new MonteCarloAgent(0.1);
     mc.initializeBeforeNewGame();
 
-    Action newAction = mc.chooseAction(oldState);
+    State state = null;
 
-    // Choose the same action
-    while (!newAction.equals(oldAction)) {
-      newAction = mc.chooseAction(oldState);
+    switch (game) {
+      case CHUNG_TOI:   state = new ChungToiState(); break;
+      case TIC_TAC_TOE: state = new TicTacToeNormalState(); break;
+    }
+
+    Action previousGameAction = mc.chooseAction(state);
+    mc.receiveReturn(0);
+    mc.gameOver();
+    mc.initializeBeforeNewGame();
+
+    Action newAction = mc.chooseAction(state);
+
+    // Choose SAME action
+    while (!newAction.equals(previousGameAction)) {
+      newAction = mc.chooseAction(state);
     }
 
     mc.receiveReturn(0);
-
-    assertThat(mc.getEpisodeStates(), hasKey(oldState));
-    assertThat(mc.getEpisodeStates().get(oldState),
-               contains(oldAction) /* NOT newAction as well */);
+    assertThat(mc.getEpisodeStates(), hasKey(state));
+    assertThat(mc.getEpisodeStates().get(state), contains(previousGameAction));
   }
 }
