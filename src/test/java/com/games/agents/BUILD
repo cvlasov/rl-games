@@ -10,5 +10,6 @@ java_test(
     "//src/main/java/com/games/general:general",
     "//src/main/java/com/games/tictactoe:tictactoe",
     "//third_party:junit4",
+    "//third_party:mockito",
   ]
 )

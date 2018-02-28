@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Game-playing agent that uses an epsilon-soft on-policy Monte Carlo control
@@ -65,6 +66,13 @@ public class MonteCarloAgent implements Agent {
 
   public MonteCarloAgent(double epsilon) {
     this.epsilon = epsilon;
+  }
+
+  @VisibleForTesting
+  MonteCarloAgent(double epsilon, Map<State, List<Action>> episodeStates) {
+    this.epsilon = epsilon;
+    this.episodeStates.clear();
+    this.episodeStates.putAll(episodeStates);
   }
 
   @Override
