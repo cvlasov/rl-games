@@ -68,6 +68,17 @@ public class MonteCarloAgent implements Agent {
     this.epsilon = epsilon;
   }
 
+  @VisibleForTesting
+  MonteCarloAgent(double epsilon,
+                  Map<State, List<Action>> episodeStates,
+                  Map<State, HashMap<Action, List<Double>>> overallReturns) {
+    this.epsilon = epsilon;
+    this.episodeStates.clear();
+    this.episodeStates.putAll(episodeStates);
+    this.overallReturns.clear();
+    this.overallReturns.putAll(overallReturns);
+  }
+
   @Override
   public String getName() {
     return "MonteC";
@@ -196,9 +207,15 @@ public class MonteCarloAgent implements Agent {
     return overallReturns;
   }
 
+  @VisibleForTesting
+  HashMap<State, HashMap<Action, Double>> getActionValueFunction() {
+    return Q;
+  }
+
   // Recalculate action-value function for states that were visited in the most
   // recent episode.
-  private void policyEvaluation() {
+  @VisibleForTesting
+  void policyEvaluation() {
     for (State s : episodeStates.keySet()) {
       for (Action a : episodeStates.get(s)) {
         List<Double> returns = overallReturns.get(s).get(a);

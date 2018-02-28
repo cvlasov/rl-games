@@ -11,7 +11,6 @@ java_test(
     "//src/main/java/com/games/general:general",
     "//src/main/java/com/games/tictactoe:tictactoe",
     "//third_party:junit4",
-    "//third_party:mockito",
   ]
 )
 
@@ -26,6 +25,18 @@ java_test(
     "//src/main/java/com/games/general:general",
     "//src/main/java/com/games/tictactoe:tictactoe",
     "//third_party:junit4",
-    "//third_party:mockito",
+  ]
+)
+
+java_test(
+  name = "montecarlo_policy_evaluation",
+  size = "small",
+  srcs = ["MonteCarloAgentPolicyEvaluationTest.java"],
+  test_class = "com.games.agents.MonteCarloAgentPolicyEvaluationTest",
+  deps = [
+    "//src/main/java/com/games/agents:agents",
+    "//src/main/java/com/games/general:general",
+    "//src/main/java/com/games/tictactoe:tictactoe",
+    "//third_party:junit4",
   ]
 )
