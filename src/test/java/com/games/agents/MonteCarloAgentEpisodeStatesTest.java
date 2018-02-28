@@ -40,6 +40,7 @@ public class MonteCarloAgentEpisodeStatesTest {
   @Test
   public void testEpisodeStatesContainsAllChungToiStatesEncountered() {
     MonteCarloAgent mc = new MonteCarloAgent(0.1);
+    mc.initializeBeforeNewGame();
 
     ChungToiState state1 = new ChungToiState();
     Action action1 = mc.chooseAction(state1);
@@ -66,6 +67,7 @@ public class MonteCarloAgentEpisodeStatesTest {
   @Test
   public void testEpisodeStatesContainsAllTicTacToeStatesEncountered() {
     MonteCarloAgent mc = new MonteCarloAgent(0.1);
+    mc.initializeBeforeNewGame();
 
     TicTacToeState state1 = new TicTacToeNormalState();
     Action action1 = mc.chooseAction(state1);
@@ -101,6 +103,7 @@ public class MonteCarloAgentEpisodeStatesTest {
 
   private void testNewActionFromNewStateAddedToEpisodeStates(Game game) {
     MonteCarloAgent mc = new MonteCarloAgent(0.1);
+    mc.initializeBeforeNewGame();
 
     State state = null;
 
@@ -150,6 +153,7 @@ public class MonteCarloAgentEpisodeStatesTest {
     episodeStates.put(oldState, oldActions);
 
     MonteCarloAgent mc = new MonteCarloAgent(0.1, episodeStates);
+    mc.initializeBeforeNewGame();
 
     Action newAction = oldAction;
 
@@ -197,6 +201,7 @@ public class MonteCarloAgentEpisodeStatesTest {
     episodeStates.put(oldState, oldActions);
 
     MonteCarloAgent mc = new MonteCarloAgent(0.1, episodeStates);
+    mc.initializeBeforeNewGame();
 
     Action newAction = mc.chooseAction(oldState);
 

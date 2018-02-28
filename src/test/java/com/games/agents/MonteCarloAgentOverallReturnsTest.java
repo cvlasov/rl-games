@@ -38,6 +38,7 @@ public class MonteCarloAgentOverallReturnsTest {
   @Test
   public void testOverallReturnsContainsAllChungToiStatesEncountered() {
     MonteCarloAgent mc = new MonteCarloAgent(0.1);
+    mc.initializeBeforeNewGame();
 
     ChungToiState state1 = new ChungToiState();
     Action action1 = mc.chooseAction(state1);
@@ -64,6 +65,7 @@ public class MonteCarloAgentOverallReturnsTest {
   @Test
   public void testOverallReturnsContainsAllTicTacToeStatesEncountered() {
     MonteCarloAgent mc = new MonteCarloAgent(0.1);
+    mc.initializeBeforeNewGame();
 
     TicTacToeState state1 = new TicTacToeNormalState();
     Action action1 = mc.chooseAction(state1);
@@ -99,6 +101,7 @@ public class MonteCarloAgentOverallReturnsTest {
 
   private void testNewActionFromNewStateAddedToOverallReturns(Game game) {
     MonteCarloAgent mc = new MonteCarloAgent(0.1);
+    mc.initializeBeforeNewGame();
 
     State state = null;
 
@@ -157,9 +160,8 @@ public class MonteCarloAgentOverallReturnsTest {
     HashMap<State, HashMap<Action, List<Double>>> overallReturns = new HashMap<>();
     overallReturns.put(oldState, oldActionReturns);
 
-    MonteCarloAgent mc = new MonteCarloAgent(0.1,
-                                             episodeStates,
-                                             overallReturns);
+    MonteCarloAgent mc = new MonteCarloAgent(0.1, episodeStates, overallReturns);
+    mc.initializeBeforeNewGame();
 
     Action newAction = oldAction;
 
@@ -218,9 +220,8 @@ public class MonteCarloAgentOverallReturnsTest {
     HashMap<State, HashMap<Action, List<Double>>> overallReturns = new HashMap<>();
     overallReturns.put(oldState, oldActionReturns);
 
-    MonteCarloAgent mc = new MonteCarloAgent(0.1,
-                                             episodeStates,
-                                             overallReturns);
+    MonteCarloAgent mc = new MonteCarloAgent(0.1, episodeStates, overallReturns);
+    mc.initializeBeforeNewGame();
 
     Action newAction = mc.chooseAction(oldState);
 
