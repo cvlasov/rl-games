@@ -7,6 +7,7 @@ java_test(
   test_class = "com.games.agents.MonteCarloAgentTest",
   deps = [
     "//src/main/java/com/games/agents:agents",
+    "//src/main/java/com/games/chungtoi:chungtoi",
     "//src/main/java/com/games/general:general",
     "//src/main/java/com/games/tictactoe:tictactoe",
     "//third_party:junit4",

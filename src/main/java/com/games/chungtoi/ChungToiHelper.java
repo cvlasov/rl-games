@@ -7,7 +7,7 @@ public class ChungToiHelper {
   private ChungToiHelper() {}  // restrict instantiation
 
   /** Type of token in a cell on the board. */
-  enum TokenType {
+  public enum TokenType {
     X_NORMAL   ("-X-"),
     X_DIAGONAL ("/X/"),
     O_NORMAL   ("-O-"),
