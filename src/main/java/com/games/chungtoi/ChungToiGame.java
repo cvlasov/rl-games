@@ -79,20 +79,15 @@ public class ChungToiGame implements Game {
     ChungToiState stateAfterAgent2 = null;
     int agent1Return;
 
-    state.print();
-
     while (true) {
       // AGENT 1'S TURN
       Action agent1Action = agent1.chooseAction(state);
       ChungToiState stateAfterAgent1 =
               (ChungToiState) state.applyAction(agent1Action);
 
-      agent1Action.print(); System.out.println();
-
       // If Agent 1 just made the game end
       if (stateAfterAgent1.isTerminalState()
           || bothAgentsPassed(agent2Action, agent1Action)) {
-        stateAfterAgent1.print();
         winner = gameOver(stateAfterAgent1);
         break;
 
@@ -104,18 +99,14 @@ public class ChungToiGame implements Game {
 
       firstTurn = false;
       state = stateAfterAgent1;
-      state.print();
 
       // AGENT 2'S TURN
       agent2Action = agent2.chooseAction(state);
       stateAfterAgent2 = (ChungToiState) state.applyAction(agent2Action);
 
-      agent2Action.print(); System.out.println();
-
       // If Agent 2 just made the game end
       if (stateAfterAgent2.isTerminalState()
           || bothAgentsPassed(agent1Action, agent2Action)) {
-        stateAfterAgent2.print();
         winner = gameOver(stateAfterAgent2);
         break;
 
@@ -124,7 +115,6 @@ public class ChungToiGame implements Game {
       }
 
       state = stateAfterAgent2;
-      state.print();
     }
 
     return winner;
