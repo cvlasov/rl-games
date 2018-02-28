@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 java_test(
-  name = "montecarlo_episode_states",
+  name = "monte_carlo_episode_states",
   size = "small",
   srcs = ["MonteCarloAgentEpisodeStatesTest.java"],
   test_class = "com.games.agents.MonteCarloAgentEpisodeStatesTest",
@@ -15,7 +15,7 @@ java_test(
 )
 
 java_test(
-  name = "montecarlo_overall_returns",
+  name = "monte_carlo_overall_returns",
   size = "small",
   srcs = ["MonteCarloAgentOverallReturnsTest.java"],
   test_class = "com.games.agents.MonteCarloAgentOverallReturnsTest",
@@ -29,7 +29,7 @@ java_test(
 )
 
 java_test(
-  name = "montecarlo_policy_evaluation",
+  name = "monte_carlo_policy_evaluation",
   size = "small",
   srcs = ["MonteCarloAgentPolicyEvaluationTest.java"],
   test_class = "com.games.agents.MonteCarloAgentPolicyEvaluationTest",
