@@ -41,13 +41,13 @@ public class MonteCarloAgentPolicyEvaluationTest {
 
     List<Double> returnsList = new ArrayList<Double>(Arrays.asList(returns));
 
-    HashMap<Action, List<Double>> returnsMap = new HashMap<>();
+    Map<Action, List<Double>> returnsMap = new HashMap<>();
     returnsMap.put(action, returnsList);
 
     Map<State, List<Action>> episodeStates = new HashMap<>();
     episodeStates.put(state, actions);
 
-    Map<State, HashMap<Action, List<Double>>> overallReturns = new HashMap<>();
+    Map<State, Map<Action, List<Double>>> overallReturns = new HashMap<>();
     overallReturns.put(state, returnsMap);
 
     MonteCarloAgent mc = new MonteCarloAgent(0.1, episodeStates, overallReturns);

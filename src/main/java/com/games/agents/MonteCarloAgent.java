@@ -31,7 +31,7 @@ public class MonteCarloAgent implements Agent {
    * actions to the probability of choosing that action from that state under
    * this policy.
    */
-  private final HashMap<State, HashMap<Action, Double>> PI = new HashMap<>();
+  private final Map<State, HashMap<Action, Double>> PI = new HashMap<>();
 
   /**
    * Action-value function for policy PI.
@@ -40,20 +40,20 @@ public class MonteCarloAgent implements Agent {
    * and maps each of these actions to the expected return from starting at the
    * state, executing the action, and then following current policy.
    */
-  private final HashMap<State, HashMap<Action, Double>> Q = new HashMap<>();
+  private final Map<State, Map<Action, Double>> Q = new HashMap<>();
 
   /**
    *  Returns for the first occurrences of all (state, action) pairs encountered
    *  in all episodes so far (including the one in progress).
    */
-  private final HashMap<State, HashMap<Action, List<Double>>> overallReturns =
+  private final Map<State, Map<Action, List<Double>>> overallReturns =
           new HashMap<>();
 
   /**
    * Maps each state encountered in the current episode so far to all actions
    * taken from that state in the current episode so far.
    */
-  private final HashMap<State, List<Action>> episodeStates = new HashMap<>();
+  private final Map<State, List<Action>> episodeStates = new HashMap<>();
 
   /**
    * Most recent state from which an action was chosen and for which a return
@@ -71,7 +71,7 @@ public class MonteCarloAgent implements Agent {
   @VisibleForTesting
   MonteCarloAgent(double epsilon,
                   Map<State, List<Action>> episodeStates,
-                  Map<State, HashMap<Action, List<Double>>> overallReturns) {
+                  Map<State, Map<Action, List<Double>>> overallReturns) {
     this.epsilon = epsilon;
     this.episodeStates.clear();
     this.episodeStates.putAll(episodeStates);
@@ -106,7 +106,7 @@ public class MonteCarloAgent implements Agent {
     } else {
       // This state was encountered in a previous episode, so the policy is not
       // arbitrary
-      HashMap<Action, Double> policy = PI.get(state);
+      Map<Action, Double> policy = PI.get(state);
 
       // System.out.println("available actions:");
       // for (Action a : actions) {
@@ -198,17 +198,17 @@ public class MonteCarloAgent implements Agent {
   }
 
   @VisibleForTesting
-  HashMap<State, List<Action>> getEpisodeStates() {
+  Map<State, List<Action>> getEpisodeStates() {
     return episodeStates;
   }
 
   @VisibleForTesting
-  HashMap<State, HashMap<Action, List<Double>>> getOverallReturns() {
+  Map<State, Map<Action, List<Double>>> getOverallReturns() {
     return overallReturns;
   }
 
   @VisibleForTesting
-  HashMap<State, HashMap<Action, Double>> getActionValueFunction() {
+  Map<State, Map<Action, Double>> getActionValueFunction() {
     return Q;
   }
 
