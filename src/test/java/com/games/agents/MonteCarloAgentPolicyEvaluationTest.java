@@ -3,12 +3,10 @@ package com.games.agents;
 import static org.hamcrest.collection.IsMapContaining.hasKey;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 import com.games.general.Action;
 import com.games.general.State;
-import com.games.tictactoe.TicTacToeAction;
-import com.games.tictactoe.TicTacToeHelper;
-import com.games.tictactoe.TicTacToeNormalState;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,22 +19,22 @@ import org.junit.Test;
 public class MonteCarloAgentPolicyEvaluationTest {
 
   @Test
-  public void testPolicyEvaluationForTicTacToeActionThatOccurredOnlyOnce() {
-    testPolicyEvaluationForTicTacToeAction(1.0, 1.0);
+  public void testPolicyEvaluationForActionThatOccurredOnlyOnce() {
+    testPolicyEvaluation(1.0, 1.0);
   }
 
   @Test
-  public void testPolicyEvaluationForTicTacToeActionThatOccurredManyTimes() {
-    testPolicyEvaluationForTicTacToeAction(1.0, 0.0, 2.0, 1.0);
+  public void testPolicyEvaluationForActionThatOccurredManyTimes() {
+    testPolicyEvaluation(1.0, 0.0, 2.0, 1.0);
   }
 
-  private void testPolicyEvaluationForTicTacToeAction(
+  private void testPolicyEvaluation(
       Double expectedAverage,
       Double... returns) {
 
-    State state = new TicTacToeNormalState();
+    State state = mock(State.class);
 
-    Action action = new TicTacToeAction(0, TicTacToeHelper.TokenType.X);
+    Action action = mock(Action.class);
     List<Action> actions = new ArrayList<>(); actions.add(action);
 
     List<Double> returnsList = new ArrayList<Double>(Arrays.asList(returns));
