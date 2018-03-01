@@ -9,29 +9,37 @@ import com.games.general.Action;
 import com.games.general.State;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
+import org.junit.runner.RunWith;
 import org.junit.Test;
 
+@RunWith(Parameterized.class)
 public class MonteCarloAgentPolicyEvaluationTest {
 
-  @Test
-  public void testPolicyEvaluationForActionThatOccurredOnlyOnce() {
-    testPolicyEvaluation(1.0, 1.0);
+  @Parameters
+  public static Collection<Object[]> returns() {
+     return Arrays.asList(new Object[][] {
+        { new Double[] { 1.0 },           1.0 },
+        { new Double[] { 2.0, 6.0, 4.0 }, 4.0 },
+     });
   }
 
+  @Parameter(0)
+  public Double[] returns;
+
+  @Parameter(1)
+  public Double expectedAverage;
+
   @Test
-  public void testPolicyEvaluationForActionThatOccurredManyTimes() {
-    testPolicyEvaluation(1.0, 0.0, 2.0, 1.0);
-  }
-
-  private void testPolicyEvaluation(
-      Double expectedAverage,
-      Double... returns) {
-
+  public void testPolicyEvaluation() {
     State state = mock(State.class);
 
     Action action = mock(Action.class);
