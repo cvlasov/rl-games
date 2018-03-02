@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThat;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,78 +19,75 @@ import org.junit.Test;
 
 public class TicTacToeHelperTest {
 
-  private List<TokenType> originalGrid;
-  private List<TokenType> gridFlippedVertically;
-  private List<TokenType> gridFlippedHorizontally;
-  private List<TokenType> gridFlippedAlongMajorDiagonal;
-  private List<TokenType> gridFlippedAlongMinorDiagonal;
+  /*
+   *    | X |
+   * -----------
+   *  O |   |
+   * -----------
+   *  X |   |
+   */
+  private List<TokenType> originalGrid =
+      Arrays.asList(new TokenType[] {
+        TokenType.NONE, TokenType.X,    TokenType.NONE,
+        TokenType.O,    TokenType.NONE, TokenType.NONE,
+        TokenType.X,    TokenType.NONE, TokenType.NONE
+      });
 
-  public TicTacToeHelperTest() {
-    /*
-     *    | X |
-     * -----------
-     *  O |   |
-     * -----------
-     *  X |   |
-     */
-    originalGrid =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    originalGrid.set(1, TokenType.X);
-    originalGrid.set(3, TokenType.O);
-    originalGrid.set(6, TokenType.X);
+  /*
+   *  X |   |
+   * -----------
+   *  O |   |
+   * -----------
+   *    | X |
+   */
+  private List<TokenType> gridFlippedVertically =
+      Arrays.asList(new TokenType[] {
+        TokenType.X,    TokenType.NONE, TokenType.NONE,
+        TokenType.O,    TokenType.NONE, TokenType.NONE,
+        TokenType.NONE, TokenType.X,    TokenType.NONE
+      });
 
-    /*
-     *  X |   |
-     * -----------
-     *  O |   |
-     * -----------
-     *    | X |
-     */
-    gridFlippedVertically =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    gridFlippedVertically.set(0, TokenType.X);
-    gridFlippedVertically.set(3, TokenType.O);
-    gridFlippedVertically.set(7, TokenType.X);
+  /*
+   *    | X |
+   * -----------
+   *    |   | O
+   * -----------
+   *    |   | X
+   */
+  private List<TokenType> gridFlippedHorizontally =
+      Arrays.asList(new TokenType[] {
+        TokenType.NONE, TokenType.X,    TokenType.NONE,
+        TokenType.NONE, TokenType.NONE, TokenType.O,
+        TokenType.NONE, TokenType.NONE, TokenType.X
+      });
 
-    /*
-     *    | X |
-     * -----------
-     *    |   | O
-     * -----------
-     *    |   | X
-     */
-    gridFlippedHorizontally =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    gridFlippedHorizontally.set(1, TokenType.X);
-    gridFlippedHorizontally.set(5, TokenType.O);
-    gridFlippedHorizontally.set(8, TokenType.X);
+  /*
+   *    | O | X
+   * -----------
+   *  X |   |
+   * -----------
+   *    |   |
+   */
+  private List<TokenType> gridFlippedAlongMajorDiagonal =
+      Arrays.asList(new TokenType[] {
+        TokenType.NONE, TokenType.O,    TokenType.X,
+        TokenType.X,    TokenType.NONE, TokenType.NONE,
+        TokenType.NONE, TokenType.NONE, TokenType.NONE
+      });
 
-    /*
-     *    | O | X
-     * -----------
-     *  X |   |
-     * -----------
-     *    |   |
-     */
-    gridFlippedAlongMajorDiagonal =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    gridFlippedAlongMajorDiagonal.set(3, TokenType.X);
-    gridFlippedAlongMajorDiagonal.set(1, TokenType.O);
-    gridFlippedAlongMajorDiagonal.set(2, TokenType.X);
-
-    /*
-     *    |   |
-     * -----------
-     *    |   | X
-     * -----------
-     *  X | O |
-     */
-    gridFlippedAlongMinorDiagonal =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    gridFlippedAlongMinorDiagonal.set(5, TokenType.X);
-    gridFlippedAlongMinorDiagonal.set(7, TokenType.O);
-    gridFlippedAlongMinorDiagonal.set(6, TokenType.X);
-  }
+  /*
+   *    |   |
+   * -----------
+   *    |   | X
+   * -----------
+   *  X | O |
+   */
+  private List<TokenType> gridFlippedAlongMinorDiagonal =
+      Arrays.asList(new TokenType[] {
+        TokenType.NONE, TokenType.NONE, TokenType.NONE,
+        TokenType.NONE, TokenType.NONE, TokenType.X,
+        TokenType.X,    TokenType.O,    TokenType.NONE
+      });
 
   @Test
   public void testVerticalGridFlip() {

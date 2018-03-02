@@ -10,10 +10,8 @@ import static org.junit.Assert.assertTrue;
 import com.games.general.Action;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -31,10 +29,12 @@ public class TicTacToeNormalStateTest {
 
   @Test
   public void testInequality() {
-    List<TokenType> grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid.set(0, TokenType.X);
-
-	  TicTacToeNormalState state1 = new TicTacToeNormalState(grid);
+    TicTacToeNormalState state1 = new TicTacToeNormalState(
+        Arrays.asList(new TokenType[] {
+          TokenType.X,    TokenType.NONE, TokenType.NONE,
+          TokenType.NONE, TokenType.NONE, TokenType.NONE,
+          TokenType.NONE, TokenType.NONE, TokenType.NONE
+        }));
 		TicTacToeNormalState state2 = new TicTacToeNormalState();
     assertThat(state1, not(equalTo(state2)));
 	}
@@ -48,10 +48,12 @@ public class TicTacToeNormalStateTest {
 
   @Test
 	public void testHashCodeInequality() {
-    List<TokenType> grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid.set(0, TokenType.X);
-
-	  TicTacToeNormalState state1 = new TicTacToeNormalState(grid);
+    TicTacToeNormalState state1 = new TicTacToeNormalState(
+        Arrays.asList(new TokenType[] {
+          TokenType.X,    TokenType.NONE, TokenType.NONE,
+          TokenType.NONE, TokenType.NONE, TokenType.NONE,
+          TokenType.NONE, TokenType.NONE, TokenType.NONE
+        }));
 		TicTacToeNormalState state2 = new TicTacToeNormalState();
     assertThat(state1.hashCode(), not(equalTo(state2.hashCode())));
 	}
@@ -66,19 +68,13 @@ public class TicTacToeNormalStateTest {
      * -----------
      *  X | O | X
      */
+    TicTacToeNormalState state = new TicTacToeNormalState(
+        Arrays.asList(new TokenType[] {
+          TokenType.O, TokenType.X, TokenType.X,
+          TokenType.O, TokenType.X, TokenType.O,
+          TokenType.X, TokenType.O, TokenType.X
+        }));
 
-    List<TokenType> grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid.set(0, TokenType.O);
-    grid.set(1, TokenType.X);
-    grid.set(2, TokenType.X);
-    grid.set(3, TokenType.O);
-    grid.set(4, TokenType.X);
-    grid.set(5, TokenType.O);
-    grid.set(6, TokenType.X);
-    grid.set(7, TokenType.O);
-    grid.set(8, TokenType.X);
-
-    TicTacToeNormalState state = new TicTacToeNormalState(grid);
     assertTrue(state.isTerminalState());
   }
 
@@ -92,16 +88,13 @@ public class TicTacToeNormalStateTest {
      * -----------
      *  X |   | O
      */
+    TicTacToeNormalState state = new TicTacToeNormalState(
+        Arrays.asList(new TokenType[] {
+          TokenType.O,    TokenType.X,    TokenType.NONE,
+          TokenType.NONE, TokenType.O,    TokenType.X,
+          TokenType.X,    TokenType.NONE, TokenType.O
+        }));
 
-    List<TokenType> grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid.set(0, TokenType.O);
-    grid.set(1, TokenType.X);
-    grid.set(4, TokenType.O);
-    grid.set(5, TokenType.X);
-    grid.set(6, TokenType.X);
-    grid.set(8, TokenType.O);
-
-    TicTacToeNormalState state = new TicTacToeNormalState(grid);
     assertTrue(state.isTerminalState());
   }
 
@@ -115,19 +108,13 @@ public class TicTacToeNormalStateTest {
      * -----------
      *  X | O | X
      */
+    TicTacToeNormalState state = new TicTacToeNormalState(
+        Arrays.asList(new TokenType[] {
+          TokenType.O, TokenType.X, TokenType.X,
+          TokenType.X, TokenType.O, TokenType.O,
+          TokenType.X, TokenType.O, TokenType.X
+        }));
 
-    List<TokenType> grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid.set(0, TokenType.O);
-    grid.set(1, TokenType.X);
-    grid.set(2, TokenType.X);
-    grid.set(3, TokenType.X);
-    grid.set(4, TokenType.O);
-    grid.set(5, TokenType.O);
-    grid.set(6, TokenType.X);
-    grid.set(7, TokenType.O);
-    grid.set(8, TokenType.X);
-
-    TicTacToeNormalState state = new TicTacToeNormalState(grid);
     assertTrue(state.isTerminalState());
   }
 
@@ -141,12 +128,13 @@ public class TicTacToeNormalStateTest {
      * -----------
      *    |   |
      */
+    TicTacToeNormalState state = new TicTacToeNormalState(
+        Arrays.asList(new TokenType[] {
+          TokenType.O,    TokenType.NONE, TokenType.NONE,
+          TokenType.NONE, TokenType.NONE, TokenType.X,
+          TokenType.NONE, TokenType.NONE, TokenType.NONE
+        }));
 
-    List<TokenType> grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid.set(0, TokenType.O);
-    grid.set(5, TokenType.X);
-
-    TicTacToeNormalState state = new TicTacToeNormalState(grid);
     assertFalse(state.isTerminalState());
   }
 
@@ -160,21 +148,21 @@ public class TicTacToeNormalStateTest {
      * -----------
      *  * | * | *
      */
+    TicTacToeNormalState state = new TicTacToeNormalState();
 
-    List<TokenType> grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    Set<Action> expectedActions = new HashSet<>(Arrays.asList(new Action[] {
+      new TicTacToeAction(0, TokenType.X),
+      new TicTacToeAction(1, TokenType.X),
+      new TicTacToeAction(2, TokenType.X),
+      new TicTacToeAction(3, TokenType.X),
+      new TicTacToeAction(4, TokenType.X),
+      new TicTacToeAction(5, TokenType.X),
+      new TicTacToeAction(6, TokenType.X),
+      new TicTacToeAction(7, TokenType.X),
+      new TicTacToeAction(8, TokenType.X)
+    }));
 
-    Set<Action> expectedActions = new HashSet<>();
-    expectedActions.add(new TicTacToeAction(0, TokenType.X));
-    expectedActions.add(new TicTacToeAction(1, TokenType.X));
-    expectedActions.add(new TicTacToeAction(2, TokenType.X));
-    expectedActions.add(new TicTacToeAction(3, TokenType.X));
-    expectedActions.add(new TicTacToeAction(4, TokenType.X));
-    expectedActions.add(new TicTacToeAction(5, TokenType.X));
-    expectedActions.add(new TicTacToeAction(6, TokenType.X));
-    expectedActions.add(new TicTacToeAction(7, TokenType.X));
-    expectedActions.add(new TicTacToeAction(8, TokenType.X));
-
-    checkSameActions(expectedActions, grid);
+    assertThat(new HashSet<>(state.getActions()), equalTo(expectedActions));
   }
 
   @Test
@@ -187,21 +175,21 @@ public class TicTacToeNormalStateTest {
      * -----------
      *  O | X | *
      */
+    TicTacToeNormalState state = new TicTacToeNormalState(
+        Arrays.asList(new TokenType[] {
+          TokenType.NONE, TokenType.X,    TokenType.NONE,
+          TokenType.X,    TokenType.NONE, TokenType.O,
+          TokenType.O,    TokenType.X,    TokenType.NONE
+        }));
 
-    List<TokenType> grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid.set(1, TokenType.X);
-    grid.set(3, TokenType.X);
-    grid.set(5, TokenType.O);
-    grid.set(6, TokenType.O);
-    grid.set(7, TokenType.X);
+    Set<Action> expectedActions = new HashSet<>(Arrays.asList(new Action[] {
+      new TicTacToeAction(0, TokenType.O),
+      new TicTacToeAction(2, TokenType.O),
+      new TicTacToeAction(4, TokenType.O),
+      new TicTacToeAction(8, TokenType.O)
+    }));
 
-    Set<Action> expectedActions = new HashSet<>();
-    expectedActions.add(new TicTacToeAction(0, TokenType.O));
-    expectedActions.add(new TicTacToeAction(2, TokenType.O));
-    expectedActions.add(new TicTacToeAction(4, TokenType.O));
-    expectedActions.add(new TicTacToeAction(8, TokenType.O));
-
-    checkSameActions(expectedActions, grid);
+    assertThat(new HashSet<>(state.getActions()), equalTo(expectedActions));
   }
 
   @Test
@@ -214,25 +202,15 @@ public class TicTacToeNormalStateTest {
      * -----------
      *  X | O | X
      */
-
-    List<TokenType> grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    grid.set(0, TokenType.O);
-    grid.set(1, TokenType.X);
-    grid.set(2, TokenType.X);
-    grid.set(3, TokenType.O);
-    grid.set(4, TokenType.X);
-    grid.set(5, TokenType.O);
-    grid.set(6, TokenType.X);
-    grid.set(7, TokenType.O);
-    grid.set(8, TokenType.X);
+    TicTacToeNormalState state = new TicTacToeNormalState(
+        Arrays.asList(new TokenType[] {
+          TokenType.O, TokenType.X, TokenType.X,
+          TokenType.O, TokenType.X, TokenType.O,
+          TokenType.X, TokenType.O, TokenType.X
+        }));
 
     Set<Action> expectedActions = new HashSet<>();
-    checkSameActions(expectedActions, grid);
-  }
 
-  private void checkSameActions(Set<Action> expectedActions, List<TokenType> grid) {
-    TicTacToeNormalState state = new TicTacToeNormalState(grid);
-    Set<Action> actualActions = new HashSet<>(state.getActions());
-    assertThat(actualActions, equalTo(expectedActions));
+    assertThat(new HashSet<>(state.getActions()), equalTo(expectedActions));
   }
 }

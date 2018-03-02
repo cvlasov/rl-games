@@ -10,68 +10,75 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import com.games.general.Agent;
+import com.games.general.State;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 import com.games.tictactoe.TicTacToeNormalGame;
 import com.games.tictactoe.TicTacToeNormalState;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
+import org.junit.runner.RunWith;
 import org.junit.Test;
 
+@RunWith(Parameterized.class)
 public class TicTacToeNormalGameTest {
 
   private Agent mockAgent1 = mock(Agent.class);
   private Agent mockAgent2 = mock(Agent.class);
 
-  private TicTacToeNormalState winningXState;
-  private TicTacToeNormalState winningOState;
-  private TicTacToeNormalState drawState;
+  private static TicTacToeNormalState winningXState =
+      new TicTacToeNormalState(Arrays.asList(new TokenType[] {
+        TokenType.O, TokenType.X, TokenType.X,
+        TokenType.O, TokenType.X, TokenType.O,
+        TokenType.X, TokenType.O, TokenType.X
+      }));
 
-  public TicTacToeNormalGameTest() {
-    List<TokenType> winningXGrid =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    winningXGrid.set(0, TokenType.O);
-    winningXGrid.set(1, TokenType.X);
-    winningXGrid.set(2, TokenType.X);
-    winningXGrid.set(3, TokenType.O);
-    winningXGrid.set(4, TokenType.X);
-    winningXGrid.set(5, TokenType.O);
-    winningXGrid.set(6, TokenType.X);
-    winningXGrid.set(7, TokenType.O);
-    winningXGrid.set(8, TokenType.X);
+  private static TicTacToeNormalState winningOState =
+      new TicTacToeNormalState(Arrays.asList(new TokenType[] {
+        TokenType.O, TokenType.O, TokenType.O,
+        TokenType.X, TokenType.O, TokenType.X,
+        TokenType.X, TokenType.X, TokenType.NONE
+      }));
 
-    List<TokenType> winningOGrid =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    winningOGrid.set(0, TokenType.O);
-    winningOGrid.set(1, TokenType.O);
-    winningOGrid.set(2, TokenType.O);
-    winningOGrid.set(3, TokenType.X);
-    winningOGrid.set(4, TokenType.O);
-    winningOGrid.set(5, TokenType.X);
-    winningOGrid.set(6, TokenType.X);
-    winningOGrid.set(7, TokenType.X);
+  private static TicTacToeNormalState drawState =
+      new TicTacToeNormalState(Arrays.asList(new TokenType[] {
+        TokenType.X, TokenType.O, TokenType.X,
+        TokenType.O, TokenType.O, TokenType.X,
+        TokenType.X, TokenType.X, TokenType.O
+      }));
 
-    List<TokenType> drawGrid =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    drawGrid.set(0, TokenType.X);
-    drawGrid.set(1, TokenType.O);
-    drawGrid.set(2, TokenType.X);
-    drawGrid.set(3, TokenType.O);
-    drawGrid.set(4, TokenType.O);
-    drawGrid.set(5, TokenType.X);
-    drawGrid.set(6, TokenType.X);
-    drawGrid.set(7, TokenType.X);
-    drawGrid.set(8, TokenType.O);
+  @Parameter(0)
+  public int swapAgents;  // 0 = no swap, 1 = swap
 
-    winningXState = new TicTacToeNormalState(winningXGrid);
-    winningOState = new TicTacToeNormalState(winningOGrid);
-    drawState = new TicTacToeNormalState(drawGrid);
+  @Parameter(1)
+  public TicTacToeNormalState state;
 
-    winningXState.isTerminalState();
-    winningOState.isTerminalState();
-    drawState.isTerminalState();
+  @Parameter(2)
+  public int expectedWinner;  // 0 = draw, 1 = agent 1, 2 = agent 2
+
+  @Parameter(3)
+  public int expectedAgent1Return;
+
+  @Parameter(4)
+  public int expectedAgent2Return;
+
+  @Parameters
+  public static Collection<Object[]> agentConfigurations() {
+     return Arrays.asList(new Object[][] {
+        { 0, winningXState, 1, WIN_RETURN,  LOSS_RETURN },
+        { 0, winningOState, 2, LOSS_RETURN, WIN_RETURN },
+        { 1, winningOState, 1, WIN_RETURN,  LOSS_RETURN },
+        { 1, winningXState, 2, LOSS_RETURN, WIN_RETURN },
+        { 0, drawState,     0, DRAW_RETURN, DRAW_RETURN },
+        { 1, drawState,     0, DRAW_RETURN, DRAW_RETURN }
+     });
   }
 
   @Test
@@ -91,74 +98,13 @@ public class TicTacToeNormalGameTest {
   }
 
   @Test
-  public void testFirstAgentWinsWithoutSwap() {
-    // Don't swap agents - mockAgent1 plays with X and mockAgent2 plays with O
+  public void testCorrectWinnerAndReturns() {
     TicTacToeNormalGame game =
-        new TicTacToeNormalGame(mockAgent1, mockAgent2, 0 /* no swap */);
-    int winner = game.gameOver(winningXState);
+        new TicTacToeNormalGame(mockAgent1, mockAgent2, swapAgents);
+    int winner = game.gameOver(state);
 
-    assertThat(winner, equalTo(1));
-    verify(mockAgent1).receiveReturn(WIN_RETURN);
-    verify(mockAgent2).receiveReturn(LOSS_RETURN);
-  }
-
-  @Test
-  public void testSecondAgentWinsWithoutSwap() {
-    // Don't swap agents - mockAgent1 plays with X and mockAgent2 plays with O
-    TicTacToeNormalGame game =
-        new TicTacToeNormalGame(mockAgent1, mockAgent2, 0 /* no swap */);
-    int winner = game.gameOver(winningOState);
-
-    assertThat(winner, equalTo(2));
-    verify(mockAgent1).receiveReturn(LOSS_RETURN);
-    verify(mockAgent2).receiveReturn(WIN_RETURN);
-  }
-
-  @Test
-  public void testFirstAgentWinsWithSwap() {
-    // Swap agents - mockAgent2 plays with X and mockAgent2 plays with O
-    TicTacToeNormalGame game =
-        new TicTacToeNormalGame(mockAgent1, mockAgent2, 1 /* swap */);
-    int winner = game.gameOver(winningOState);
-
-    assertThat(winner, equalTo(1));
-    verify(mockAgent1).receiveReturn(WIN_RETURN);
-    verify(mockAgent2).receiveReturn(LOSS_RETURN);
-  }
-
-  @Test
-  public void testSecondAgentWinsWithSwap() {
-    // Swap agents - mockAgent2 plays with X and mockAgent2 plays with O
-    TicTacToeNormalGame game =
-        new TicTacToeNormalGame(mockAgent1, mockAgent2, 1 /* swap */);
-    int winner = game.gameOver(winningXState);
-
-    assertThat(winner, equalTo(2));
-    verify(mockAgent1).receiveReturn(LOSS_RETURN);
-    verify(mockAgent2).receiveReturn(WIN_RETURN);
-  }
-
-  @Test
-  public void testDrawWithNoSwap() {
-    // Don't swap agents - mockAgent1 plays with X and mockAgent2 plays with O
-    TicTacToeNormalGame game =
-        new TicTacToeNormalGame(mockAgent1, mockAgent2, 0 /* no swap */);
-    int winner = game.gameOver(drawState);
-
-    assertThat(winner, equalTo(0));
-    verify(mockAgent1).receiveReturn(DRAW_RETURN);
-    verify(mockAgent2).receiveReturn(DRAW_RETURN);
-  }
-
-  @Test
-  public void testDrawWithSwap() {
-    // Swap agents - mockAgent2 plays with X and mockAgent2 plays with O
-    TicTacToeNormalGame game =
-        new TicTacToeNormalGame(mockAgent1, mockAgent2, 1 /* swap */);
-    int winner = game.gameOver(drawState);
-
-    assertThat(winner, equalTo(0));
-    verify(mockAgent1).receiveReturn(DRAW_RETURN);
-    verify(mockAgent2).receiveReturn(DRAW_RETURN);
+    assertThat(winner, equalTo(expectedWinner));
+    verify(mockAgent1).receiveReturn(expectedAgent1Return);
+    verify(mockAgent2).receiveReturn(expectedAgent2Return);
   }
 }

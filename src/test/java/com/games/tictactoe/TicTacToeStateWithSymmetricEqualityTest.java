@@ -11,8 +11,7 @@ import static org.junit.Assert.assertThat;
 
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -38,11 +37,12 @@ public class TicTacToeStateWithSymmetricEqualityTest {
      * -----------
      *  X |   |
      */
-    List<TokenType> originalGrid =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    originalGrid.set(1, TokenType.X);
-    originalGrid.set(3, TokenType.O);
-    originalGrid.set(6, TokenType.X);
+    List<TokenType> originalGrid = Arrays.asList(
+        new TokenType[] {
+          TokenType.NONE, TokenType.X,    TokenType.NONE,
+          TokenType.O,    TokenType.NONE, TokenType.NONE,
+          TokenType.X,    TokenType.NONE, TokenType.NONE
+        });
 
     originalState = new TicTacToeStateWithSymmetricEquality(originalGrid);
 
@@ -124,15 +124,13 @@ public class TicTacToeStateWithSymmetricEqualityTest {
      * -----------       -----------
      *  X |   |           X |   |
      */
-
-    List<TokenType> nonSymmetricalGrid =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    nonSymmetricalGrid.set(4, TokenType.X);
-    nonSymmetricalGrid.set(3, TokenType.O);
-    nonSymmetricalGrid.set(6, TokenType.X);
-
     TicTacToeStateWithSymmetricEquality nonSymmetricalState =
-        new TicTacToeStateWithSymmetricEquality(nonSymmetricalGrid);
+        new TicTacToeStateWithSymmetricEquality(Arrays.asList(
+            new TokenType[] {
+              TokenType.NONE, TokenType.NONE, TokenType.NONE,
+              TokenType.O,    TokenType.X,    TokenType.NONE,
+              TokenType.X,    TokenType.NONE, TokenType.NONE
+            }));
 
     assertThat(originalState, not(equalTo(nonSymmetricalState)));
   }
@@ -196,15 +194,13 @@ public class TicTacToeStateWithSymmetricEqualityTest {
      * -----------       -----------
      *  X |   |           X |   |
      */
-
-    List<TokenType> nonSymmetricalGrid =
-        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
-    nonSymmetricalGrid.set(4, TokenType.X);
-    nonSymmetricalGrid.set(3, TokenType.O);
-    nonSymmetricalGrid.set(6, TokenType.X);
-
     TicTacToeStateWithSymmetricEquality nonSymmetricalState =
-        new TicTacToeStateWithSymmetricEquality(nonSymmetricalGrid);
+        new TicTacToeStateWithSymmetricEquality(Arrays.asList(
+            new TokenType[] {
+              TokenType.NONE, TokenType.NONE, TokenType.NONE,
+              TokenType.O,    TokenType.X,    TokenType.NONE,
+              TokenType.X,    TokenType.NONE, TokenType.NONE
+            }));
 
     assertThat(
         new HashSet<>(originalState.getActions()),
