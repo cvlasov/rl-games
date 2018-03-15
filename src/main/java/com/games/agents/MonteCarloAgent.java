@@ -22,7 +22,7 @@ public class MonteCarloAgent implements Agent {
   boolean debug = false;
 
   /** Value of epsilon used in policy improvement. */
-  private final double epsilon;
+  private final double EPSILON;
 
   /**
    * Agent's policy.
@@ -31,7 +31,7 @@ public class MonteCarloAgent implements Agent {
    * actions to the probability of choosing that action from that state under
    * this policy.
    */
-  private final Map<State, HashMap<Action, Double>> PI = new HashMap<>();
+  private final Map<State, Map<Action, Double>> PI = new HashMap<>();
 
   /**
    * Action-value function for policy PI.
@@ -43,17 +43,17 @@ public class MonteCarloAgent implements Agent {
   private final Map<State, Map<Action, Double>> Q = new HashMap<>();
 
   /**
-   *  Returns for the first occurrences of all (state, action) pairs encountered
-   *  in all episodes so far (including the one in progress).
+   *  Returns for the number of times each (state, action) pair has been
+   *  encountered in all episodes so far (including the one in progress).
    */
-  private final Map<State, Map<Action, List<Double>>> overallReturns =
+  private final Map<State, Map<Action, Integer>> stateActionCounts =
           new HashMap<>();
 
   /**
    * Maps each state encountered in the current episode so far to all actions
-   * taken from that state in the current episode so far.
+   * taken from that state and their returns in the current episode so far.
    */
-  private final Map<State, List<Action>> episodeStates = new HashMap<>();
+  private final Map<State, Map<Action, Double>> episodeStates = new HashMap<>();
 
   /**
    * Most recent state from which an action was chosen and for which a return
@@ -64,19 +64,40 @@ public class MonteCarloAgent implements Agent {
   /** Most recent action for which a return has not yet been given. */
   private Action lastAction;
 
-  public MonteCarloAgent(double epsilon) {
-    this.epsilon = epsilon;
+  public MonteCarloAgent(double e) {
+    EPSILON = e;
   }
 
   @VisibleForTesting
-  MonteCarloAgent(double epsilon,
-                  Map<State, List<Action>> episodeStates,
-                  Map<State, Map<Action, List<Double>>> overallReturns) {
-    this.epsilon = epsilon;
+  MonteCarloAgent(double e,
+                  Map<State, Map<Action, Double>> episodeStates,
+                  Map<State, Map<Action, Double>> actionValueFunction,
+                  Map<State, Map<Action, Integer>> stateActionCounts) {
+    EPSILON = e;
     this.episodeStates.clear();
     this.episodeStates.putAll(episodeStates);
-    this.overallReturns.clear();
-    this.overallReturns.putAll(overallReturns);
+    this.Q.clear();
+    this.Q.putAll(actionValueFunction);
+    this.stateActionCounts.clear();
+    this.stateActionCounts.putAll(stateActionCounts);
+  }
+
+  @VisibleForTesting
+  MonteCarloAgent(double e,
+                  Map<State, Map<Action, Double>> map,
+                  boolean isActionValueFunction,
+                  boolean isPolicy) {
+    EPSILON = e;
+
+    if (isActionValueFunction) {
+      this.Q.clear();
+      this.Q.putAll(map);
+    }
+
+    if (isPolicy) {
+      this.PI.clear();
+      this.PI.putAll(map);
+    }
   }
 
   @Override
@@ -108,51 +129,11 @@ public class MonteCarloAgent implements Agent {
       // arbitrary
       Map<Action, Double> policy = PI.get(state);
 
-      // System.out.println("available actions:");
-      // for (Action a : actions) {
-      //   a.print(); System.out.println();
-      // }
-      //
-      // System.out.println("policy actions:");
-      // for (Action a : policy.keySet()) {
-      //   a.print(); System.out.println();
-      // }
+      assert (new HashSet<Action>(actions)).equals(policy.keySet())
+             : "state's available actions not equal to actions in policy";
 
-      // System.out.println("policy size (" + policy.size()
-      //                    + "), actions from this state (" + actions.size() + ")");
-
-      if (debug) System.out.println("state encountered in previous episode - "
-                         + "policy.keySet().equals(actions)? "
-                         + policy.keySet().equals(new HashSet(actions))
-                         + "\n\n");
-
-      // Compute cumulative distribution function of policy at given state
-      double[] cdf = new double[policy.size()];
-      cdf[0] = policy.get(actions.get(0));
-
-      for (int i = 1; i < cdf.length /* = policy.size() = actions.size() */; i++) {
-        cdf[i] = cdf[i - 1] + policy.get(actions.get(i));
-      }
-
-      int i;
-
-      while (true) {
-        i = Arrays.binarySearch(cdf, Math.random());
-
-        if (i < 0) {
-          // Arrays.binarySearch returns -i-1 if the insertion index is i (and
-          // the value is not already in the array
-          i = -i - 1;
-          break;
-
-        } else if (i < cdf.length) {
-          break;
-        }
-        // Redo if Arrays.binarySearch returns cdf.length (due to error in
-        // rounding of double value)
-      }
-
-      lastAction = actions.get(i);
+      double[] cdf = computeCDF(actions, policy);
+      lastAction = actions.get(chooseActionIndex(cdf));
     }
 
     lastState = state.copy();
@@ -163,7 +144,7 @@ public class MonteCarloAgent implements Agent {
   @Override
   public void receiveReturn(double amount) {
     if (episodeStates.containsKey(lastState)
-            && episodeStates.get(lastState).contains(lastAction)) {
+            && episodeStates.get(lastState).containsKey(lastAction)) {
       // Not the first time 'lastAction' was chosen at 'lastState' so no need
       // to record the given return.
       return;
@@ -171,24 +152,20 @@ public class MonteCarloAgent implements Agent {
 
     if (!episodeStates.containsKey(lastState)) {
       // First time 'lastState' was visited in this episode
-      episodeStates.put(lastState, new ArrayList<>());
+      episodeStates.put(lastState, new HashMap<>());
     }
 
     // Record that the pair (lastState, lastAction) was encountered (for the
     // first time in this episode)
-    episodeStates.get(lastState).add(lastAction);
+    episodeStates.get(lastState).put(lastAction, amount);
 
-    if (!overallReturns.containsKey(lastState)) {
-      overallReturns.put(lastState, new HashMap<>());
+    if (!stateActionCounts.containsKey(lastState)) {
+      stateActionCounts.put(lastState, new HashMap<>());
     }
 
-    if (!overallReturns.get(lastState).containsKey(lastAction)) {
-      overallReturns.get(lastState).put(lastAction, new ArrayList<>());
+    if (!stateActionCounts.get(lastState).containsKey(lastAction)) {
+      stateActionCounts.get(lastState).put(lastAction, 0);
     }
-
-    // Record the return given for the first execution of 'lastAction' at
-    // 'lastState' in this episode.
-    overallReturns.get(lastState).get(lastAction).add(amount);
   }
 
   @Override
@@ -198,13 +175,13 @@ public class MonteCarloAgent implements Agent {
   }
 
   @VisibleForTesting
-  Map<State, List<Action>> getEpisodeStates() {
+  Map<State, Map<Action, Double>> getEpisodeStates() {
     return episodeStates;
   }
 
   @VisibleForTesting
-  Map<State, Map<Action, List<Double>>> getOverallReturns() {
-    return overallReturns;
+  Map<State, Map<Action, Integer>> getStateActionCounts() {
+    return stateActionCounts;
   }
 
   @VisibleForTesting
@@ -212,68 +189,126 @@ public class MonteCarloAgent implements Agent {
     return Q;
   }
 
+  @VisibleForTesting
+  Map<State, Map<Action, Double>> getPolicy() {
+    return PI;
+  }
+
+  /**
+   * Computes the cumulative distribution function of the agent's policy at a
+   * particular state.
+   */
+  @VisibleForTesting
+  double[] computeCDF(List<Action> actions, Map<Action, Double> policy) {
+    double[] cdf = new double[policy.size()];
+
+    if (policy.size() == 0) return cdf;
+
+    cdf[0] = policy.get(actions.get(0));
+
+    for (int i = 1; i < actions.size() /* = policy.size() */ ; i++) {
+      cdf[i] = cdf[i-1] + policy.get(actions.get(i));
+    }
+
+    return cdf;
+  }
+
+  private int chooseActionIndex(double[] cdf) {
+    int i = Arrays.binarySearch(cdf, Math.random());
+
+    if (i < 0) {
+      // Arrays.binarySearch returns -i-1 if the insertion index is i (and
+      // the value is not already in the array
+      return (-i) - 1;
+
+    } else if (i < cdf.length) {
+      return i;
+
+    } else { // i == cdf.length
+      return cdf.length - 1;
+    }
+  }
+
   // Recalculate action-value function for states that were visited in the most
   // recent episode.
   @VisibleForTesting
   void policyEvaluation() {
     for (State s : episodeStates.keySet()) {
-      for (Action a : episodeStates.get(s)) {
-        List<Double> returns = overallReturns.get(s).get(a);
-        double average = 0.0;
+      for (Action a : episodeStates.get(s).keySet()) {
+        int count = stateActionCounts.get(s).get(a);
+        double returnSum = 0.0;
 
-        for (double i : returns) {
-          average += i;
-        }
+        if (count != 0) {
+          returnSum = count * Q.get(s).get(a);
 
-        average /= returns.size();
-
-        if (!Q.containsKey(s)) {
+        } else if (!Q.containsKey(s)) {
           Q.put(s, new HashMap<>());
         }
 
-        Q.get(s).put(a, average);
+        returnSum += episodeStates.get(s).get(a);
+        double newAverage = returnSum / (count + 1);
+
+        Q.get(s).put(a, newAverage);
+        stateActionCounts.get(s).put(a, count + 1);
       }
     }
   }
 
   private void policyImprovement() {
-    if (debug) System.out.println("*****************************");
-    if (debug) System.out.println("POLICY IMPROVEMENT");
+    if (debug) {
+      System.out.println("*****************************");
+      System.out.println("POLICY IMPROVEMENT");
+    }
 
     for (State s : episodeStates.keySet()) {
-      if (debug) System.out.println("\nupdating policy for state");
-      if (debug) s.print();
+      if (debug) { System.out.println("\nupdating policy for:"); s.print(); }
 
-      Action bestAction = null;
-      double bestValue = -Double.MAX_VALUE;
-
-      for (Action a : Q.get(s).keySet()) {
-        double value = Q.get(s).get(a);
-
-        if (value > bestValue) {
-          bestValue = value;
-          bestAction = a;
-        }
+      // If there are no possible actions, then there is nothing to update
+      if (s.getActions().size() == 0) {
+        break;
       }
 
-      if (!PI.containsKey(s)) {
-        if (debug) System.out.println("adding it to the policy for the first time!");
-        PI.put(s, new HashMap<>());
-      }
-
-      double randomProb = epsilon / s.getActions().size();
-
-      for (Action a : s.getActions()) {
-        if (debug) a.print(); if (debug) System.out.println();
-
-        if (a.equals(bestAction)) {
-          PI.get(s).put(a, 1 - epsilon + randomProb);
-        } else {
-          PI.get(s).put(a, randomProb);
-        }
-      }
+      updatePolicyForState(s, getBestAction(s));
     }
 
     if (debug) System.out.println("*****************************\n");
+  }
+
+  @VisibleForTesting
+  Action getBestAction(State s) {
+    Action bestAction = null;
+    double bestValue = -Double.MAX_VALUE;
+
+    for (Action a : Q.get(s).keySet()) {
+      double value = Q.get(s).get(a);
+
+      if (value > bestValue) {
+        bestValue = value;
+        bestAction = a;
+      }
+    }
+
+    return bestAction;
+  }
+
+  @VisibleForTesting
+  void updatePolicyForState(State s, Action bestAction) {
+    if (!PI.containsKey(s)) {
+      if (debug) System.out.println("adding it to policy for the 1st time");
+      PI.put(s, new HashMap<>());
+    }
+
+    // Probability for sub-optimal action
+    double randomProb = EPSILON / s.getActions().size();
+
+    for (Action a : s.getActions()) {
+      if (debug) { a.print(); System.out.println(); }
+
+      if (a.equals(bestAction)) {
+        PI.get(s).put(a, 1 - EPSILON + randomProb);
+      } else {  // not the best action
+        PI.get(s).put(a, randomProb);
+      }
+    }
   }
 }

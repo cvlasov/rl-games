@@ -19,49 +19,84 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 import org.junit.runner.RunWith;
+import org.junit.Before;
 import org.junit.Test;
 
 @RunWith(Parameterized.class)
 public class MonteCarloAgentPolicyEvaluationTest {
 
+  private final double EPSILON = 0.1;
+
+  private State state;
+  private Action action;
+  private MonteCarloAgent mc;
+
   @Parameters
   public static Collection<Object[]> returns() {
      return Arrays.asList(new Object[][] {
-        { new Double[] { 1.0 },           1.0 },
-        { new Double[] { 2.0, 6.0, 4.0 }, 4.0 },
+     // { oldAverage,      oldCount,        newReturn,       expectedNewAverage, expectedNewCount }
+        { new Double(1.0), new Integer(5),  new Double( 1.0), new Double( 1.0),  new Integer(6) },
+        { new Double(4.0), new Integer(1),  new Double( 6.0), new Double( 5.0),  new Integer(2) },
+        { new Double(0.0), new Integer(0),  new Double(-1.0), new Double(-1.0),  new Integer(1) }
      });
   }
 
   @Parameter(0)
-  public Double[] returns;
+  public Double oldAverage;
 
   @Parameter(1)
-  public Double expectedAverage;
+  public Integer oldCount;
+
+  @Parameter(2)
+  public Double newReturn;
+
+  @Parameter(3)
+  public Double expectedNewAverage;
+
+  @Parameter(4)
+  public Integer expectedNewCount;
+
+  @Before
+  public void setUp() {
+    state = mock(State.class);
+    action = mock(Action.class);
+
+    Map<Action, Double> newActionReturnsMap = new HashMap<>();
+    newActionReturnsMap.put(action, newReturn);
+
+    Map<State, Map<Action, Double>> episodeStates = new HashMap<>();
+    episodeStates.put(state, newActionReturnsMap);
+
+    Map<Action, Double> averageReturnsMap = new HashMap<>();
+    averageReturnsMap.put(action, oldAverage);
+
+    Map<State, Map<Action, Double>> actionValueFunction = new HashMap<>();
+    actionValueFunction.put(state, averageReturnsMap);
+
+    Map<Action, Integer> actionCountsMap = new HashMap<>();
+    actionCountsMap.put(action, oldCount);
+
+    Map<State, Map<Action, Integer>> stateActionCounts = new HashMap<>();
+    stateActionCounts.put(state, actionCountsMap);
+
+    mc = new MonteCarloAgent(
+        EPSILON, episodeStates, actionValueFunction, stateActionCounts);
+    mc.policyEvaluation();
+  }
 
   @Test
-  public void testPolicyEvaluation() {
-    State state = mock(State.class);
+  public void testPolicyEvaluationUpdatesStateActionCounts() {
+    assertThat(mc.getStateActionCounts(), hasKey(state));
+    assertThat(mc.getStateActionCounts().get(state), hasKey(action));
+    assertThat(mc.getStateActionCounts().get(state).get(action),
+               equalTo(expectedNewCount));
+  }
 
-    Action action = mock(Action.class);
-    List<Action> actions = new ArrayList<>(); actions.add(action);
-
-    List<Double> returnsList = new ArrayList<Double>(Arrays.asList(returns));
-
-    Map<Action, List<Double>> returnsMap = new HashMap<>();
-    returnsMap.put(action, returnsList);
-
-    Map<State, List<Action>> episodeStates = new HashMap<>();
-    episodeStates.put(state, actions);
-
-    Map<State, Map<Action, List<Double>>> overallReturns = new HashMap<>();
-    overallReturns.put(state, returnsMap);
-
-    MonteCarloAgent mc = new MonteCarloAgent(0.1, episodeStates, overallReturns);
-    mc.policyEvaluation();
-
+  @Test
+  public void testPolicyEvaluationUpdatesActionValueFunction() {
     assertThat(mc.getActionValueFunction(), hasKey(state));
     assertThat(mc.getActionValueFunction().get(state), hasKey(action));
     assertThat(mc.getActionValueFunction().get(state).get(action),
-               equalTo(expectedAverage));
+               equalTo(expectedNewAverage));
   }
 }
