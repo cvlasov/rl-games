@@ -117,12 +117,15 @@ public class MonteCarloAgent implements Agent {
     List<Action> actions = state.getActions();
 
     if (!PI.containsKey(state)) {
-      if (debug) System.out.println("first time state was ever encountered\n\n");
-
       // First time this state has been reached in any episode, so the policy
       // is arbitrary (i.e. all actions are equally likely to be chosen)
       int randomIndex = (int) (Math.random() * actions.size());
       lastAction = actions.get(randomIndex);
+
+      if (debug) {
+        state.print();
+        System.out.println("first time this state has been encountered");
+      }
 
     } else {
       // This state was encountered in a previous episode, so the policy is not
@@ -132,8 +135,39 @@ public class MonteCarloAgent implements Agent {
       assert (new HashSet<Action>(actions)).equals(policy.keySet())
              : "state's available actions not equal to actions in policy";
 
+      if (debug) {
+        state.print();
+        System.out.println();
+
+        System.out.println("available actions:");
+        for (Action a : actions) {
+          System.out.print("-- ");
+          a.print();
+          System.out.println();
+        }
+
+        System.out.println();
+
+        System.out.println("policy actions:");
+        for (Action a : policy.keySet()) {
+          System.out.print("-- ");
+          a.print();
+          System.out.println();
+        }
+
+        System.out.println();
+        System.out.println("state has been encountered before, computing CDF:");
+      }
+
       double[] cdf = computeCDF(actions, policy);
       lastAction = actions.get(chooseActionIndex(cdf));
+    }
+
+    if (debug) {
+      System.out.print("--> CHOSEN ACTION: ");
+      lastAction.print();
+      System.out.println();
+      System.out.println();
     }
 
     lastState = state.copy();
@@ -204,9 +238,22 @@ public class MonteCarloAgent implements Agent {
 
     if (policy.size() == 0) return cdf;
 
+    if (debug) {
+      System.out.print("action ");
+      actions.get(0).print();
+      System.out.println(" has probability " + policy.get(actions.get(0)));
+    }
+
     cdf[0] = policy.get(actions.get(0));
 
     for (int i = 1; i < actions.size() /* = policy.size() */ ; i++) {
+
+      if (debug) {
+        System.out.print("action ");
+        actions.get(i).print();
+        System.out.println(" has probability " + policy.get(actions.get(i)));
+      }
+
       cdf[i] = cdf[i-1] + policy.get(actions.get(i));
     }
 
@@ -255,14 +302,7 @@ public class MonteCarloAgent implements Agent {
   }
 
   private void policyImprovement() {
-    if (debug) {
-      System.out.println("*****************************");
-      System.out.println("POLICY IMPROVEMENT");
-    }
-
     for (State s : episodeStates.keySet()) {
-      if (debug) { System.out.println("\nupdating policy for:"); s.print(); }
-
       // If there are no possible actions, then there is nothing to update
       if (s.getActions().size() == 0) {
         break;
@@ -270,8 +310,6 @@ public class MonteCarloAgent implements Agent {
 
       updatePolicyForState(s, getBestAction(s));
     }
-
-    if (debug) System.out.println("*****************************\n");
   }
 
   @VisibleForTesting
@@ -294,7 +332,6 @@ public class MonteCarloAgent implements Agent {
   @VisibleForTesting
   void updatePolicyForState(State s, Action bestAction) {
     if (!PI.containsKey(s)) {
-      if (debug) System.out.println("adding it to policy for the 1st time");
       PI.put(s, new HashMap<>());
     }
 
@@ -302,8 +339,6 @@ public class MonteCarloAgent implements Agent {
     double randomProb = EPSILON / s.getActions().size();
 
     for (Action a : s.getActions()) {
-      if (debug) { a.print(); System.out.println(); }
-
       if (a.equals(bestAction)) {
         PI.get(s).put(a, 1 - EPSILON + randomProb);
       } else {  // not the best action
