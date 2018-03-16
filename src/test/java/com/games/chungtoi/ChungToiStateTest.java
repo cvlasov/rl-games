@@ -33,8 +33,19 @@ public class ChungToiStateTest {
 	}
 
   @Test
-  public void testInequality() {
-    List<TokenType> grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+  public void testInequalityWithSameGridAndDifferentNextTurn() {
+    List<TokenType> grid =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+
+    ChungToiState state1 = new ChungToiState(grid, Player.X);
+    ChungToiState state2 = new ChungToiState(grid, Player.O);
+    assertThat(state1, not(equalTo(state2)));
+  }
+
+  @Test
+  public void testInequalityWithDifferentGridAndDifferentNextTurn() {
+    List<TokenType> grid =
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
     grid.set(0, TokenType.X_NORMAL);
 
 	  ChungToiState state1 = new ChungToiState(grid, Player.O);

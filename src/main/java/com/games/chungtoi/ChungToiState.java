@@ -146,7 +146,7 @@ public class ChungToiState implements State {
       }
     }
 
-    return true;
+    return this.nextTurn == other.nextTurn;
   }
 
   @Override
