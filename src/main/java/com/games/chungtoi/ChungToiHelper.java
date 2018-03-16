@@ -12,7 +12,7 @@ public class ChungToiHelper {
     X_DIAGONAL ("/X/"),
     O_NORMAL   ("-O-"),
     O_DIAGONAL ("/O/"),
-    NONE ("   ");
+    NONE       ("   ");
 
     private final String name;
 
@@ -75,18 +75,17 @@ public class ChungToiHelper {
 
   public static void print(List<TokenType> grid) {
     StringBuilder builder = new StringBuilder();
-    builder.append(" " + grid.get(0).toString() + " *");
-    builder.append(" " + grid.get(1).toString() + " *");
-    builder.append(" " + grid.get(2).toString() + "\n");
-    builder.append("*****************\n");
-    builder.append(" " + grid.get(3).toString() + " *");
-    builder.append(" " + grid.get(4).toString() + " *");
-    builder.append(" " + grid.get(5).toString() + "\n");
-    builder.append("*****************\n");
-    builder.append(" " + grid.get(6).toString() + " *");
-    builder.append(" " + grid.get(7).toString() + " *");
-    builder.append(" " + grid.get(8).toString() + "\n");
-    System.out.println(builder.toString());
+    System.out.println(" " + grid.get(0).toString() + " *" +
+                       " " + grid.get(1).toString() + " *" +
+                       " " + grid.get(2).toString());
+    System.out.println("*****************");
+    System.out.println(" " + grid.get(3).toString() + " *" +
+                       " " + grid.get(4).toString() + " *" +
+                       " " + grid.get(5).toString());
+    System.out.println("*****************");
+    System.out.println(" " + grid.get(6).toString() + " *" +
+                       " " + grid.get(7).toString() + " *" +
+                       " " + grid.get(8).toString());
   }
 
   public static boolean threeInARow(
