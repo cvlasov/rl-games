@@ -101,10 +101,21 @@ public final class TicTacToeEpsilonExperiments {
            epsilon < 1.0 ;
            epsilon += epsilonGranularity) {
 
+        System.out.println();
+        System.out.println("-------------------------------------------");
+        System.out.println("-------------------------------------------");
+        System.out.println("NEW EPSILON VALUE: " + epsilon);
+
         MonteCarloAgent monteCarloAgent = new MonteCarloAgent(epsilon);
         RandomAgent randomAgent = new RandomAgent();
 
         for (int i = 1 ; i <= numGames ; i++) {
+          System.out.println();
+          System.out.println("-------------------------------------------");
+          System.out.println("GAME #" + i);
+          System.out.println("-------------------------------------------");
+          System.out.println();
+
           switch (gameType) {
             case NORMAL:
               game = new TicTacToeNormalGame(monteCarloAgent, randomAgent);

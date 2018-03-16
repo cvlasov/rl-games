@@ -61,13 +61,21 @@ public class ChungToiEpsilonExperiments {
            epsilon < 1.0 ;
            epsilon += epsilonGranularity) {
 
-        System.out.println("epsilon: " + epsilon);
+        System.out.println();
+        System.out.println("-------------------------------------------");
+        System.out.println("-------------------------------------------");
+        System.out.println("NEW EPSILON VALUE: " + epsilon);
 
         MonteCarloAgent monteCarloAgent = new MonteCarloAgent(epsilon);
         RandomAgent randomAgent = new RandomAgent();
 
         for (int i = 1 ; i <= numGames ; i++) {
-          System.out.println("game #" + i);
+          System.out.println();
+          System.out.println("-------------------------------------------");
+          System.out.println("GAME #" + i);
+          System.out.println("-------------------------------------------");
+          System.out.println();
+
           game = new ChungToiGame(monteCarloAgent, randomAgent);
           int winner = game.play();
           if (winner == -1) System.out.println("ERROR");
