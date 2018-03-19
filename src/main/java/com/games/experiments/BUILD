@@ -1,25 +1,16 @@
 package(default_visibility = ["//visibility:public"])
 
 java_binary(
-  name = "chungtoi_epsilon",
-  srcs = glob(["ChungToiEpsilonExperiments.java"]),
-  main_class = "com.games.experiments.ChungToiEpsilonExperiments",
+  name = "epsilon",
+  srcs = [
+    "EpsilonExperiments.java",
+    "ExperimentHelper.java",
+  ],
+  main_class = "com.games.experiments.EpsilonExperiments",
   deps = [
     "//src/main/java/com/games/agents:agents",
     "//src/main/java/com/games/general:general",
     "//src/main/java/com/games/chungtoi:chungtoi",
-    "//third_party:guava",
-    "//third_party:opencsv",
-  ],
-)
-
-java_binary(
-  name = "tictactoe_epsilon",
-  srcs = glob(["TicTacToeEpsilonExperiments.java"]),
-  main_class = "com.games.experiments.TicTacToeEpsilonExperiments",
-  deps = [
-    "//src/main/java/com/games/agents:agents",
-    "//src/main/java/com/games/general:general",
     "//src/main/java/com/games/tictactoe:tictactoe",
     "//third_party:guava",
     "//third_party:opencsv",
