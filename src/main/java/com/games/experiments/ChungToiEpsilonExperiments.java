@@ -25,21 +25,20 @@ public class ChungToiEpsilonExperiments {
 
   public static void main(String[] args) throws IOException {
     saveEpsilonResultsInCSV(
-        0.01,    /* epsilon granularity */
+        0.01,      /* epsilon precision */
         1000*1000  /* number of games */);
   }
 
   /**
-   * Makes a Monte Carlo agent play Chung TOi against a random agent the given
-   * number of times, repeating for each value of epsilon from 0 to 1 (not
-   * inclusive) and saves the results in a CSV file.
+   * Makes a Monte Carlo agent play Chung Toi against a random agent the given
+   * number of times, repeating for each value of epsilon from 0 to 1
+   * (inclusive) and saves the results in a CSV file.
    *
-   * @param epsilonGranularity difference between consecutive epsilon values
-   *                           tried
-   * @param numGames           number of games to play for each epsilon value
+   * @param epsilonPrecision difference between consecutive values tried
+   * @param numGames         number of games to play for each epsilon value
    */
   private static void saveEpsilonResultsInCSV(
-      double epsilonGranularity,
+      double epsilonPrecision,
       int numGames) throws IOException {
 
     try (
@@ -56,9 +55,9 @@ public class ChungToiEpsilonExperiments {
       String[] headerRecord = {"Epsilon", "Win", "Loss", "Draw"};
       csvWriter.writeNext(headerRecord);
 
-      for (double epsilon = epsilonGranularity ;
-           epsilon < 1.0 ;
-           epsilon += epsilonGranularity) {
+      for (double epsilon = 0.0 ;
+           epsilon <= 1.0 ;
+           epsilon += epsilonPrecision) {
 
         if (debug) {
           System.out.println();
