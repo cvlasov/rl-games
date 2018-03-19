@@ -21,16 +21,16 @@ import java.nio.file.Paths;
 public final class TicTacToePerformanceExperiments {
 
   private static final String COMBINED_PERFORMANCE_RESULTS =
-      "./CombinedPerformanceResults_e0.1.csv";
+      "./TicTacToe_CombinedPerformanceResults_e0.1.csv";
 
   private static final String NORMAL_PERFORMANCE_RESULTS =
-      "./NormalPerformanceResults_e0.1.csv";
+      "./TicTacToeNormal_PerformanceResults_e0.1.csv";
 
   private static final String LIMITED_ACTIONS_PERFORMANCE_RESULTS =
-      "./LimitedActionsPerformanceResults_e0.1.csv";
+      "./TicTacToeLimitedActions_PerformanceResults_e0.1.csv";
 
   private static final String SYMMETRIC_EQUALITY_PERFORMANCE_RESULTS =
-      "./SymmetricEqualityPerformanceResults_e0.1.csv";
+      "./TicTacToeSymmetricEquality_PerformanceResults_e0.1.csv";
 
   public static void main(String[] args) throws IOException {
     savePerformanceResultsForAllGameTypesInCSV(
@@ -40,8 +40,8 @@ public final class TicTacToePerformanceExperiments {
         new RandomAgent(),
         new MonteCarloAgent(0.1),
         new RandomAgent(),
-        500000,  /* number of games */
-        10000    /* result interval */);
+        500*1000,  /* number of games */
+        10*1000    /* result interval */);
 
     // savePerformanceResultsForSingleGameTypeInCSV(
     //     GameType.SYMMETRIC_EQUALITY,

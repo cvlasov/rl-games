@@ -18,13 +18,15 @@ import java.nio.file.Paths;
 /** Main class for making agents play Chung Toi against each other. */
 public class ChungToiEpsilonExperiments {
 
+  private static boolean debug = false;
+
   private static final String RESULTS =
-      "./ChungToiEpsilonResults_1kGames.csv";
+      "./ChungToi_EpsilonResults_1MillionGames.csv";
 
   public static void main(String[] args) throws IOException {
     saveEpsilonResultsInCSV(
         0.01,    /* epsilon granularity */
-        1*1000  /* number of games */);
+        1000*1000  /* number of games */);
   }
 
   /**
@@ -54,27 +56,30 @@ public class ChungToiEpsilonExperiments {
       String[] headerRecord = {"Epsilon", "Win", "Loss", "Draw"};
       csvWriter.writeNext(headerRecord);
 
-      int[] wins = new int[3]; // index 0 is draw, 1 is agent1, 2 is agent2
-      ChungToiGame game = null;
-
       for (double epsilon = epsilonGranularity ;
            epsilon < 1.0 ;
            epsilon += epsilonGranularity) {
 
-        System.out.println();
-        System.out.println("-------------------------------------------");
-        System.out.println("-------------------------------------------");
-        System.out.println("NEW EPSILON VALUE: " + epsilon);
+        if (debug) {
+          System.out.println();
+          System.out.println("-------------------------------------------");
+          System.out.println("-------------------------------------------");
+          System.out.println("NEW EPSILON VALUE: " + epsilon);
+        }
 
+        int[] wins = new int[3]; // index 0 is draw, 1 is agent1, 2 is agent2
+        ChungToiGame game = null;
         MonteCarloAgent monteCarloAgent = new MonteCarloAgent(epsilon);
         RandomAgent randomAgent = new RandomAgent();
 
         for (int i = 1 ; i <= numGames ; i++) {
-          System.out.println();
-          System.out.println("-------------------------------------------");
-          System.out.println("GAME #" + i);
-          System.out.println("-------------------------------------------");
-          System.out.println();
+          if (debug) {
+            System.out.println();
+            System.out.println("-------------------------------------------");
+            System.out.println("GAME #" + i);
+            System.out.println("-------------------------------------------");
+            System.out.println();
+          }
 
           game = new ChungToiGame(monteCarloAgent, randomAgent);
           int winner = game.play();

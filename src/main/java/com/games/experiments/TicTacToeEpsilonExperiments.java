@@ -20,20 +20,22 @@ import java.nio.file.Paths;
 /** Main class for making agents play Tic-Tac-Toe against each other. */
 public final class TicTacToeEpsilonExperiments {
 
+  private static boolean debug = false;
+
   private static final String NORMAL_EPSILON_RESULTS =
-      "./NormalEpsilonResults_500kGames.csv";
+      "./TicTacToeNormal_EpsilonResults_1MillionGames.csv";
 
   private static final String LIMITED_ACTIONS_EPSILON_RESULTS =
-      "./LimitedActionsEpsilonResults_500kGames.csv";
+      "./TicTacToeLimitedActions_EpsilonResults_1MillionGames.csv";
 
   private static final String SYMMETRIC_EQUALITY_EPSILON_RESULTS =
-      "./SymmetricEqualityEpsilonResults_500kGames.csv";
+      "./TicTacToeSymmetricEquality_EpsilonResults_1MillionGames.csv";
 
   public static void main(String[] args) throws IOException {
     saveEpsilonResultsForSingleGameTypeInCSV(
-        GameType.NORMAL,
-        0.01,    /* epsilon granularity */
-        500*1000  /* number of games */);
+        GameType.SYMMETRIC_EQUALITY,
+        0.01,       /* epsilon granularity */
+        1000*1000   /* number of games */);
   }
 
   /**
@@ -94,27 +96,30 @@ public final class TicTacToeEpsilonExperiments {
 
       csvWriter.writeNext(headerRecord);
 
-      int[] wins = new int[3]; // index 0 is draw, 1 is agent1, 2 is agent2
-      TicTacToeGame game = null;
-
       for (double epsilon = epsilonGranularity ;
            epsilon < 1.0 ;
            epsilon += epsilonGranularity) {
 
-        System.out.println();
-        System.out.println("-------------------------------------------");
-        System.out.println("-------------------------------------------");
-        System.out.println("NEW EPSILON VALUE: " + epsilon);
+        if (debug) {
+          System.out.println();
+          System.out.println("-------------------------------------------");
+          System.out.println("-------------------------------------------");
+          System.out.println("NEW EPSILON VALUE: " + epsilon);
+        }
 
+        int[] wins = new int[3]; // index 0 is draw, 1 is agent1, 2 is agent2
+        TicTacToeGame game = null;
         MonteCarloAgent monteCarloAgent = new MonteCarloAgent(epsilon);
         RandomAgent randomAgent = new RandomAgent();
 
         for (int i = 1 ; i <= numGames ; i++) {
-          System.out.println();
-          System.out.println("-------------------------------------------");
-          System.out.println("GAME #" + i);
-          System.out.println("-------------------------------------------");
-          System.out.println();
+          if (debug) {
+            System.out.println();
+            System.out.println("-------------------------------------------");
+            System.out.println("GAME #" + i);
+            System.out.println("-------------------------------------------");
+            System.out.println();
+          }
 
           switch (gameType) {
             case NORMAL:
