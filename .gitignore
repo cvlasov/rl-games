@@ -3,3 +3,5 @@ bazel-genfiles/
 bazel-out/
 bazel-rl-games/
 bazel-testlogs/
+
+*.synctex.gz
