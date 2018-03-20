@@ -26,12 +26,13 @@ public final class EpsilonExperiments {
   private static boolean debug = false;
 
   private static final String EPSILON_RESULTS_FILE_NAME =
-      "./%s_EpsilonResults_10kGames.csv";
+      "./%s_EpsilonResults_10kGames_WithPolicySize.csv";
 
   private static final String EPSILON_HEADER = "Epsilon";
   private static final String WIN_HEADER  ="%sWin";
   private static final String LOSS_HEADER ="%sLoss";
   private static final String DRAW_HEADER ="%sDraw";
+  private static final String POLICY_STATES_HEADER = "StatesInPolicy";
 
   public static void main(String[] args) throws IOException {
     saveEpsilonResultsInCSV(GameType.TIC_TAC_TOE_NORMAL,
@@ -68,7 +69,8 @@ public final class EpsilonExperiments {
           EPSILON_HEADER,
           String.format(WIN_HEADER,  type.toString()),
           String.format(LOSS_HEADER, type.toString()),
-          String.format(DRAW_HEADER, type.toString())
+          String.format(DRAW_HEADER, type.toString()),
+          POLICY_STATES_HEADER
         };
 
       csvWriter.writeNext(headerRecord);
@@ -122,7 +124,8 @@ public final class EpsilonExperiments {
           String.valueOf(epsilon),
           String.valueOf(wins[1]),
           String.valueOf(wins[2]),
-          String.valueOf(wins[0])});
+          String.valueOf(wins[0]),
+          String.valueOf(mcAgent.getPolicy().size())});
        }
      }
   }
