@@ -74,18 +74,25 @@ public final class TicTacToeStateWithLimitedActions extends TicTacToeState {
 
       List<TokenType> verticalFlip = flipGridVertically(nextGridState);
       List<TokenType> horizontalFlip = flipGridHorizontally(nextGridState);
-      List<TokenType> doubleFlip = flipGridHorizontally(verticalFlip);
+      List<TokenType> verticalAndHorizontalFlip =
+          flipGridHorizontally(flipGridVertically(nextGridState));
       List<TokenType> majorDiagonalFlip =
           flipGridAlongMajorDiagonal(nextGridState);
+      List<TokenType> majorDiagonalAndHorizontalFlip =
+          flipGridHorizontally(flipGridAlongMajorDiagonal(nextGridState));
       List<TokenType> minorDiagonalFlip =
           flipGridAlongMinorDiagonal(nextGridState);
+      List<TokenType> minorDiagonalAndHorizontalFlip =
+          flipGridHorizontally(flipGridAlongMinorDiagonal(nextGridState));
 
       if (possibleNextStates.contains(nextGridState)
           || possibleNextStates.contains(verticalFlip)
           || possibleNextStates.contains(horizontalFlip)
-          || possibleNextStates.contains(doubleFlip)
+          || possibleNextStates.contains(verticalAndHorizontalFlip)
           || possibleNextStates.contains(majorDiagonalFlip)
-          || possibleNextStates.contains(minorDiagonalFlip)) {
+          || possibleNextStates.contains(majorDiagonalAndHorizontalFlip)
+          || possibleNextStates.contains(minorDiagonalFlip)
+          || possibleNextStates.contains(minorDiagonalAndHorizontalFlip)) {
         continue;
       }
 
