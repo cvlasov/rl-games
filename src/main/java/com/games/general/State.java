@@ -8,5 +8,4 @@ public interface State {
   State applyAction(Action a);
   boolean isTerminalState();
   void print();
-  State copy();
 }
