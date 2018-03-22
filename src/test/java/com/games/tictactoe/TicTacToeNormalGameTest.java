@@ -10,15 +10,12 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import com.games.general.Agent;
-import com.games.general.State;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 import com.games.tictactoe.TicTacToeNormalGame;
 import com.games.tictactoe.TicTacToeNormalState;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.runners.Parameterized;
@@ -98,12 +95,18 @@ public class TicTacToeNormalGameTest {
   }
 
   @Test
-  public void testCorrectWinnerAndReturns() {
+  public void testCorrectWinner() {
     TicTacToeNormalGame game =
         new TicTacToeNormalGame(mockAgent1, mockAgent2, swapAgents);
     int winner = game.gameOver(state);
-
     assertThat(winner, equalTo(expectedWinner));
+  }
+
+  @Test
+  public void testCorrectReturns() {
+    TicTacToeNormalGame game =
+        new TicTacToeNormalGame(mockAgent1, mockAgent2, swapAgents);
+    game.gameOver(state);
     verify(mockAgent1).receiveReturn(expectedAgent1Return);
     verify(mockAgent2).receiveReturn(expectedAgent2Return);
   }
