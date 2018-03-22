@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import com.games.general.Agent;
+import com.games.tictactoe.TicTacToeHelper.Player;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 import com.games.tictactoe.TicTacToeNormalGame;
 import com.games.tictactoe.TicTacToeNormalState;
@@ -31,25 +32,31 @@ public class TicTacToeNormalGameTest {
   private Agent mockAgent2 = mock(Agent.class);
 
   private static TicTacToeNormalState winningXState =
-      new TicTacToeNormalState(Arrays.asList(new TokenType[] {
-        TokenType.O, TokenType.X, TokenType.X,
-        TokenType.O, TokenType.X, TokenType.O,
-        TokenType.X, TokenType.O, TokenType.X
-      }));
+      new TicTacToeNormalState(
+        Arrays.asList(new TokenType[] {
+          TokenType.O, TokenType.X, TokenType.X,
+          TokenType.O, TokenType.X, TokenType.O,
+          TokenType.X, TokenType.O, TokenType.X
+        }),
+        Player.O);
 
   private static TicTacToeNormalState winningOState =
-      new TicTacToeNormalState(Arrays.asList(new TokenType[] {
-        TokenType.O, TokenType.O, TokenType.O,
-        TokenType.X, TokenType.O, TokenType.X,
-        TokenType.X, TokenType.X, TokenType.NONE
-      }));
+      new TicTacToeNormalState(
+        Arrays.asList(new TokenType[] {
+          TokenType.O, TokenType.O, TokenType.O,
+          TokenType.X, TokenType.O, TokenType.X,
+          TokenType.X, TokenType.X, TokenType.NONE
+        }),
+        Player.X);
 
   private static TicTacToeNormalState drawState =
-      new TicTacToeNormalState(Arrays.asList(new TokenType[] {
-        TokenType.X, TokenType.O, TokenType.X,
-        TokenType.O, TokenType.O, TokenType.X,
-        TokenType.X, TokenType.X, TokenType.O
-      }));
+      new TicTacToeNormalState(
+        Arrays.asList(new TokenType[] {
+          TokenType.X, TokenType.O, TokenType.X,
+          TokenType.O, TokenType.O, TokenType.X,
+          TokenType.X, TokenType.X, TokenType.O
+        }),
+        Player.O);
 
   @Parameter(0)
   public int swapAgents;  // 0 = no swap, 1 = swap

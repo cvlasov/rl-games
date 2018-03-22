@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 
 import com.games.general.Action;
 import com.games.tictactoe.TicTacToeAction;
+import com.games.tictactoe.TicTacToeHelper.Player;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 
 import java.util.Arrays;
@@ -56,7 +57,8 @@ public class TicTacToeStateWithLimitedActionsTest {
             TokenType.NONE, TokenType.X,    TokenType.NONE,
             TokenType.NONE, TokenType.NONE, TokenType.NONE,
             TokenType.NONE, TokenType.NONE, TokenType.NONE
-          }));
+          }),
+          Player.O);
 
     Set<Action> expectedActions = new HashSet<>(Arrays.asList(new Action[] {
       new TicTacToeAction(0, TokenType.O),
@@ -84,7 +86,8 @@ public class TicTacToeStateWithLimitedActionsTest {
            TokenType.O, TokenType.X, TokenType.X,
            TokenType.O, TokenType.X, TokenType.O,
            TokenType.X, TokenType.O, TokenType.X
-         }));
+         }),
+         Player.O);
 
      Set<Action> expectedActions = new HashSet<>();
 

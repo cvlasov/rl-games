@@ -4,11 +4,11 @@ import static com.games.tictactoe.TicTacToeHelper.flipGridVertically;
 import static com.games.tictactoe.TicTacToeHelper.flipGridHorizontally;
 import static com.games.tictactoe.TicTacToeHelper.flipGridAlongMajorDiagonal;
 import static com.games.tictactoe.TicTacToeHelper.flipGridAlongMinorDiagonal;
-import static com.games.tictactoe.TicTacToeHelper.GRID_SIZE;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
+import com.games.tictactoe.TicTacToeHelper.Player;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 
 import java.util.Arrays;
@@ -27,7 +27,6 @@ public class TicTacToeStateWithSymmetricEqualityTest {
   private TicTacToeStateWithSymmetricEquality stateFlippedAlongMajorDiagonalAndHorizontally;
   private TicTacToeStateWithSymmetricEquality stateFlippedAlongMinorDiagonal;
   private TicTacToeStateWithSymmetricEquality stateFlippedAlongMinorDiagonalAndHorizontally;
-  private TicTacToeStateWithSymmetricEquality emptyState;
 
   public TicTacToeStateWithSymmetricEqualityTest() {
     /*
@@ -44,37 +43,38 @@ public class TicTacToeStateWithSymmetricEqualityTest {
           TokenType.X,    TokenType.NONE, TokenType.NONE
         });
 
-    originalState = new TicTacToeStateWithSymmetricEquality(originalGrid);
+    originalState =
+        new TicTacToeStateWithSymmetricEquality(originalGrid, Player.O);
 
     stateFlippedVertically =
         new TicTacToeStateWithSymmetricEquality(
-            flipGridVertically(originalGrid));
+            flipGridVertically(originalGrid), Player.O);
 
     stateFlippedHorizontally =
         new TicTacToeStateWithSymmetricEquality(
-            flipGridHorizontally(originalGrid));
+            flipGridHorizontally(originalGrid), Player.O);
 
     stateFlippedVerticallyAndHorizontally =
         new TicTacToeStateWithSymmetricEquality(
-            flipGridHorizontally(flipGridVertically(originalGrid)));
+            flipGridHorizontally(flipGridVertically(originalGrid)), Player.O);
 
     stateFlippedAlongMajorDiagonal =
         new TicTacToeStateWithSymmetricEquality(
-            flipGridAlongMajorDiagonal(originalGrid));
+            flipGridAlongMajorDiagonal(originalGrid), Player.O);
 
     stateFlippedAlongMajorDiagonalAndHorizontally =
         new TicTacToeStateWithSymmetricEquality(
-            flipGridHorizontally(flipGridAlongMajorDiagonal(originalGrid)));
+            flipGridHorizontally(flipGridAlongMajorDiagonal(originalGrid)),
+            Player.O);
 
     stateFlippedAlongMinorDiagonal =
       new TicTacToeStateWithSymmetricEquality(
-          flipGridAlongMinorDiagonal(originalGrid));
+          flipGridAlongMinorDiagonal(originalGrid), Player.O);
 
     stateFlippedAlongMinorDiagonalAndHorizontally =
       new TicTacToeStateWithSymmetricEquality(
-          flipGridHorizontally(flipGridAlongMinorDiagonal(originalGrid)));
-
-    emptyState = new TicTacToeStateWithSymmetricEquality();
+          flipGridHorizontally(flipGridAlongMinorDiagonal(originalGrid)),
+          Player.O);
   }
 
   @Test
@@ -130,7 +130,8 @@ public class TicTacToeStateWithSymmetricEqualityTest {
               TokenType.NONE, TokenType.NONE, TokenType.NONE,
               TokenType.O,    TokenType.X,    TokenType.NONE,
               TokenType.X,    TokenType.NONE, TokenType.NONE
-            }));
+            }),
+            Player.O);
 
     assertThat(originalState, not(equalTo(nonSymmetricalState)));
   }
@@ -200,7 +201,8 @@ public class TicTacToeStateWithSymmetricEqualityTest {
               TokenType.NONE, TokenType.NONE, TokenType.NONE,
               TokenType.O,    TokenType.X,    TokenType.NONE,
               TokenType.X,    TokenType.NONE, TokenType.NONE
-            }));
+            }),
+            Player.O);
 
     assertThat(
         new HashSet<>(originalState.getActions()),

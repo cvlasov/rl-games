@@ -2,6 +2,7 @@ package com.games.tictactoe;
 
 import com.games.general.Action;
 import com.games.general.State;
+import com.games.tictactoe.TicTacToeHelper.Player;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -26,12 +27,13 @@ public final class TicTacToeNormalState extends TicTacToeState {
   }
 
   @VisibleForTesting
-  TicTacToeNormalState(List<TokenType> g) {
+  TicTacToeNormalState(List<TokenType> g, Player next) {
     // TicTacToeState no-param constructor is automatically called, so reset
     this.actions = null;
     this.winner = null;
 
     grid = new ArrayList<>(g);
+    nextTurn = next;
     computeActions();
     isTerminalState();
   }

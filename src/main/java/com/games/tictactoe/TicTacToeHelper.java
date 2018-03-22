@@ -19,6 +19,11 @@ public final class TicTacToeHelper {
     SYMMETRIC_EQUALITY
   }
 
+  public enum Player {
+    X,
+    O
+  }
+
   /** Contents of a cell on the board. */
   public enum TokenType {
     X ("X"),

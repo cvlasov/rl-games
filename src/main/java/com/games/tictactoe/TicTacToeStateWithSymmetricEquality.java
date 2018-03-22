@@ -8,6 +8,7 @@ import static com.games.tictactoe.TicTacToeHelper.GRID_SIZE;
 
 import com.games.general.Action;
 import com.games.general.State;
+import com.games.tictactoe.TicTacToeHelper.Player;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 import com.google.common.annotations.VisibleForTesting;
 
@@ -33,6 +34,7 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
     this.winner = null;
 
     grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    nextTurn = Player.X;
     initialize();
   }
 
@@ -43,6 +45,7 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
     this.winner = null;
 
     grid = new ArrayList<>(oldState.grid);
+    nextTurn = oldState.nextTurn;
     initialize();
   }
 
@@ -55,16 +58,21 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
 
     grid = new ArrayList<>(oldState.grid);
     grid.set(action.index, action.tokenType);
+    switch (oldState.nextTurn) {
+      case X: nextTurn = Player.O; break;
+      case O: nextTurn = Player.X; break;
+    }
     initialize();
   }
 
   @VisibleForTesting
-  TicTacToeStateWithSymmetricEquality(List<TokenType> g) {
+  TicTacToeStateWithSymmetricEquality(List<TokenType> g, Player next) {
     // TicTacToeState no-param constructor is automatically called, so reset
     this.actions = null;
     this.winner = null;
 
     grid = new ArrayList<>(g);
+    nextTurn = next;
     initialize();
   }
 

@@ -8,9 +8,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import com.games.general.Action;
+import com.games.tictactoe.TicTacToeHelper.Player;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,16 +31,28 @@ public class TicTacToeNormalStateTest {
 	}
 
   @Test
-  public void testInequality() {
+  public void testInequalityWithDifferentGrids() {
     TicTacToeNormalState state1 = new TicTacToeNormalState(
         Arrays.asList(new TokenType[] {
           TokenType.X,    TokenType.NONE, TokenType.NONE,
           TokenType.NONE, TokenType.NONE, TokenType.NONE,
           TokenType.NONE, TokenType.NONE, TokenType.NONE
-        }));
+        }),
+        Player.X);
 		TicTacToeNormalState state2 = new TicTacToeNormalState();
     assertThat(state1, not(equalTo(state2)));
 	}
+
+  @Test
+  public void testInequalityWithDifferentNextTurns() {
+    TicTacToeNormalState state1 = new TicTacToeNormalState(
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE)),
+        Player.X);
+    TicTacToeNormalState state2 = new TicTacToeNormalState(
+        new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE)),
+        Player.O);
+    assertThat(state1, not(equalTo(state2)));
+  }
 
   @Test
 	public void testHashCodeEquality() {
@@ -53,7 +68,8 @@ public class TicTacToeNormalStateTest {
           TokenType.X,    TokenType.NONE, TokenType.NONE,
           TokenType.NONE, TokenType.NONE, TokenType.NONE,
           TokenType.NONE, TokenType.NONE, TokenType.NONE
-        }));
+        }),
+        Player.O);
 		TicTacToeNormalState state2 = new TicTacToeNormalState();
     assertThat(state1.hashCode(), not(equalTo(state2.hashCode())));
 	}
@@ -73,7 +89,8 @@ public class TicTacToeNormalStateTest {
           TokenType.O, TokenType.X, TokenType.X,
           TokenType.O, TokenType.X, TokenType.O,
           TokenType.X, TokenType.O, TokenType.X
-        }));
+        }),
+        Player.O);
 
     assertTrue(state.isTerminalState());
   }
@@ -93,7 +110,8 @@ public class TicTacToeNormalStateTest {
           TokenType.O,    TokenType.X,    TokenType.NONE,
           TokenType.NONE, TokenType.O,    TokenType.X,
           TokenType.X,    TokenType.NONE, TokenType.O
-        }));
+        }),
+        Player.X);
 
     assertTrue(state.isTerminalState());
   }
@@ -113,7 +131,8 @@ public class TicTacToeNormalStateTest {
           TokenType.O, TokenType.X, TokenType.X,
           TokenType.X, TokenType.O, TokenType.O,
           TokenType.X, TokenType.O, TokenType.X
-        }));
+        }),
+        Player.O);
 
     assertTrue(state.isTerminalState());
   }
@@ -133,7 +152,8 @@ public class TicTacToeNormalStateTest {
           TokenType.O,    TokenType.NONE, TokenType.NONE,
           TokenType.NONE, TokenType.NONE, TokenType.X,
           TokenType.NONE, TokenType.NONE, TokenType.NONE
-        }));
+        }),
+        Player.X);
 
     assertFalse(state.isTerminalState());
   }
@@ -180,7 +200,8 @@ public class TicTacToeNormalStateTest {
           TokenType.NONE, TokenType.X,    TokenType.NONE,
           TokenType.X,    TokenType.NONE, TokenType.O,
           TokenType.O,    TokenType.X,    TokenType.NONE
-        }));
+        }),
+        Player.O);
 
     Set<Action> expectedActions = new HashSet<>(Arrays.asList(new Action[] {
       new TicTacToeAction(0, TokenType.O),
@@ -207,7 +228,8 @@ public class TicTacToeNormalStateTest {
           TokenType.O, TokenType.X, TokenType.X,
           TokenType.O, TokenType.X, TokenType.O,
           TokenType.X, TokenType.O, TokenType.X
-        }));
+        }),
+        Player.O);
 
     Set<Action> expectedActions = new HashSet<>();
 

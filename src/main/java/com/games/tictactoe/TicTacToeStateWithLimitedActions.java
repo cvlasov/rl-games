@@ -8,6 +8,7 @@ import static com.games.tictactoe.TicTacToeHelper.flipGridVertically;
 
 import com.games.general.Action;
 import com.games.general.State;
+import com.games.tictactoe.TicTacToeHelper.Player;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 import com.google.common.annotations.VisibleForTesting;
 
@@ -39,12 +40,13 @@ public final class TicTacToeStateWithLimitedActions extends TicTacToeState {
   }
 
   @VisibleForTesting
-  TicTacToeStateWithLimitedActions(List<TokenType> g) {
+  TicTacToeStateWithLimitedActions(List<TokenType> g, Player next) {
     // TicTacToeState no-param constructor is automatically called, so reset
     this.actions = null;
     this.winner = null;
 
     grid = new ArrayList<>(g);
+    nextTurn = next;
     computeActions();
     isTerminalState();
   }
@@ -69,18 +71,7 @@ public final class TicTacToeStateWithLimitedActions extends TicTacToeState {
     // Actions are only computed once
     if (actions != null) return;
 
-    int diff = 0;  // X's turn if diff = 0, O's turn if diff = 1
-
-    for (TokenType t : grid) {
-      switch (t) {
-        case X:    diff += 1; break;
-        case O:    diff -= 1; break;
-        case NONE: break;
-      }
-    }
-
-    TokenType tokenType = diff == 0 ? TokenType.X : TokenType.O;
-
+    TokenType tokenType = (nextTurn == Player.X) ? TokenType.X : TokenType.O;
     List<Action> possibleActions = new ArrayList<>();
     Set<List<TokenType>> possibleNextStates = new HashSet<>();
 

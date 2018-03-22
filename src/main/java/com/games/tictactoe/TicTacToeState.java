@@ -4,6 +4,7 @@ import static com.games.tictactoe.TicTacToeHelper.GRID_SIZE;
 
 import com.games.general.Action;
 import com.games.general.State;
+import com.games.tictactoe.TicTacToeHelper.Player;
 import com.games.tictactoe.TicTacToeHelper.TokenType;
 import com.games.tictactoe.TicTacToeHelper.Winner;
 
@@ -28,6 +29,8 @@ public abstract class TicTacToeState implements State {
   /** List of possible actions to take from this state. */
   protected List<Action> actions = null;
 
+  protected Player nextTurn;
+
   /**
    * Winning token type (or draw) if this is a terminal state, otherwise
    * {@link TicTacToeHelper#Winner.GAME_NOT_OVER}. Null if
@@ -38,6 +41,7 @@ public abstract class TicTacToeState implements State {
   /** Creates a state with an empty grid. */
   protected TicTacToeState() {
     grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
+    nextTurn = Player.X;
     computeActions();
     isTerminalState();  // ignore result
   }
@@ -45,6 +49,7 @@ public abstract class TicTacToeState implements State {
   /** Creates a copy of the given state. */
   protected TicTacToeState(TicTacToeState oldState) {
     grid = new ArrayList<>(oldState.grid);
+    nextTurn = oldState.nextTurn;
     computeActions();
     isTerminalState();  // ignore result
   }
@@ -56,6 +61,10 @@ public abstract class TicTacToeState implements State {
   protected TicTacToeState(TicTacToeState oldState, TicTacToeAction action) {
     grid = new ArrayList<>(oldState.grid);
     grid.set(action.index, action.tokenType);
+    switch (oldState.nextTurn) {
+      case X: nextTurn = Player.O; break;
+      case O: nextTurn = Player.X; break;
+    }
     computeActions();
     isTerminalState();  // ignore result
   }
@@ -77,13 +86,10 @@ public abstract class TicTacToeState implements State {
 
     final TicTacToeState other = (TicTacToeState) o;
 
-    for (int i = 0 ; i < GRID_SIZE ; i++) {
-      if (this.grid.get(i) != other.grid.get(i)) {
-        return false;
-      }
-    }
-
-    return true;
+    return this.grid.equals(other.grid)
+           && this.actions.equals(other.actions)
+           && this.nextTurn == other.nextTurn
+           && this.winner == other.winner;
   }
 
   @Override
@@ -186,17 +192,7 @@ public abstract class TicTacToeState implements State {
     // Actions are only computed once
     if (actions != null) return;
 
-    int diff = 0; // X's turn if diff = 0, O's turn if diff = 1
-
-    for (TokenType t : grid) {
-      switch (t) {
-        case X:    diff += 1; break;
-        case O:    diff -= 1; break;
-        case NONE: break;
-      }
-    }
-
-    TokenType tokenType = diff == 0 ? TokenType.X : TokenType.O;
+    TokenType tokenType = (nextTurn == Player.X) ? TokenType.X : TokenType.O;
     actions = new ArrayList<>();
 
     for (int i = 0; i < GRID_SIZE ; i++) {
