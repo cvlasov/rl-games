@@ -74,18 +74,15 @@ public abstract class TicTacToeGame implements Game {
     boolean firstTurn = true;
     int winner = -1;
 
+    TicTacToeAction agent1Action = null;
+    TicTacToeState stateAfterAgent1 = null;
     TicTacToeAction agent2Action = null;
-    TicTacToeState stateAfterAgent2 = null;
-    int agent1Return;
+    TicTacToeState stateAfterAgent2 = state;  // initial state
 
     while (true) {
       // AGENT 1'S TURN
-      TicTacToeAction agent1Action =
-              (TicTacToeAction) agent1.chooseAction(state);
-      TicTacToeState stateAfterAgent1 =
-              (TicTacToeState) state.applyAction(agent1Action);
-
-      int agent2Return = Integer.MIN_VALUE;
+      agent1Action = (TicTacToeAction) agent1.chooseAction(stateAfterAgent2);
+      stateAfterAgent1 = (TicTacToeState) state.applyAction(agent1Action);
 
       // If Agent 1 just made the game end
       if (stateAfterAgent1.isTerminalState()) {
@@ -99,10 +96,9 @@ public abstract class TicTacToeGame implements Game {
       }
 
       firstTurn = false;
-      state = stateAfterAgent1;
 
       // AGENT 2'S TURN
-      agent2Action = (TicTacToeAction) agent2.chooseAction(state);
+      agent2Action = (TicTacToeAction) agent2.chooseAction(stateAfterAgent1);
       stateAfterAgent2 = (TicTacToeState) state.applyAction(agent2Action);
 
       // If Agent 2 just made the game end
@@ -113,8 +109,6 @@ public abstract class TicTacToeGame implements Game {
       } else {
         agent1.receiveReturn(GAME_IN_PROGRESS_RETURN);
       }
-
-      state = stateAfterAgent2;
     }
 
     return winner;
@@ -127,10 +121,11 @@ public abstract class TicTacToeGame implements Game {
   */
   @VisibleForTesting
   int gameOver(TicTacToeState terminalState) {
-    int winner = -1;
+    int winner = Integer.MIN_VALUE;
 
     switch (terminalState.getWinner()) {
       case GAME_NOT_OVER:
+        winner = -1;
         break;
       case DRAW:
         winner = 0;
