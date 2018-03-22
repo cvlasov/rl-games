@@ -82,7 +82,7 @@ public abstract class TicTacToeGame implements Game {
     while (true) {
       // AGENT 1'S TURN
       agent1Action = (TicTacToeAction) agent1.chooseAction(stateAfterAgent2);
-      stateAfterAgent1 = (TicTacToeState) state.applyAction(agent1Action);
+      stateAfterAgent1 = (TicTacToeState) stateAfterAgent2.applyAction(agent1Action);
 
       // If Agent 1 just made the game end
       if (stateAfterAgent1.isTerminalState()) {
@@ -99,7 +99,7 @@ public abstract class TicTacToeGame implements Game {
 
       // AGENT 2'S TURN
       agent2Action = (TicTacToeAction) agent2.chooseAction(stateAfterAgent1);
-      stateAfterAgent2 = (TicTacToeState) state.applyAction(agent2Action);
+      stateAfterAgent2 = (TicTacToeState) stateAfterAgent1.applyAction(agent2Action);
 
       // If Agent 2 just made the game end
       if (stateAfterAgent2.isTerminalState()) {
