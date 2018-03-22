@@ -1,20 +1,138 @@
-\documentclass[11pt,twoside,a4paper]{article}
+\documentclass[11pt,a4paper]{report}
+
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+
 \author{Catherine Vlasov}
 \title{3rd Year Project Report}
+\date{May 2018}
+
 \begin{document}
-\maketitle
-\section{What I Learned}
+
+\makeatletter
+	\begin{titlepage}
+		\vspace*{\fill}
+		\begin{center}
+			{\huge \bfseries \@title }
+			\\[4ex]
+			{\LARGE  \@author}
+			\\[2ex]
+			{\large \@date}
+			\\[50ex]
+			\includegraphics[width=30mm]{oxlogo.png}
+		\end{center}
+		\vspace*{\fill}
+	\end{titlepage}
+\makeatother
+
+\begin{abstract}
+This is my abstract
+\end{abstract}
+
+\tableofcontents
+
+
+%-----------------------
+\chapter{Introduction}
+
+
+%-----------------------
+\chapter{Background}
+
+
+\section{Reinforcement Learning}
+
+
+\section{Learning Algorithms}
+
+
+\subsection{Monte Carlo Learning}
+
+
+%-----------------------------------------
+\chapter{Design \& Implementation}
+
+
+\section{Overview} % including a UML diagram
+
+
+\section{Agents}
+
+
+\section{Tic-Tac-Toe}
+
+\subsection{Rules}
+
+\subsection{Implementation Details}
+
+\subsection{Breaking Symmetries}
+% 1. Limiting Available Actions
+% 2. Changing Definition of Equality
+
+
+\section{Chung Toi}
+
+\subsection{Rules} % including an example game board
+
+\subsection{Implementation Details}
+
+\subsection{Breaking Symmetries} % explanation of why I didn’t bother
+
+
+%------------------
+\chapter{Results}
+
+
+\section{Overview}
+
+
+\section{Monte Carlo Learning Parameter}
+% - Tic-Tac-Toe win rate graph for each value of alpha from 0.01 to 0.99
+% - zoomed in graph for the region around global max. with more games per value
+% - same graphs for both implementations of symmetry-breaking
+% - analysis
+
+
+\section{Policies} % ???
+% - pick interesting examples and plot the policies vs. number of games ???
+
+
+\section{Time}
+% - discussion of time complexity
+
+
+\section{Win/Learning Rate}
+% - plot all three Tic-Tac-Toe types on the same graph
+
+
+
+%-------------------
+\chapter{Analysis} % or Discussion
+
+
+
+%-----------------------
+\chapter{Conclusion}
+
+
+\section{Future Work}
+
+
+\section{Personal Reflections}
+
 This has been a really great learning experience, not only in terms of discovering the field of reinforcement learning and its applications, but also in terms of gaining experience with building up a large, complex programming project from scratch using a variety of technical tools.
 
 When I was in high school, I designed and implemented the classic board game Nine Men’s Morris where a user plays against an algorithm I wrote. My plan for the project was to ask my friends and family to play my game and to store the moves made in each game so that I could build up a database of sequences of moves and outcomes of the game. I hoped to somehow compute which moves were the best and get my algorithm to learn which moves made winning the most likely. Little did I know, I wanted to invent RL from scratch – unaware of its existence or of the amount of research in the field. Several years later, I am delighted to have had the chance to work on a similar project, but this time on a deeper level using well-known computational algorithms.
 
 When I started working on this project, I decided to treat it as an opportunity to develop many skills that are critical for a career in software engineering:
+
 \begin{itemize}
-\item[-] Writing clean, maintainable, well-documented code
-\item[-]Designing and implementing tests for my code
-\item[-]Using a build tool to manage dependencies between packages in my project as well as with external libraries
-\item[-]Using version control effectively
+	\item[-] Writing clean, maintainable, well-documented code
+	\item[-]Designing and implementing tests for my code
+	\item[-]Using a build tool to manage dependencies between packages in my project as well as with external libraries
+	\item[-]Using version control effectively
 \end{itemize}
+
 I tested the methods in my API using a unit-testing framework for Java called JUnit. I also used a testing framework for Java called Mockito – this allowed me to verify the behaviour of objects with external dependencies by creating “mock objects” for theses dependencies, which mimic real objects but do so in a particular way that I can specify.
 
 In order to save my experiment results in a format that would facilitate the creation of graphs, I used opencsv, a CSV parser library for Java.
@@ -22,4 +140,12 @@ In order to save my experiment results in a format that would facilitate the cre
 To manage my project’s dependencies, I used a build tool developed by Google called Bazel and I used Git for version control.
 
 Overall, I really enjoyed learning about RL algorithms and exploring their applications and success rates, all while developing strong programming skills that will help me throughout my career.
+
+
+%--------------------------------
+\chapter{Acknowledgements}
+
+Thanks for reading.
+
+
 \end{document}
