@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 java_test(
-  name = "monte_carlo_get_best_action",
+  name = "montecarlo_get_best_action",
   size = "small",
   srcs = ["MonteCarloAgentGetBestActionTest.java"],
   test_class = "com.games.agents.MonteCarloAgentGetBestActionTest",
@@ -15,7 +15,7 @@ java_test(
 )
 
 java_test(
-  name = "monte_carlo_compute_cdf",
+  name = "montecarlo_compute_cdf",
   size = "small",
   srcs = ["MonteCarloAgentComputeCDFTest.java"],
   test_class = "com.games.agents.MonteCarloAgentComputeCDFTest",
@@ -28,7 +28,7 @@ java_test(
 )
 
 java_test(
-  name = "monte_carlo_episode_states",
+  name = "montecarlo_episode_states",
   size = "small",
   srcs = ["MonteCarloAgentEpisodeStatesTest.java"],
   test_class = "com.games.agents.MonteCarloAgentEpisodeStatesTest",
@@ -42,7 +42,7 @@ java_test(
 )
 
 java_test(
-  name = "monte_carlo_policy_evaluation",
+  name = "montecarlo_policy_evaluation",
   size = "small",
   srcs = ["MonteCarloAgentPolicyEvaluationTest.java"],
   test_class = "com.games.agents.MonteCarloAgentPolicyEvaluationTest",
@@ -55,7 +55,7 @@ java_test(
 )
 
 java_test(
-  name = "monte_carlo_state_action_counts",
+  name = "montecarlo_state_action_counts",
   size = "small",
   srcs = ["MonteCarloAgentStateActionCountsTest.java"],
   test_class = "com.games.agents.MonteCarloAgentStateActionCountsTest",
@@ -69,7 +69,7 @@ java_test(
 )
 
 java_test(
-  name = "monte_carlo_update_policy",
+  name = "montecarlo_update_policy",
   size = "small",
   srcs = ["MonteCarloAgentUpdatePolicyTest.java"],
   test_class = "com.games.agents.MonteCarloAgentUpdatePolicyTest",

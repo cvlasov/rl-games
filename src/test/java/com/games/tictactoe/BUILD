@@ -13,7 +13,7 @@ java_test(
 )
 
 java_test(
-  name = "limitedactionsstate",
+  name = "limited_actions_state",
   size = "small",
   srcs = ["TicTacToeStateWithLimitedActionsTest.java"],
   test_class = "com.games.tictactoe.TicTacToeStateWithLimitedActionsTest",
@@ -25,7 +25,7 @@ java_test(
 )
 
 java_test(
-  name = "normalgame",
+  name = "normal_game",
   size = "small",
   srcs = ["TicTacToeNormalGameTest.java"],
   test_class = "com.games.tictactoe.TicTacToeNormalGameTest",
@@ -39,7 +39,7 @@ java_test(
 )
 
 java_test(
-  name = "normalstate",
+  name = "normal_state",
   size = "small",
   srcs = ["TicTacToeNormalStateTest.java"],
   test_class = "com.games.tictactoe.TicTacToeNormalStateTest",
@@ -51,7 +51,7 @@ java_test(
 )
 
 java_test(
-  name = "symmetricequalitystate",
+  name = "symmetric_equality_state",
   size = "small",
   srcs = ["TicTacToeStateWithSymmetricEqualityTest.java"],
   test_class = "com.games.tictactoe.TicTacToeStateWithSymmetricEqualityTest",
