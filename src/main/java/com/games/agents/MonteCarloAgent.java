@@ -224,7 +224,7 @@ public class MonteCarloAgent implements Agent {
   }
 
   @VisibleForTesting
-  Map<State, Map<Action, Double>> getPolicy() {
+  public Map<State, Map<Action, Double>> getPolicy() {
     return PI;
   }
 
