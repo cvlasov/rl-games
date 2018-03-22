@@ -39,17 +39,6 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
   }
 
   private TicTacToeStateWithSymmetricEquality(
-      TicTacToeStateWithSymmetricEquality oldState) {
-    // TicTacToeState no-param constructor is automatically called, so reset
-    this.actions = null;
-    this.winner = null;
-
-    grid = new ArrayList<>(oldState.grid);
-    nextTurn = oldState.nextTurn;
-    initialize();
-  }
-
-  private TicTacToeStateWithSymmetricEquality(
       TicTacToeStateWithSymmetricEquality oldState,
       TicTacToeAction action) {
     // TicTacToeState no-param constructor is automatically called, so reset
@@ -79,11 +68,6 @@ public final class TicTacToeStateWithSymmetricEquality extends TicTacToeState {
   @Override  // from interface State
   public State applyAction(Action a) {
     return new TicTacToeStateWithSymmetricEquality(this, (TicTacToeAction) a);
-  }
-
-  @Override  // from interface State
-  public State copy() {
-    return new TicTacToeStateWithSymmetricEquality(this);
   }
 
   private void initialize() {

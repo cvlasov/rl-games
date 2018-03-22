@@ -50,14 +50,6 @@ public class ChungToiState implements State {
     isTerminalState();  // ignore result
   }
 
-  /** Creates a copy of the given state. */
-  private ChungToiState(ChungToiState oldState) {
-    grid = new ArrayList<>(oldState.grid);
-    nextTurn = oldState.nextTurn;
-    computeActions();
-    isTerminalState();  // ignore result
-  }
-
   /**
    * Creates the state that results from applying the given "move" action at
    * the given state.
@@ -180,11 +172,6 @@ public class ChungToiState implements State {
     } else {
       return null;
     }
-  }
-
-  @Override
-  public State copy() {
-    return new ChungToiState(this);
   }
 
   @Override

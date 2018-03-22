@@ -16,10 +16,6 @@ public final class TicTacToeNormalState extends TicTacToeState {
     super();
   }
 
-  private TicTacToeNormalState(TicTacToeNormalState oldState) {
-    super(oldState);
-  }
-
   private TicTacToeNormalState(
       TicTacToeNormalState oldState,
       TicTacToeAction action) {
@@ -41,10 +37,5 @@ public final class TicTacToeNormalState extends TicTacToeState {
   @Override  // from interface State
   public State applyAction(Action a) {
     return new TicTacToeNormalState(this, (TicTacToeAction) a);
-  }
-
-  @Override  // from interface State
-  public State copy() {
-    return new TicTacToeNormalState(this);
   }
 }

@@ -29,11 +29,6 @@ public final class TicTacToeStateWithLimitedActions extends TicTacToeState {
   }
 
   private TicTacToeStateWithLimitedActions(
-      TicTacToeStateWithLimitedActions oldState) {
-    super(oldState);
-  }
-
-  private TicTacToeStateWithLimitedActions(
       TicTacToeStateWithLimitedActions oldState,
       TicTacToeAction action) {
     super(oldState, action);
@@ -54,11 +49,6 @@ public final class TicTacToeStateWithLimitedActions extends TicTacToeState {
   @Override  // from interface State
   public State applyAction(Action a) {
     return new TicTacToeStateWithLimitedActions(this, (TicTacToeAction) a);
-  }
-
-  @Override  // from interface State
-  public State copy() {
-    return new TicTacToeStateWithLimitedActions(this);
   }
 
   /**

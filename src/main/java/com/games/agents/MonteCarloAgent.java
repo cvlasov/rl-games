@@ -170,7 +170,7 @@ public class MonteCarloAgent implements Agent {
       System.out.println();
     }
 
-    lastState = state.copy();
+    lastState = state;
     return lastAction;
   }
 

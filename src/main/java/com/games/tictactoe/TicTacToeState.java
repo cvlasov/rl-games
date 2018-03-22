@@ -46,14 +46,6 @@ public abstract class TicTacToeState implements State {
     isTerminalState();  // ignore result
   }
 
-  /** Creates a copy of the given state. */
-  protected TicTacToeState(TicTacToeState oldState) {
-    grid = new ArrayList<>(oldState.grid);
-    nextTurn = oldState.nextTurn;
-    computeActions();
-    isTerminalState();  // ignore result
-  }
-
   /**
    * Creates the state that results from applying the given action at the given
    * state.
