@@ -84,7 +84,7 @@ public final class TicTacToeStateWithLimitedActions extends TicTacToeState {
       if (grid.get(i) != TokenType.NONE) continue;
 
       List<TokenType> nextGrid = new ArrayList<>(this.grid);
-      nextGrid.set(action.index, action.tokenType);
+      nextGrid.set(i, tokenType);
 
       List<TokenType> verticalFlip = flipGridVertically(nextGrid);
       List<TokenType> horizontalFlip = flipGridHorizontally(nextGrid);
