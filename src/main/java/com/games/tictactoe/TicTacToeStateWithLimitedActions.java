@@ -63,41 +63,40 @@ public final class TicTacToeStateWithLimitedActions extends TicTacToeState {
 
     TokenType tokenType = (nextTurn == Player.X) ? TokenType.X : TokenType.O;
     List<Action> possibleActions = new ArrayList<>();
-    Set<List<TokenType>> possibleNextStates = new HashSet<>();
+    Set<List<TokenType>> possibleNextGrids = new HashSet<>();
 
     for (int i = 0; i < GRID_SIZE ; i++) {
       if (grid.get(i) != TokenType.NONE) continue;
 
-      TicTacToeAction action = new TicTacToeAction(i, tokenType);
-      List<TokenType> nextGridState = new ArrayList<>(this.grid);
-      nextGridState.set(action.index, action.tokenType);
+      List<TokenType> nextGrid = new ArrayList<>(this.grid);
+      nextGrid.set(action.index, action.tokenType);
 
-      List<TokenType> verticalFlip = flipGridVertically(nextGridState);
-      List<TokenType> horizontalFlip = flipGridHorizontally(nextGridState);
+      List<TokenType> verticalFlip = flipGridVertically(nextGrid);
+      List<TokenType> horizontalFlip = flipGridHorizontally(nextGrid);
       List<TokenType> verticalAndHorizontalFlip =
-          flipGridHorizontally(flipGridVertically(nextGridState));
+          flipGridHorizontally(flipGridVertically(nextGrid));
       List<TokenType> majorDiagonalFlip =
-          flipGridAlongMajorDiagonal(nextGridState);
+          flipGridAlongMajorDiagonal(nextGrid);
       List<TokenType> majorDiagonalAndHorizontalFlip =
-          flipGridHorizontally(flipGridAlongMajorDiagonal(nextGridState));
+          flipGridHorizontally(flipGridAlongMajorDiagonal(nextGrid));
       List<TokenType> minorDiagonalFlip =
-          flipGridAlongMinorDiagonal(nextGridState);
+          flipGridAlongMinorDiagonal(nextGrid);
       List<TokenType> minorDiagonalAndHorizontalFlip =
-          flipGridHorizontally(flipGridAlongMinorDiagonal(nextGridState));
+          flipGridHorizontally(flipGridAlongMinorDiagonal(nextGrid));
 
-      if (possibleNextStates.contains(nextGridState)
-          || possibleNextStates.contains(verticalFlip)
-          || possibleNextStates.contains(horizontalFlip)
-          || possibleNextStates.contains(verticalAndHorizontalFlip)
-          || possibleNextStates.contains(majorDiagonalFlip)
-          || possibleNextStates.contains(majorDiagonalAndHorizontalFlip)
-          || possibleNextStates.contains(minorDiagonalFlip)
-          || possibleNextStates.contains(minorDiagonalAndHorizontalFlip)) {
+      if (possibleNextGrids.contains(nextGrid)
+          || possibleNextGrids.contains(verticalFlip)
+          || possibleNextGrids.contains(horizontalFlip)
+          || possibleNextGrids.contains(verticalAndHorizontalFlip)
+          || possibleNextGrids.contains(majorDiagonalFlip)
+          || possibleNextGrids.contains(majorDiagonalAndHorizontalFlip)
+          || possibleNextGrids.contains(minorDiagonalFlip)
+          || possibleNextGrids.contains(minorDiagonalAndHorizontalFlip)) {
         continue;
       }
 
-      possibleActions.add(action);
-      possibleNextStates.add(nextGridState);
+      possibleActions.add(new TicTacToeAction(i, tokenType));
+      possibleNextGrids.add(nextGrid);
     }
 
     actions = possibleActions;
