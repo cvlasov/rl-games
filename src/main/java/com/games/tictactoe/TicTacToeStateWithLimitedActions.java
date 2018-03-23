@@ -20,20 +20,29 @@ import java.util.Set;
 /**
  * State of a game of Tic-Tac-Toe where the list of possible actions does not
  * include any two actions that result in states that are symmetrical along the
- * vertical or horizontal axis or along either diagonal.
+ * vertical axis, horizontal axis, major diagonal, minor diagonal, or a
+ * combination of these.
  */
 public final class TicTacToeStateWithLimitedActions extends TicTacToeState {
 
+  // CONSTRUCTORS
+
+  /** Creates a state with an empty grid. */
   public TicTacToeStateWithLimitedActions() {
     super();
   }
 
+  /**
+   * Creates the state that results from applying the given action at the given
+   * state.
+   */
   private TicTacToeStateWithLimitedActions(
       TicTacToeStateWithLimitedActions oldState,
       TicTacToeAction action) {
     super(oldState, action);
   }
 
+  /** Creates a state with the given grid and the given next player. */
   @VisibleForTesting
   TicTacToeStateWithLimitedActions(List<TokenType> g, Player next) {
     // TicTacToeState no-param constructor is automatically called, so reset
@@ -46,10 +55,16 @@ public final class TicTacToeStateWithLimitedActions extends TicTacToeState {
     isTerminalState();
   }
 
-  @Override  // from interface State
+
+  // IMPLEMENTATION OF STATE INTERFACE METHOD
+
+  @Override
   public State applyAction(Action a) {
     return new TicTacToeStateWithLimitedActions(this, (TicTacToeAction) a);
   }
+
+
+  // HELPER METHOD
 
   /**
    * Populates {@link #actions} with all actions that can be taken from this

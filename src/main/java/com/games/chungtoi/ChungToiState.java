@@ -31,6 +31,7 @@ public class ChungToiState implements State {
   /** List of possible actions to take from this state. */
   private List<Action> actions;
 
+  /** Player whose turn it is to move from this state. */
   private Player nextTurn;
 
   /**
@@ -43,6 +44,7 @@ public class ChungToiState implements State {
 
   // CONSTRUCTORS
 
+  /** Creates a state with an empty grid. */
   public ChungToiState() {
     grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
     nextTurn = Player.X;
@@ -86,10 +88,12 @@ public class ChungToiState implements State {
    */
   private ChungToiState(ChungToiState oldState, ChungToiPassAction action) {
     grid = new ArrayList<>(oldState.grid);
+
     switch (oldState.nextTurn) {
       case X: nextTurn = Player.O; break;
       case O: nextTurn = Player.X; break;
     }
+
     computeActions();
     isTerminalState();  // ignore result
   }
@@ -101,20 +105,23 @@ public class ChungToiState implements State {
   private ChungToiState(ChungToiState oldState, ChungToiPutAction action) {
     grid = new ArrayList<>(oldState.grid);
     grid.set(action.index, action.tokenType);
+
     switch (oldState.nextTurn) {
       case X: nextTurn = Player.O; break;
       case O: nextTurn = Player.X; break;
     }
+
     computeActions();
     isTerminalState();  // ignore result
   }
 
+  /** Creates a state with the given grid and the given next player. */
   @VisibleForTesting
   ChungToiState(List<TokenType> g, Player next) {
     grid = new ArrayList<>(g);
     nextTurn = next;
     computeActions();
-    isTerminalState();
+    isTerminalState();  // ignore result
   }
 
 
@@ -252,8 +259,13 @@ public class ChungToiState implements State {
     return winner;
   }
 
+
   // PRIVATE HELPER METHODS
 
+  /**
+   * Populates {@link #actions} with all actions that can be taken from this
+   * state.
+   */
   private void computeActions() {
     // Actions are only computed once
     if (actions != null) return;
@@ -297,19 +309,37 @@ public class ChungToiState implements State {
     // All pieces have been put down, so check which pieces can be moved/rotated
     for (int i = 0; i < GRID_SIZE ; i++) {
       switch (grid.get(i)) {
-        case X_NORMAL:    // fall through
-        case X_DIAGONAL:  if (nextTurn == Player.X) getActionsForIndex(i); break;
-        case O_NORMAL:    // fall through
-        case O_DIAGONAL:  if (nextTurn == Player.O) getActionsForIndex(i); break;
+        case X_NORMAL:
+          // fall through
+
+        case X_DIAGONAL:
+          if (nextTurn == Player.X) {
+            getActionsForIndex(i);
+          }
+          break;
+
+        case O_NORMAL:
+          // fall through
+
+        case O_DIAGONAL:
+          if (nextTurn == Player.O) {
+            getActionsForIndex(i);
+          }
+          break;
+
         case NONE: break;
       }
     }
   }
 
+  /**
+   * Adds to {@link #actions} all "move" actions that are posssible from this
+   * state.
+   */
   private void getActionsForIndex(int i) {
     actions.add(new ChungToiMoveAction(i, i, true));
-    // don't add the equivalent action with "false" because this means doing
-    // nothing, which is the purpose of the "pass" action
+    /* Don't add the equivalent action with "false" because this means doing
+       nothing, which is the purpose of the "pass" action */
 
     TokenType tokenType = grid.get(i);
     List<Integer> endIndices = new ArrayList<>();

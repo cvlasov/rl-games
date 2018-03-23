@@ -29,6 +29,7 @@ public abstract class TicTacToeState implements State {
   /** List of possible actions to take from this state. */
   protected List<Action> actions = null;
 
+  /** Player whose turn it is to move from this state. */
   protected Player nextTurn;
 
   /**
@@ -38,7 +39,9 @@ public abstract class TicTacToeState implements State {
    */
   protected Winner winner = null;
 
-  /** Creates a state with an empty grid. */
+
+  // CONSTRUCTORS
+
   protected TicTacToeState() {
     grid = new ArrayList<>(Collections.nCopies(GRID_SIZE, TokenType.NONE));
     nextTurn = Player.X;
@@ -46,10 +49,6 @@ public abstract class TicTacToeState implements State {
     isTerminalState();  // ignore result
   }
 
-  /**
-   * Creates the state that results from applying the given action at the given
-   * state.
-   */
   protected TicTacToeState(TicTacToeState oldState, TicTacToeAction action) {
     grid = new ArrayList<>(oldState.grid);
     grid.set(action.index, action.tokenType);
@@ -61,10 +60,8 @@ public abstract class TicTacToeState implements State {
     isTerminalState();  // ignore result
   }
 
-  @Override
-  public List<Action> getActions() {
-    return actions;
-  }
+
+  // OVERRITTEN METHODS FROM OBJECT
 
   @Override
   public boolean equals(Object o) {
@@ -89,13 +86,16 @@ public abstract class TicTacToeState implements State {
     return TicTacToeHelper.standardHashCode(this.grid);
   }
 
+
+  // IMPLEMENTATIONS OF STATE INTERFACE METHODS
+
   @Override
-  public void print() {
-    TicTacToeHelper.print(this.grid);
+  public List<Action> getActions() {
+    return actions;
   }
 
   /**
-   * Returns whether or not this is a terminal state
+   * Returns whether or not this is a terminal state.
    * <p>
    * If it is a terminal state, updates {@link #winner} accordingly.
    *
@@ -165,6 +165,11 @@ public abstract class TicTacToeState implements State {
     return false;
   }
 
+  @Override
+  public void print() {
+    TicTacToeHelper.print(this.grid);
+  }
+
   /**
    * Returns the winner of the game, if any.
    * <p>
@@ -175,6 +180,9 @@ public abstract class TicTacToeState implements State {
   Winner getWinner() {
     return winner;
   }
+
+
+  // HELPER METHOD
 
   /**
    * Populates {@link #actions} with all actions that can be taken from this
