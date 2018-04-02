@@ -48,35 +48,139 @@ This is my abstract
 
 \subsection{Monte Carlo Learning}
 
+\label{sec:monteCarloPseudocode}
+
+
+
 
 %-----------------------------------------
 \chapter{Design \& Implementation}
 
+This section describes the implementations of Tic-Tac-Toe and Chung Toi as well as the game-playing agents used in this project's experiments. The source code is not provided in this report, but is available upon request.
+
 
 \section{Overview} % including a UML diagram
+
+The project is built in a modular way, using an object-oriented style. All actions, agents, games, and states implement general interfaces, called \emph{Action}, \emph{Agent}, \emph{Game}, and \emph{State} respectively, that serve as Facades for the complex implementations.
+
+The \emph{Game} interface has a method \emph{play()} that simulates a single game. This is where the agents are asked to choose actions, receive returns, and complete other tasks, depending on the specific game. Agents do not distinguish between different games and only use methods defined in the general interfaces, which means that the \emph{MonteCarloAgent} class, for example, can be used to play both Tic-Tac-Toe and Chung Toi. This modularity provides a nice separation of concerns that enables simpler testing and debugging.
 
 
 \section{Agents}
 
+As part of this project, two agents were implemented: \emph{RandomAgent} and \emph{MonteCarloAgent}. 
+
+\emph{MonteCarloAgent} implements the $\epsilon$-soft on-policy Monte Carlo control algorithm. In its \emph{chooseAction(State s)} method, it chooses an action according to its policy for states it has encountered in previous games, and randomly otherwise. In its \emph{gameOver()}, method it calls two private helper methods \emph{policyEvaluation()} and \emph{policyImprovement()} that update $Q$ and $\pi$, respectively, as described in section \ref{sec:monteCarloPseudocode}. Hash maps are used to store $\pi$ and $Q$ for constant time access and insertion.
+
+As its name suggests, \emph{RandomAgent} randomly selects an action from the list of available actions at any given state. In total, the logic for this agent is equivalent to one line of code and this agent is only used for training and benchmarking purposes.
+
 
 \section{Tic-Tac-Toe}
 
+The first game used in this project is Tic-Tac-Toe. It was chosen because it has a small state space (less than $3^9 = 19,683$ states) and it is a conceptually simple game that most people are familiar with.
+
+
 \subsection{Rules}
+
+Although this is a widely-known game, the rules are still included here for reference and clarity.
+
+First, one of the two players is randomly selected to use \textbf{X} tokens (the other player uses \textbf{O} tokens). From now on, these players are referred to as the ``X-player'' and ``O-player'', respectively. The game then consists of the two players alternately placing their tokens in empty spaces on a 3x3 grid, starting with the X-player. Figure \ref{tic-tac-toe-grid-example} is an example of a possible state of the grid.
+
+% Not sure if this is necessary
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=50mm]{tictactoe_grid_example.png}
+		\caption{Example of a Tic-Tac-Toe grid\label{tic-tac-toe-grid-example}}
+	\end{center}
+\end{figure}
+
+The game has three possible endings:
+
+\begin{itemize}
+	\item \textbf{X-player wins}: three \textbf{X} tokens form a horizontal, vertical, or diagonal row
+	\item \textbf{O-player wins}: three \textbf{O} tokens form a horizontal, vertical, or diagonal row
+	\item \textbf{Draw}: the grid is filled and neither player has won
+\end{itemize}
+
 
 \subsection{Implementation Details}
 
-\subsection{Breaking Symmetries}
-% 1. Limiting Available Actions
-% 2. Changing Definition of Equality
+The aim of this project is to investigate the effect of eliminating a game's state symmetries on the Monte Carlo algorithm's learning rate and optimal learning parameters. In the game of Tic-Tac-Toe, a state can be symmetrical with up to seven other states as result of flipping it in the following ways:
+
+\begin{itemize}
+	\item horizontal axis
+	\item vertical axis
+	\item horizontal axis and then vertical axis
+	\item major diagonal (i.e. top left to bottom right)
+	\item major diagonal and then horizontal axis
+	\item minor diagonal (i.e. top right to bottom left)
+	\item minor diagonal and then horizontal axis
+\end{itemize}
+
+Of course, for some states, the result of some of these flips are the same, which is why a state might be symmetrical with strictly less than seven other states.
+
+Thus, Tic-Tac-Toe was implemented in three ways:
+
+\begin{itemize}
+
+	\item \textbf{``Normal''}:
+This version does not break any symmetry and was used as a baseline.
+
+	\item \textbf{``Limited Actions''}:
+This version breaks the symmetry between states by limiting the actions available from each state such that no two actions result in symmetrical states.
+
+	\item \textbf{``Symmetric Equality''}: 
+This version breaks the symmetry between states by considering two state instances to be equal (i.e. to represent the same state) if they are symmetrical.
+
+\end{itemize}
+
+An interesting result of the Limited Actions implementation is that it slightly alters the way the game is played. Suppose a \emph{RandomAgent} is asked to select a move from the game's initial state (i.e. empty grid). In the Normal implementation, there are nine possible actions and in the Limited Actions implementation, there are only three possible actions: putting an \textbf{X} token in a corner, in the middle of the grid, and in the middle of one of the sides. To give a specific example of how this changes the game, notice that the probability of the agent choosing the action that involves placing their \textbf{X} token in the middle of the grid is $\frac{1}{9}$ in the Normal implementation and $\frac{1}{3}$ in the Limited Actions implementation. Thus, the agent will end up choosing this action three times as frequently in the latter case. However, this effect is ignored for the purposes of this project because in the limit of infinitely many games, the \emph{MonteCarloAgent} will encounter all states and choose all possible moves an equal number of times, thus computing an accurate expected return for each action.
+
+Implementing the desired behaviour for the Symmetric Equality version was not as simple as initially expected. Overriding the \emph{equals()} method inherited from Java's \emph{Object} class was straightforward. However, overriding the inherited \emph{hashCode()} method was tricky. A Java \emph{HashMap} considers two keys to be distinct if their \emph{hashCode()} methods produce different results or if they produce the same result and their \emph{equals()} methods produce different results. Thus, it was crucial for the \emph{hashCode()} method to produce exactly the same result for symmetrical states. This was done by internally converting each state to a canonical form in such a way that symmetrical states have the same canonical form. Thus, % FINISH SENTENCE
+
+% defining a function that computes a unique ID for each state
+
+The idea behind the Limited Actions implementation is that it is expected to speed up the \emph{MonteCarloAgent}'s learning since only a fraction of the states will be reachable. Thus, after a fixed number of games, each possible state will be encountered more often than in the Normal implementation and so the expected return for each state will be more accurate. On the other hand, the Symmetric Equality implementation is expected speed up learning by allowing the \emph{MonteCarloAgent} to combine its learning from symmetric states therefore increasing the accuracy of its expected returns. In both cases, the agent's policy and action-value function will be smaller, which reduces the agent's memory requirements.
 
 
 \section{Chung Toi}
 
-\subsection{Rules} % including an example game board
+The second game used is in the project is Chung Toi,  a more complex version of Tic-Tac-Toe that has been studied in the context of reinforcement learning before. Its state space is larger than that of Tic-Tac-Toe (i.e. less than $5^9 = 1,953,125$ states) which leads to interesting results.
+
+
+\subsection{Rules}
+
+The main idea behind Chung Toi is the same as that behind Tic-Tac-Toe in the sense that the game is played on a 3x3 grid and each player's goal is to get three of their pieces in a row. However, that is the entire extent of their overlap and although they may seem similar, finding a good strategy for Chung Toi is not at all intuitive.
+
+The game is played as follows: first, one of the two players is randomly selected to use red tokens (the other player uses white tokens). From now on, these players are referred to as the ``red player'' and ``white player'', respectively. Each player has three tokens at their disposal and each token can be used in two possible orientations, as shown in Figure \ref{chung-toi-tokens}.
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=40mm]{chung_toi_tokens.png}
+		\caption[Chung Toi tokens]{Red and white Chung Toi tokens in both possible orientations}\label{chung-toi-tokens}
+	\end{center}
+\end{figure}
+
+The game then consists of two phases:
+
+\begin{itemize}
+	\item Phase 1: 
+	\item Phase 2:
+\end{itemize}
+
+Figure \ref{chung-toi-grid-example} is an example of a possible state of the grid.
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=50mm]{chung_toi_grid_example.png}
+		\caption{Example of a Chung Toi grid\label{chung-toi-grid-example}}
+	\end{center}
+\end{figure}
+
 
 \subsection{Implementation Details}
 
-\subsection{Breaking Symmetries} % explanation of why I didn’t bother
+% Explanation of why I didn’t bother with breaking symmetries
 
 
 %------------------
@@ -127,10 +231,10 @@ When I was in high school, I designed and implemented the classic board game Nin
 When I started working on this project, I decided to treat it as an opportunity to develop many skills that are critical for a career in software engineering:
 
 \begin{itemize}
-	\item[-] Writing clean, maintainable, well-documented code
-	\item[-]Designing and implementing tests for my code
-	\item[-]Using a build tool to manage dependencies between packages in my project as well as with external libraries
-	\item[-]Using version control effectively
+	\item Writing clean, maintainable, well-documented code
+	\item Designing and implementing tests for my code
+	\item Using a build tool to manage dependencies between packages in my project as well as with external libraries
+	\item Using version control effectively
 \end{itemize}
 
 I tested the methods in my API using a unit-testing framework for Java called JUnit. I also used a testing framework for Java called Mockito – this allowed me to verify the behaviour of objects with external dependencies by creating “mock objects” for theses dependencies, which mimic real objects but do so in a particular way that I can specify.
