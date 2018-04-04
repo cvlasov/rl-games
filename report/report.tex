@@ -102,8 +102,11 @@ The game has three possible endings:
 	\item \textbf{Draw}: the grid is filled and neither player has won
 \end{itemize}
 
+In all Tic-Tac-Toe implementations described in Section \ref{sec:TicTacToeImplementation}, agents receive a return of 1 when they win, -1 when they lose, and 0 when the game ends in a draw or the game is not yet over.
 
-\subsection{Implementation Details}
+
+\subsection{Implementation}
+\label{sec:TicTacToeImplementation}
 
 The aim of this project is to investigate the effect of eliminating a game's state symmetries on the Monte Carlo algorithm's learning rate and optimal learning parameters. In the game of Tic-Tac-Toe, a state can be symmetrical with up to seven other states as result of flipping it in the following ways:
 
@@ -117,9 +120,9 @@ The aim of this project is to investigate the effect of eliminating a game's sta
 	\item minor diagonal and then horizontal axis
 \end{itemize}
 
-Of course, for some states, the result of some of these flips are the same, which is why a state might be symmetrical with strictly less than seven other states.
+Of course, for some states, the result of some of these flips are the same, which is why a state might have strictly less than seven other symmetrical states.
 
-Thus, Tic-Tac-Toe was implemented in three ways:
+With this goal in mind, Tic-Tac-Toe was implemented in three ways:
 
 \begin{itemize}
 
@@ -130,15 +133,15 @@ This version does not break any symmetry and was used as a baseline.
 This version breaks the symmetry between states by limiting the actions available from each state such that no two actions result in symmetrical states.
 
 	\item \textbf{``Symmetric Equality''}: 
-This version breaks the symmetry between states by considering two state instances to be equal (i.e. to represent the same state) if they are symmetrical.
+This version breaks the symmetry between states by considering two objects representing states to be ``equal'' if they are symmetrical.
 
 \end{itemize}
 
-An interesting result of the Limited Actions implementation is that it slightly alters the way the game is played. Suppose a \emph{RandomAgent} is asked to select a move from the game's initial state (i.e. empty grid). In the Normal implementation, there are nine possible actions and in the Limited Actions implementation, there are only three possible actions: putting an \textbf{X} token in a corner, in the middle of the grid, and in the middle of one of the sides. To give a specific example of how this changes the game, notice that the probability of the agent choosing the action that involves placing their \textbf{X} token in the middle of the grid is $\frac{1}{9}$ in the Normal implementation and $\frac{1}{3}$ in the Limited Actions implementation. Thus, the agent will end up choosing this action three times as frequently in the latter case. However, this effect is ignored for the purposes of this project because in the limit of infinitely many games, the \emph{MonteCarloAgent} will encounter all states and choose all possible moves an equal number of times, thus computing an accurate expected return for each action.
+An interesting result of the Limited Actions implementation is that it slightly alters the way the game is played. Suppose a \emph{RandomAgent} is asked to select a move from the game's initial state (i.e. empty grid). In the Normal implementation, there are nine possible actions: putting an \textbf{X} token in one of the nine grid cells. In the Limited Actions implementation, there are only three possible actions: putting an \textbf{X} token in a corner, in the middle of the grid, and in the middle of one of the sides. To give a specific example of how this changes the game, notice that the probability of the agent choosing the action that involves placing their token in the middle of the grid is $\frac{1}{9}$ in the Normal implementation and $\frac{1}{3}$ in the Limited Actions implementation. Thus, the agent will end up choosing this action three times as frequently in the latter version. However, this effect is ignored for the purposes of this project because in the limit of infinitely many games, the \emph{MonteCarloAgent} will encounter all states and choose all possible moves an equal number of times, thus computing an accurate expected return for each action.
 
-Implementing the desired behaviour for the Symmetric Equality version was not as simple as initially expected. Overriding the \emph{equals()} method inherited from Java's \emph{Object} class was straightforward. However, overriding the inherited \emph{hashCode()} method was tricky. A Java \emph{HashMap} considers two keys to be distinct if their \emph{hashCode()} methods produce different results or if they produce the same result and their \emph{equals()} methods produce different results. Thus, it was crucial for the \emph{hashCode()} method to produce exactly the same result for symmetrical states. This was done by internally converting each state to a canonical form in such a way that symmetrical states have the same canonical form. Thus, % FINISH SENTENCE
+Implementing the desired behaviour for the Symmetric Equality version was not as simple as initially expected. Overriding the \emph{equals()} method inherited from Java's \emph{Object} class was straightforward. However, overriding the inherited \emph{hashCode()} method was tricky.
 
-% defining a function that computes a unique ID for each state
+A Java \emph{HashMap} places key-value mappings in buckets depending on the value returned by calling \emph{hashCode()} on the keys. Thus, if two keys have different hash codes, then they are placed in two different buckets, even if they are ``equal'' according to both of their \emph{equals()} methods. So, two ``equal'' keys (and their respective values) can both end up being stored in a hash map at the same time if they have different hash codes. This is why it was crucial for the \emph{hashCode()} method in \emph{TicTacToeStateWithSymmetricEquality} to produce exactly the same result for symmetrical states. After considering a few solutions, this behaviour was implemented by internally converting each state to a canonical form in such a way that symmetrical states have the same canonical form. Each state's canonical form is used to compute the state's hash code, which results in all symmetrical states having the same hash code, as required.
 
 The idea behind the Limited Actions implementation is that it is expected to speed up the \emph{MonteCarloAgent}'s learning since only a fraction of the states will be reachable. Thus, after a fixed number of games, each possible state will be encountered more often than in the Normal implementation and so the expected return for each state will be more accurate. On the other hand, the Symmetric Equality implementation is expected speed up learning by allowing the \emph{MonteCarloAgent} to combine its learning from symmetric states therefore increasing the accuracy of its expected returns. In both cases, the agent's policy and action-value function will be smaller, which reduces the agent's memory requirements.
 
@@ -150,9 +153,9 @@ The second game used is in the project is Chung Toi,  a more complex version of 
 
 \subsection{Rules}
 
-The main idea behind Chung Toi is the same as that behind Tic-Tac-Toe in the sense that the game is played on a 3x3 grid and each player's goal is to get three of their pieces in a row. However, that is the entire extent of their overlap and although they may seem similar, finding a good strategy for Chung Toi is not at all intuitive.
+The main idea behind Chung Toi is the same as that behind Tic-Tac-Toe in the sense that the game is played on a 3x3 grid and each player's goal is to get three of their pieces in a row. However, that is the entire extent of their overlap. Although the two games may seem similar, finding a good strategy for Chung Toi is not at all intuitive, unlike in Tic-Tac-Toe.
 
-The game is played as follows: first, one of the two players is randomly selected to use red tokens (the other player uses white tokens). From now on, these players are referred to as the ``red player'' and ``white player'', respectively. Each player has three tokens at their disposal and each token can be used in two possible orientations, as shown in Figure \ref{chung-toi-tokens}.
+Before the game begins, one of the two players is randomly selected to use red tokens (the other player uses white tokens). From now on, these players are referred to as the ``red player'' and ``white player'', respectively. Each player has three tokens at their disposal and each token can be used in two possible orientations, as shown in Figure \ref{chung-toi-tokens}.
 
 \begin{figure}[htbp]
 	\begin{center}
@@ -161,12 +164,26 @@ The game is played as follows: first, one of the two players is randomly selecte
 	\end{center}
 \end{figure}
 
-The game then consists of two phases:
+The game consists of the players alternately making a move, starting with the red player. Throughout the game, the red player can only move red tokens and the white player can only move white tokens. The game has two phases and both players start in Phase 1. Once a player places all three of their tokens, that player proceeds to Phase 2. The following actions are available in each phase:
 
 \begin{itemize}
-	\item Phase 1: 
-	\item Phase 2:
+
+	\item \textbf{Phase 1}
+		\begin{itemize}
+			\item Place a token (in either orientation) in an empty grid cell
+			\item Pass
+		\end{itemize}
+
+	\item \textbf{Phase 2}
+		\begin{itemize}
+			\item Slide a token on the grid in the direction of any of the arrows on that token. When the token reaches the final cell, it can be rotated (to switch its orientation) if the player chooses to do so. \emph{(Note: all grid cells in the path from the original cell to the final cell must be empty, meaning that the token cannot ``jump'' over other tokens)}
+			\item Rotate one token (to switch its orientation)
+			\item Pass
+		\end{itemize}
+
 \end{itemize}
+
+At any point in the game, if both players pass, one right after the other, the game ends and is declared a draw. Otherwise, the game continues until one of the players makes their tokens form a horizontal, vertical, or diagonal row and that player is declared the winner. The orientation of the three tokens in the row does not matter.
 
 Figure \ref{chung-toi-grid-example} is an example of a possible state of the grid.
 
@@ -178,9 +195,11 @@ Figure \ref{chung-toi-grid-example} is an example of a possible state of the gri
 \end{figure}
 
 
-\subsection{Implementation Details}
+\subsection{Implementation}
 
-% Explanation of why I didn’t bother with breaking symmetries
+The role of Chung Toi in this project was to learn more about the effect of the Monte Carlo learning parameter $\epsilon$ on an agent's learning rate and winning rate. Chung Toi has roughly 100 times more states than Tic-Tac-Toe, which is expected to have an effect on the optimal value of $\epsilon$ and therefore \emph{MonteCarloAgent}'s learning rate.
+
+Chung Toi has the same axes of symmetry as Tic-Tac-Toe, so similar results would be expected from a Chung Toi implementation that breaks symmetries. For this reason, such an implementation was not developed to reduce redundancy and instead only a normal implementation with all symmetrical states present was developed.
 
 
 %------------------
