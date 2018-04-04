@@ -12,7 +12,6 @@ java_binary(
     "//src/main/java/com/games/general:general",
     "//src/main/java/com/games/chungtoi:chungtoi",
     "//src/main/java/com/games/tictactoe:tictactoe",
-    "//third_party:guava",
     "//third_party:opencsv",
   ],
 )
@@ -29,7 +28,6 @@ java_binary(
     "//src/main/java/com/games/general:general",
     "//src/main/java/com/games/chungtoi:chungtoi",
     "//src/main/java/com/games/tictactoe:tictactoe",
-    "//third_party:guava",
     "//third_party:opencsv",
   ],
 )
