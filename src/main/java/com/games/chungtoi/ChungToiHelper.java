@@ -34,7 +34,6 @@ public class ChungToiHelper {
   public enum Winner {
     X,
     O,
-    DRAW,
     GAME_NOT_OVER
   }
 

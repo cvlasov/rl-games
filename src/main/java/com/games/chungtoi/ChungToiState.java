@@ -192,8 +192,7 @@ public class ChungToiState implements State {
     if (winner != null) {
       switch (winner) {
         case X:             // fall through
-        case O:             // fall through
-        case DRAW:          return true;
+        case O:             return true;
         case GAME_NOT_OVER: return false;
       }
     }

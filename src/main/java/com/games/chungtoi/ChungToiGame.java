@@ -123,16 +123,15 @@ public class ChungToiGame implements Game {
  /**
   * Determines which agent (if any) is the winner at the given state.
   *
-  * @return winning agent (-1 = not over, 0 = draw, 1 = agent 1, 2 = agent 2)
+  * @return winning agent (0 = draw, 1 = agent 1, 2 = agent 2)
   */
   @VisibleForTesting
   int gameOver(ChungToiState terminalState) {
-    int winner = -1;
+    int winner = Integer.MIN_VALUE;
 
     switch (terminalState.getWinner()) {
       case GAME_NOT_OVER:
-        // fall through
-      case DRAW:
+        // Occurs if both players passed, which means the game is a draw
         winner = 0;
         agent1.receiveReturn(DRAW_RETURN);
         agent2.receiveReturn(DRAW_RETURN);
