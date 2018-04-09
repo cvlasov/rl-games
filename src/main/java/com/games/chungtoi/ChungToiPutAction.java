@@ -32,14 +32,14 @@ public class ChungToiPutAction implements Action {
 
   @Override
   public int hashCode() {
-    int hash = index;
+    int hash = 2^index;
 
     switch (tokenType) {
-      case X_NORMAL:   hash += 11; break;
-      case X_DIAGONAL: hash += 13; break;
-      case O_NORMAL:   hash += 17; break;
-      case O_DIAGONAL: hash += 19; break;
-      case NONE:       hash += 23; break;
+      case X_NORMAL:   hash *= 3; break;
+      case X_DIAGONAL: hash *= 5; break;
+      case O_NORMAL:   hash *= 7; break;
+      case O_DIAGONAL: hash *= 11; break;
+      case NONE:       hash *= 13; break;
     }
 
     return hash;

@@ -37,7 +37,7 @@ public class ChungToiMoveAction implements Action {
 
   @Override
   public int hashCode() {
-    return startIndex*2 + endIndex*7 + (rotateToken ? 1 : 0);
+    return 2^startIndex * 3^endIndex * 5^(rotateToken ? 1 : 0);
   }
 
   @Override
