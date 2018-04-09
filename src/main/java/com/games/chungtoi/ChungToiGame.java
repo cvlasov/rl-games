@@ -26,10 +26,12 @@ public class ChungToiGame implements Game {
   private int swapAgentOrder;
 
   /** Agent that goes first and plays with {@link #TokenType.X}. */
-  private Agent agent1;
+  @VisibleForTesting
+  Agent agent1;
 
   /** Agent that goes second and plays with {@link #TokenType.O}. */
-  private Agent agent2;
+  @VisibleForTesting
+  Agent agent2;
 
   public ChungToiGame(Agent a1, Agent a2) {
     swapAgentOrder = (int) (Math.random() * 2);
@@ -150,7 +152,8 @@ public class ChungToiGame implements Game {
     return winner;
   }
 
-  private boolean bothAgentsPassed(Action action1, Action action2) {
+  @VisibleForTesting
+  boolean bothAgentsPassed(Action action1, Action action2) {
     if (action1 == null || action2 == null) return false;
     return ChungToiPassAction.class.isAssignableFrom(action1.getClass())
            && ChungToiPassAction.class.isAssignableFrom(action2.getClass());

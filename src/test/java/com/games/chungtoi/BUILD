@@ -1,6 +1,19 @@
 package(default_visibility = ["//visibility:public"])
 
 java_test(
+  name = "game",
+  size = "small",
+  srcs = ["ChungToiGameTest.java"],
+  test_class = "com.games.chungtoi.ChungToiGameTest",
+  deps = [
+    "//src/main/java/com/games/general:general",
+    "//src/main/java/com/games/chungtoi:chungtoi",
+    "//third_party:junit4",
+    "//third_party:mockito",
+  ]
+)
+
+java_test(
   name = "move_action",
   size = "small",
   srcs = ["ChungToiMoveActionTest.java"],
