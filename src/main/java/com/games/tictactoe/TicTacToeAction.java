@@ -31,12 +31,12 @@ public final class TicTacToeAction implements Action {
 
   @Override
   public int hashCode() {
-    int hash = index;
+    int hash = 2^index;
 
     switch (tokenType) {
-      case NONE: hash += 0; break;
-      case X:    hash += 1; break;
-      case O:    hash += 2; break;
+      case NONE: hash *= 3^0; break;
+      case X:    hash *= 3^1; break;
+      case O:    hash *= 3^2; break;
     }
 
     return hash;
