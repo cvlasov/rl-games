@@ -74,14 +74,14 @@ public abstract class TicTacToeGame implements Game {
     boolean firstTurn = true;
     int winner = -1;
 
-    TicTacToeAction agent1Action = null;
+    Action agent1Action = null;
     TicTacToeState stateAfterAgent1 = null;
-    TicTacToeAction agent2Action = null;
+    Action agent2Action = null;
     TicTacToeState stateAfterAgent2 = state;  // initial state
 
     while (true) {
       // AGENT 1'S TURN
-      agent1Action = (TicTacToeAction) agent1.chooseAction(stateAfterAgent2);
+      agent1Action = agent1.chooseAction(stateAfterAgent2);
       stateAfterAgent1 = (TicTacToeState) stateAfterAgent2.applyAction(agent1Action);
 
       // If Agent 1 just made the game end
@@ -98,7 +98,7 @@ public abstract class TicTacToeGame implements Game {
       firstTurn = false;
 
       // AGENT 2'S TURN
-      agent2Action = (TicTacToeAction) agent2.chooseAction(stateAfterAgent1);
+      agent2Action = agent2.chooseAction(stateAfterAgent1);
       stateAfterAgent2 = (TicTacToeState) stateAfterAgent1.applyAction(agent2Action);
 
       // If Agent 2 just made the game end
