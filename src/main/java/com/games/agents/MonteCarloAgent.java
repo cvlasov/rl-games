@@ -305,7 +305,7 @@ public class MonteCarloAgent implements Agent {
     for (State s : episodeStates.keySet()) {
       // If there are no possible actions, then there is nothing to update
       if (s.getActions().size() == 0) {
-        break;
+        continue;
       }
 
       updatePolicyForState(s, getBestAction(s));
