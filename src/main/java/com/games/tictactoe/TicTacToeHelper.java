@@ -63,16 +63,6 @@ public final class TicTacToeHelper {
     System.out.println();
   }
 
-  public static void printActions(TicTacToeState state) {
-    System.out.println("Actions available from");
-    state.print();
-
-    for (Action a : state.getActions()) {
-      a.print();
-      System.out.println();
-    }
-  }
-
   /**
    * Returns a hash code of a Tic-Tac-Toe grid in such a way that two states
    * have the same hash code if and only if they have the same tokens, or lack
