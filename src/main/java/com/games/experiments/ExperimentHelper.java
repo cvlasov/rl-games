@@ -4,6 +4,7 @@ import com.games.agents.MonteCarloAgent;
 import com.games.agents.RandomAgent;
 import com.games.chungtoi.ChungToiGame;
 import com.games.general.Game;
+import com.games.nim.NimGame;
 import com.games.tictactoe.TicTacToeGameWithLimitedActions;
 import com.games.tictactoe.TicTacToeGameWithSymmetricEquality;
 import com.games.tictactoe.TicTacToeNormalGame;
@@ -33,6 +34,7 @@ public final class ExperimentHelper {
 
   enum GameType {
     CHUNG_TOI ("ChungToi"),
+    NIM ("Nim"),
     TIC_TAC_TOE_NORMAL ("TicTacToeNormal"),
     TIC_TAC_TOE_LIMITED_ACTIONS ("TicTacToeLimitedActions"),
     TIC_TAC_TOE_SYMMETRIC_EQUALITY ("TicTacToeSymmetricEquality");
@@ -121,6 +123,9 @@ public final class ExperimentHelper {
             case CHUNG_TOI:
               game = new ChungToiGame(mcAgent, randAgent);
               break;
+            case NIM:
+              game = new NimGame(mcAgent, randAgent);
+              break;
             case TIC_TAC_TOE_NORMAL:
               game = new TicTacToeNormalGame(mcAgent, randAgent);
               break;
@@ -199,6 +204,9 @@ public final class ExperimentHelper {
         switch (type) {
           case CHUNG_TOI:
             game = new ChungToiGame(mcAgent, randAgent);
+            break;
+          case NIM:
+            game = new NimGame(mcAgent, randAgent);
             break;
           case TIC_TAC_TOE_NORMAL:
             game = new TicTacToeNormalGame(mcAgent, randAgent);

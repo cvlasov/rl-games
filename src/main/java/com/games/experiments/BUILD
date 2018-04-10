@@ -8,6 +8,13 @@ java_binary(
 )
 
 java_binary(
+  name = "epsilon_nim",
+  srcs = ["NimEpsilonExperiment.java"],
+  main_class = "com.games.experiments.NimEpsilonExperiment",
+  deps = [":experiment_deps"],
+)
+
+java_binary(
   name = "epsilon_tictactoe_limited_actions",
   srcs = ["TicTacToeLimitedActionsEpsilonExperiment.java"],
   main_class = "com.games.experiments.TicTacToeLimitedActionsEpsilonExperiment",
@@ -35,6 +42,7 @@ java_library(
     "//src/main/java/com/games/agents:agents",
     "//src/main/java/com/games/general:general",
     "//src/main/java/com/games/chungtoi:chungtoi",
+    "//src/main/java/com/games/nim:nim",
     "//src/main/java/com/games/tictactoe:tictactoe",
     "//third_party:opencsv",
   ],
