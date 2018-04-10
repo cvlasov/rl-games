@@ -89,7 +89,7 @@ public final class ExperimentHelper {
       csvWriter.writeNext(headerRecord);
 
       for (double epsilon = 0.0 ;
-           epsilon <= 1.0 ;
+           epsilon <= 1.0 + (epsilonPrecision/10);  // for floating-point error
            epsilon += epsilonPrecision) {
 
         if (debug) {
@@ -97,6 +97,10 @@ public final class ExperimentHelper {
           System.out.println("-------------------------------------------");
           System.out.println("-------------------------------------------");
           System.out.println("NEW EPSILON VALUE: " + epsilon);
+        }
+
+        if (epsilon > 1.0) {  // due to floating-point error
+          epsilon = 1.0;
         }
 
         int[] wins = new int[3];  // index 0 is draw, 1 is agent1, 2 is agent2
