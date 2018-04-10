@@ -2,7 +2,7 @@ package com.games.tictactoe;
 
 import com.games.general.Action;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public final class TicTacToeHelper {
@@ -83,58 +83,26 @@ public final class TicTacToeHelper {
   }
 
   public static List<TokenType> flipGridVertically(List<TokenType> g) {
-    List<TokenType> verticalFlipGrid = new ArrayList<>();
-    verticalFlipGrid.add(g.get(6));
-    verticalFlipGrid.add(g.get(7));
-    verticalFlipGrid.add(g.get(8));
-    verticalFlipGrid.add(g.get(3));
-    verticalFlipGrid.add(g.get(4));
-    verticalFlipGrid.add(g.get(5));
-    verticalFlipGrid.add(g.get(0));
-    verticalFlipGrid.add(g.get(1));
-    verticalFlipGrid.add(g.get(2));
-    return verticalFlipGrid;
+    return Arrays.asList(g.get(6), g.get(7), g.get(8),
+                         g.get(3), g.get(4), g.get(5),
+                         g.get(0), g.get(1), g.get(2));
   }
 
   public static List<TokenType> flipGridHorizontally(List<TokenType> g) {
-    List<TokenType> horizontalFlipGrid = new ArrayList<>(GRID_SIZE);
-    horizontalFlipGrid.add(g.get(2));
-    horizontalFlipGrid.add(g.get(1));
-    horizontalFlipGrid.add(g.get(0));
-    horizontalFlipGrid.add(g.get(5));
-    horizontalFlipGrid.add(g.get(4));
-    horizontalFlipGrid.add(g.get(3));
-    horizontalFlipGrid.add(g.get(8));
-    horizontalFlipGrid.add(g.get(7));
-    horizontalFlipGrid.add(g.get(6));
-    return horizontalFlipGrid;
+    return Arrays.asList(g.get(2), g.get(1), g.get(0),
+                         g.get(5), g.get(4), g.get(3),
+                         g.get(8), g.get(7), g.get(6));
   }
 
   public static List<TokenType> flipGridAlongMajorDiagonal(List<TokenType> g) {
-    List<TokenType> majorDiagonalFlipGrid = new ArrayList<>(GRID_SIZE);
-    majorDiagonalFlipGrid.add(g.get(0));
-    majorDiagonalFlipGrid.add(g.get(3));
-    majorDiagonalFlipGrid.add(g.get(6));
-    majorDiagonalFlipGrid.add(g.get(1));
-    majorDiagonalFlipGrid.add(g.get(4));
-    majorDiagonalFlipGrid.add(g.get(7));
-    majorDiagonalFlipGrid.add(g.get(2));
-    majorDiagonalFlipGrid.add(g.get(5));
-    majorDiagonalFlipGrid.add(g.get(8));
-    return majorDiagonalFlipGrid;
+    return Arrays.asList(g.get(0), g.get(3), g.get(6),
+                         g.get(1), g.get(4), g.get(7),
+                         g.get(2), g.get(5), g.get(8));
   }
 
   public static List<TokenType> flipGridAlongMinorDiagonal(List<TokenType> g) {
-    List<TokenType> minorDiagonalFlipGrid = new ArrayList<>(GRID_SIZE);
-    minorDiagonalFlipGrid.add(g.get(8));
-    minorDiagonalFlipGrid.add(g.get(5));
-    minorDiagonalFlipGrid.add(g.get(2));
-    minorDiagonalFlipGrid.add(g.get(7));
-    minorDiagonalFlipGrid.add(g.get(4));
-    minorDiagonalFlipGrid.add(g.get(1));
-    minorDiagonalFlipGrid.add(g.get(6));
-    minorDiagonalFlipGrid.add(g.get(3));
-    minorDiagonalFlipGrid.add(g.get(0));
-    return minorDiagonalFlipGrid;
+    return Arrays.asList(g.get(8), g.get(5), g.get(2),
+                         g.get(7), g.get(4), g.get(1),
+                         g.get(6), g.get(3), g.get(0));
   }
 }
