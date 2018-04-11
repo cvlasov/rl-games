@@ -119,7 +119,7 @@ public class NimState implements State {
   public boolean isTerminalState() {
     int totalCount = 0;
 
-    for (int i = 0 ; i < NUM_PILES ; i++) {
+    for (int i = 0 ; i < piles.length ; i++) {
       totalCount += piles[i];
     }
 
@@ -164,7 +164,7 @@ public class NimState implements State {
 
     actions = new ArrayList<>();
 
-    for (int i = 0; i < NUM_PILES ; i++) {
+    for (int i = 0; i < piles.length ; i++) {
       for (int n = 1 ; n <= piles[i] ; n++) {
         actions.add(new NimAction(i, n));
       }

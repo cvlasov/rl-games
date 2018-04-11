@@ -20,10 +20,12 @@ public class NimGame implements Game {
   private int swapAgentOrder;
 
   /** Agent that goes first. */
-  private Agent agent1;
+  @VisibleForTesting
+  Agent agent1;
 
   /** Agent that goes second. */
-  private Agent agent2;
+  @VisibleForTesting
+  Agent agent2;
 
   public NimGame(Agent a1, Agent a2) {
     swapAgentOrder = (int) (Math.random() * 2);
