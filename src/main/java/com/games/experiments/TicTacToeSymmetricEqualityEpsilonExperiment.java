@@ -14,6 +14,8 @@ public final class TicTacToeSymmetricEqualityEpsilonExperiment {
 
   public static void main(String[] args) throws IOException {
     saveEpsilonResultsInCSV(GameType.TIC_TAC_TOE_SYMMETRIC_EQUALITY,
+                            0.0,       /* epsilon start */
+                            1.0,       /* epsilon end */
                             0.01,      /* epsilon precision */
                             1000*1000, /* number of games */
                             false      /* whether to print debugging stmts */);

@@ -52,10 +52,12 @@ public final class ExperimentHelper {
 
   /**
    * Makes a Monte Carlo agent play the given type of game against a random
-   * agent the given number of times, repeating for each value of epsilon from
-   * 0 to 1 (inclusive) and saves the results in a CSV file.
+   * agent the given number of times, repeating for each value of epsilon in the
+   * given range (inclusive) and saves the results in a CSV file.
    *
    * @param type             type of two-player game to play
+   * @param epsilonStart     smallest epsilon value to try
+   * @param epsilonEnd       largest epsilon value to try
    * @param epsilonPrecision difference between consecutive values tried
    * @param numGames         number of games to play
    * @param debug            whether or not to print debugging statements to the
@@ -63,6 +65,8 @@ public final class ExperimentHelper {
    */
   static void saveEpsilonResultsInCSV(
       GameType type,
+      double epsilonStart,
+      double epsilonEnd,
       double epsilonPrecision,
       int numGames,
       boolean debug) throws IOException {
@@ -90,8 +94,8 @@ public final class ExperimentHelper {
 
       csvWriter.writeNext(headerRecord);
 
-      for (double epsilon = 0.0 ;
-           epsilon <= 1.0 + (epsilonPrecision/10);  // for floating-point error
+      for (double epsilon = epsilonStart ;
+           epsilon <= epsilonEnd + (epsilonPrecision/10);  // for floating-point error
            epsilon += epsilonPrecision) {
 
         if (debug) {
@@ -101,8 +105,8 @@ public final class ExperimentHelper {
           System.out.println("NEW EPSILON VALUE: " + epsilon);
         }
 
-        if (epsilon > 1.0) {  // due to floating-point error
-          epsilon = 1.0;
+        if (epsilon > epsilonEnd) {  // due to floating-point error
+          epsilon = epsilonEnd;
         }
 
         int[] wins = new int[3];  // index 0 is draw, 1 is agent1, 2 is agent2
