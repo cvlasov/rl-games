@@ -131,6 +131,21 @@ public class NimState implements State {
     System.out.println(Arrays.toString(piles));
   }
 
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+
+    for (int i = 0 ; i < piles.length ; i++) {
+      builder.append(piles[i]);
+
+      if (i < piles.length-1) {
+        builder.append(" ");
+      }
+    }
+
+    return builder.toString();
+  }
+
   /**
    * Returns the winner of the game, if any.
    * <p>

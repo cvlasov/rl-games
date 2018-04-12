@@ -39,4 +39,9 @@ public class NimAction implements Action {
     System.out.print(
         String.format("%d token(s) from pile %d", numTokens, pile));
   }
+
+  @Override
+  public String toString() {
+    return String.format("%d token(s) from pile %d", numTokens, pile);
+  }
 }
