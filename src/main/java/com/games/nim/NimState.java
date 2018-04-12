@@ -85,21 +85,12 @@ public class NimState implements State {
     }
 
     final NimState other = (NimState) o;
-
-    return this.nextTurn == other.nextTurn
-           && Arrays.equals(this.piles, other.piles);
+    return Arrays.equals(this.piles, other.piles);
   }
 
   @Override
   public int hashCode() {
-    int hash = Arrays.hashCode(piles);
-
-    switch (nextTurn) {
-      case X: hash *= 3; break;
-      case O: hash *= 5; break;
-    }
-
-    return hash;
+    return Arrays.hashCode(piles);
   }
 
 
