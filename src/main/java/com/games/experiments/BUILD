@@ -56,6 +56,13 @@ java_binary(
 )
 
 java_binary(
+  name = "performance_nim",
+  srcs = ["NimPerformanceExperiment.java"],
+  main_class = "com.games.experiments.NimPerformanceExperiment",
+  deps = [":experiment_deps"],
+)
+
+java_binary(
   name = "performance_tictactoe_limited_actions",
   srcs = ["TicTacToeLimitedActionsPerformanceExperiment.java"],
   main_class = "com.games.experiments.TicTacToeLimitedActionsPerformanceExperiment",
