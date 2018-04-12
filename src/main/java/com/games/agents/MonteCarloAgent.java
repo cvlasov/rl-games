@@ -68,6 +68,11 @@ public class MonteCarloAgent implements Agent {
     EPSILON = e;
   }
 
+  public MonteCarloAgent(double e, boolean debug) {
+    EPSILON = e;
+    this.debug = debug;
+  }
+
   @VisibleForTesting
   MonteCarloAgent(double e,
                   Map<State, Map<Action, Double>> episodeStates,

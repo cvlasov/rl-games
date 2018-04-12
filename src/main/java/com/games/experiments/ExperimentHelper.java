@@ -4,6 +4,7 @@ import com.games.agents.MonteCarloAgent;
 import com.games.agents.RandomAgent;
 import com.games.chungtoi.ChungToiGame;
 import com.games.general.Game;
+import com.games.general.State;
 import com.games.nim.NimGame;
 import com.games.tictactoe.TicTacToeGameWithLimitedActions;
 import com.games.tictactoe.TicTacToeGameWithSymmetricEquality;
@@ -111,7 +112,7 @@ public final class ExperimentHelper {
 
         int[] wins = new int[3];  // index 0 is draw, 1 is agent1, 2 is agent2
         Game game = null;
-        MonteCarloAgent mcAgent = new MonteCarloAgent(epsilon);
+        MonteCarloAgent mcAgent = new MonteCarloAgent(epsilon, debug);
         RandomAgent randAgent = new RandomAgent();
 
         for (int gameNum = 1 ; gameNum <= numGames ; gameNum++) {
@@ -201,7 +202,7 @@ public final class ExperimentHelper {
 
       int[] wins = new int[3]; // index 0 is draw, 1 is agent1, 2 is agent2
       Game game = null;
-      MonteCarloAgent mcAgent = new MonteCarloAgent(epsilon);
+      MonteCarloAgent mcAgent = new MonteCarloAgent(epsilon, debug);
       RandomAgent randAgent = new RandomAgent();
 
       for (int gamesSoFar = 1 ; gamesSoFar <= numGames ; gamesSoFar++) {
