@@ -82,3 +82,14 @@ java_binary(
   main_class = "com.games.experiments.TicTacToeSymmetricEqualityPerformanceExperiment",
   deps = [":experiment_deps"],
 )
+
+java_binary(
+  name = "tictactoe_policy_comparison",
+  srcs = ["TicTacToePolicySizeComparison.java"],
+  main_class = "com.games.experiments.TicTacToePolicySizeComparison",
+  deps = [
+    "//src/main/java/com/games/agents:agents",
+    "//src/main/java/com/games/general:general",
+    "//src/main/java/com/games/tictactoe:tictactoe",
+  ],
+)
