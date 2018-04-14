@@ -47,6 +47,7 @@ This is my abstract
 
 
 \subsection{Monte Carlo Learning}
+\label{sec:MonteCarloLearning}
 
 \label{sec:monteCarloPseudocode}
 
@@ -203,35 +204,140 @@ Chung Toi has the same axes of symmetry as Tic-Tac-Toe, so similar results would
 
 
 %------------------
-\chapter{Results}
+\chapter{Results \& Analysis}
+
+This section describes the outcomes of a variety of experiments and discusses why these outcomes were expected, or unexpected, and what can be learned from them.
 
 
-\section{Overview}
+\section{Types of Experiments}
+
+Two types of experiments were used to investigate the behaviour of the Monte Carlo agent when playing games:
+
+\begin{itemize}
+
+	\item \textbf{``Epsilon'' Experiment}: This type of experiment iterates through all values of epsilon in a particular range and makes a Monte Carlo agent (initialised with that value of epsilon) play a specific game against another agent a fixed number of times. Then it records the results (i.e. wins, losses, draws) for each value of epsilon in a CSV file. Thus, it is possible to produce graphs with the tested values of epsilon on the x-axis and the number of episodes resulting in a win, loss, and draw on the y-axis. These graphs are used to determine the optimal value of epsilon for a particular game.
+
+	\item \textbf{``Convergence'' Experiment}: This type of experiment makes a Monte Carlo agent (initialised with a particular value of epsilon) play a specific game against another agent a fixed number of times. In the process, it records the cumulative results (i.e. wins, losses, draws) at regular intervals, as more and more games are played, in a CSV file. Thus, it is possible to produce area charts with the cumulative number of games on the x-axis and percentages on the y-axis to show the proportions of wins, losses, and draws. These graphs are used to visualise the convergence rate of a Monte Carlo agent's policy with a specific value of epsilon.
+
+\end{itemize}
+
+The data from running these experiments on different games and with agents playing against each other different numbers of times was combined to produce a number of interesting graphs that reveal interesting properties of the Monte Carlo control algorithm used.
 
 
-\section{Monte Carlo Learning Parameter}
-% - Tic-Tac-Toe win rate graph for each value of alpha from 0.01 to 0.99
-% - zoomed in graph for the region around global max. with more games per value
-% - same graphs for both implementations of symmetry-breaking
-% - analysis
+\section{Hypothesis}
+
+Literature discussing on-policy $\epsilon$-soft Monte Carlo control algorithms tend not to discuss the effect of the value of $\epsilon$ on an agent's learning rate or how to determine a good value for a particular application. Thus, this project was quite exploratory in nature and did not attempt to empirically prove certain results.
+
+However, the following questions guided the experimentation:
+
+\begin{itemize}
+	\item Are there ``optimal'' values of epsilon that maximise an agent's performance?
+	\item How quickly does the agent's policy converge to the theoretical optimal policy?
+	\item How does the performance of the algorithm differ for different games?
+	\item When playing games where states have axes of symmetry, how does the agent's performance and learning change when symmetry is eliminated?
+\end{itemize}
+
+The games selected for this project were an interesting mix since some had relatively long episodes (Chung Toi), others could be easily configured to vary the number of possible states (Nim), and some were used to investigate symmetry (Tic-Tac-Toe). Thus, it was possible answer all of the above questions and derive some interesting results.
 
 
-\section{Policies} % ???
-% - pick interesting examples and plot the policies vs. number of games ???
+\section{Optimal Value of $\epsilon$}
+
+It is not unreasonable to expect that each game might have a specific value of epsilon that produces the fastest convergence of the learning agent's policy. If this was the case, then one would expect the graph of the winning rate produced by an epsilon experiment with $\epsilon$ ranging from 0.0 to 1.0 (inclusive) to be convex with a global maximum. This belief is reinforced by running an epsilon experiment on any game for some number of training games. For example, Figure \ref{chung-toi-epsilon-1M-graph} displays the results of training the learning agent on one million episodes of Chung Toi.
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=125mm]{ChungToi_EpsilonResults_1MGames.png}
+		\caption{Results of training learning agent with one million episodes of Chung Toi}
+		\label{chung-toi-epsilon-1M-graph}
+	\end{center}
+\end{figure}
+
+However, with some experimentation it becomes clear that there is another key factor in the equation: the number of training episodes. If the results of any particular epsilon experiment are considered without the context of the results of the same experiment with different numbers of training episodes, then the belief that each game has an optimal epsilon value seems to be true. However, when these results are considered in context, an interesting relationship between the number of training episodes and the optimal value of epsilon is uncovered. Figure \ref{nim-epsilon-win-comparison} demonstrates this relationship for Nim. The same relationship is also visible in the graphs for Tic-Tac-Toe and Chung Toi.
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=125mm]{Nim_EpsilonResults_Wins_Comparison.png}
+		\caption{Comparison between results from different numbers of training episodes for Nim}
+		\label{nim-epsilon-win-comparison}
+	\end{center}
+\end{figure}
+
+As we can see, as the number of training episodes increases, the optimal value of epsilon decreases and approaches zero. In particular, if we plot the optimal value of epsilon versus the number of training episodes, for any game, we get a graph that looks like Figure \ref{nim-training-vs-opt-epsilon}, which exhibits an inverse relationship (??) between the two. In order to obtain more accurate optimal epsilon values for Figure \ref{nim-training-vs-opt-epsilon}, each epsilon experiment was run three times and the results were averaged.
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=125mm]{Nim_OptimalEpsilon_vs_Training.png}
+		\caption{Relationship between optimal epsilon value and number of training episodes for Nim}
+		\label{nim-training-vs-opt-epsilon}
+	\end{center}
+\end{figure}
+
+This behaviour actually makes sense and should, in fact, be expected because of the role of $\epsilon$ in the Monte Carlo control algorithm. As discussed in Section \ref{sec:MonteCarloLearning}, $\epsilon$ is used during policy improvement. In particular, the probability of choosing an action (other than the best action encountered so far) is $\frac{\epsilon}{N}$ where $N$ is the number of available actions. On the other hand, the probability of choosing the best action encountered so far is  $1 - \epsilon + \frac{\epsilon}{N}$. Thus, as $\epsilon$ approaches zero, the probability of choosing the best action encountered so far approaches one.
+
+So, as the number of training episodes approaches infinity, the probability that the agent has encountered the best actions for all states approaches one. Once the best action from a state has been encountered, the agent no longer benefits from randomly trying other actions since they can only lead to smaller (or equal) returns. Therefore, from then on, the agent will earn the largest overall return by choosing the best action from that state with a very large probability whenever that state is encountered.
+
+A larger value of $\epsilon$ benefits an agent in the short-term because it speeds up learning (i.e. finding the best actions). However, it is disadvantageous in the long-term because even though the agent knows which actions produce the largest returns, the agent will still be forced to choose other actions relatively often.
+
+Overall, there is no single value of $\epsilon$ that maximises an agent's performance in a particular game. However, for any specific number of training episodes, there \emph{is} a value that results in the best winning rate by striking the right balance between being greedy (i.e. choosing the best action so far) and trying new actions that results for \emph{that} amount of training.
+
+% mention that optimal values vary from game to game
+% talk about how behaviour at 0.0 and 1.0 is the same
 
 
-\section{Time}
-% - discussion of time complexity
+\section{Convergence to the Optimal Policy}
 
+In the context of training a Monte Carlo agent to play a game, the ``speed'' at which the agent's policy converges is the number of training games the agent needs until its policy, $\pi$, converges. Naturally, this varies depending on the value $\epsilon$ used by the agent.
 
-\section{Win/Learning Rate}
-% - plot all three Tic-Tac-Toe types on the same graph
+Since the policy only converges to the theoretically optimal policy in the limit of infinitely many training episodes, in this project we consider the policy to have converged after $x$ training games if the agent's winning rate changes by less than 0.1\% after $x$ training episodes compared to after $x+1000$ training episodes.
 
+In the experiment framework developed for this project, convergence experiments provide the data needed to compare different values of $\epsilon$ and to analyse the speed of convergence. Convergence experiments produce the proportions of wins and losses (and draws, if applicable) at regular intervals as an agent participates in more and more training episodes, using a specific value of epsilon. Thus, by plotting these ratios as an area chart and looking at the borders between the regions, we see how quickly the policy changes.
 
+For instance, in Figure \ref{nim-epsilon-win-comparison}, we see that the agent's winning rate when playing Nim with $\epsilon = 0.1$ changes quite significantly as the number of training episodes increases. This suggests that running a convergence experiment for Nim with this value might provide insight into the policy's convergence rate. Figure \ref{nim-0-1-convergence} shows these results.
 
-%-------------------
-\chapter{Analysis} % or Discussion
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=125mm]{Nim_PerformanceResults_0_1.png}
+		\caption{Changes in agent's performance in Nim with $\epsilon = 0.1$}
+		\label{nim-0-1-convergence}
+	\end{center}
+\end{figure}
 
+As we can see, after about twenty or thirty thousand training episodes, the agent's performance stabilises. In fact, the performance (and therefore policy) converges -- by the definition of convergence for the purposes of this project -- after $21,000$ training episodes.
+
+On the other hand, Figure \ref{nim-epsilon-win-comparison} shows that the agent's winning rate in Nim when $\epsilon > 0.5$ does not not change significantly with more training episodes. So, we would expect that the agent's policy converges faster. This intuition is confirmed by Figure \ref{nim-0-5-convergence}, which shows the results of a convergence test on $\epsilon = 0.5$.
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=125mm]{Nim_PerformanceResults_0_5.png}
+		\caption{Changes in agent's performance in Nim with $\epsilon = 0.5$}
+		\label{nim-0-5-convergence}
+	\end{center}
+\end{figure}
+
+More specifically, the performance converges after only $10,000$ training epsidodes.
+
+Finally, the part of Figure \ref{nim-epsilon-win-comparison} that seems to show the most changes is where $\epsilon$ is very small. Figure \ref{nim-0-01-convergence} displays the results of a convergence test on $\epsilon = 0.01$. This shows that the policy takes much longer to converge -- $69,000$ training episodes, to be precise.
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=125mm]{Nim_PerformanceResults_0_01.png}
+		\caption{Changes in agent's performance in Nim with $\epsilon = 0.01$}
+		\label{nim-0-01-convergence}
+	\end{center}
+\end{figure}
+
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{c c c}
+		Epsilon & Training Episodes & Winning Rate \\
+		\hline
+		0.01 & 42,000 & 70.7\% \\
+		0.1  & 19,000 & 72.6\% \\
+		0.5 & 7,000 & 64.7\% \\
+	\end{tabular}
+	\caption{Data About Policy Convergence for Multiple Values of Epsilon}
+	\label{table:nim_convergence_table}
+\end{table}
 
 
 %-----------------------
