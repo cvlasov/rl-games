@@ -27,6 +27,11 @@ public final class RandomAgent implements Agent {
   }
 
   @Override
+  public Action chooseActionES(State s, Action a) {
+    return a;
+  }
+
+  @Override
   public void receiveReturn(double amount) {
     // do nothing
   }

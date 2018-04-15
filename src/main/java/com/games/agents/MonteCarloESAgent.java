@@ -14,24 +14,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Game-playing agent that uses an epsilon-soft on-policy Monte Carlo control
- * algorithm.
+ * Game-playing agent that uses a Monte Carlo control algorithm assuming
+ * exploring starts.
  */
-public class MonteCarloAgent implements Agent {
+public class MonteCarloESAgent implements Agent {
 
   boolean debug = false;
-
-  /** Value of epsilon used in policy improvement. */
-  private final double EPSILON;
 
   /**
    * Agent's policy.
    * <p>
-   * Maps a state to all possible actions from that state and maps each of these
-   * actions to the probability of choosing that action from that state under
-   * this policy.
+   * Maps a state to the best action found so far from that state.
    */
-  private final Map<State, Map<Action, Double>> PI = new HashMap<>();
+  private final Map<State, Action> PI = new HashMap<>();
 
   /**
    * Action-value function for policy PI.
@@ -64,45 +59,8 @@ public class MonteCarloAgent implements Agent {
   /** Most recent action for which a return has not yet been given. */
   private Action lastAction;
 
-  public MonteCarloAgent(double e) {
-    EPSILON = e;
-  }
-
-  public MonteCarloAgent(double e, boolean debug) {
-    EPSILON = e;
+  public MonteCarloESAgent(boolean debug) {
     this.debug = debug;
-  }
-
-  @VisibleForTesting
-  MonteCarloAgent(double e,
-                  Map<State, Map<Action, Double>> episodeStates,
-                  Map<State, Map<Action, Double>> actionValueFunction,
-                  Map<State, Map<Action, Integer>> stateActionCounts) {
-    EPSILON = e;
-    this.episodeStates.clear();
-    this.episodeStates.putAll(episodeStates);
-    this.Q.clear();
-    this.Q.putAll(actionValueFunction);
-    this.stateActionCounts.clear();
-    this.stateActionCounts.putAll(stateActionCounts);
-  }
-
-  @VisibleForTesting
-  MonteCarloAgent(double e,
-                  Map<State, Map<Action, Double>> map,
-                  boolean isActionValueFunction,
-                  boolean isPolicy) {
-    EPSILON = e;
-
-    if (isActionValueFunction) {
-      this.Q.clear();
-      this.Q.putAll(map);
-    }
-
-    if (isPolicy) {
-      this.PI.clear();
-      this.PI.putAll(map);
-    }
   }
 
   @Override
@@ -135,37 +93,11 @@ public class MonteCarloAgent implements Agent {
     } else {
       // This state was encountered in a previous episode, so the policy is not
       // arbitrary
-      Map<Action, Double> policy = PI.get(state);
-
-      assert (new HashSet<Action>(actions)).equals(policy.keySet())
-             : "state's available actions not equal to actions in policy";
-
       if (debug) {
         state.print();
-        System.out.println();
-
-        System.out.println("available actions:");
-        for (Action a : actions) {
-          System.out.print("-- ");
-          a.print();
-          System.out.println();
-        }
-
-        System.out.println();
-
-        System.out.println("policy actions:");
-        for (Action a : policy.keySet()) {
-          System.out.print("-- ");
-          a.print();
-          System.out.println();
-        }
-
-        System.out.println();
-        System.out.println("state has been encountered before, computing CDF:");
+        System.out.println("state has been encountered before");
       }
-
-      double[] cdf = computeCDF(actions, policy);
-      lastAction = actions.get(chooseActionIndex(cdf));
+      lastAction = PI.get(state);
     }
 
     if (debug) {
@@ -181,7 +113,18 @@ public class MonteCarloAgent implements Agent {
 
   @Override
   public Action chooseActionES(State state, Action action) {
-    return chooseAction(state);
+    lastAction = action;
+
+    if (debug) {
+      state.print();
+      System.out.print("--> CHOSEN ACTION: ");
+      lastAction.print();
+      System.out.println();
+      System.out.println();
+    }
+
+    lastState = state;
+    return lastAction;
   }
 
   /** Handles the return received for {@link #lastAction}. */
@@ -234,56 +177,8 @@ public class MonteCarloAgent implements Agent {
   }
 
   @VisibleForTesting
-  public Map<State, Map<Action, Double>> getPolicy() {
+  public Map<State, Action> getPolicy() {
     return PI;
-  }
-
-  /**
-   * Computes the cumulative distribution function of the agent's policy at a
-   * particular state.
-   */
-  @VisibleForTesting
-  double[] computeCDF(List<Action> actions, Map<Action, Double> policy) {
-    double[] cdf = new double[policy.size()];
-
-    if (policy.size() == 0) return cdf;
-
-    if (debug) {
-      System.out.print("action ");
-      actions.get(0).print();
-      System.out.println(" has probability " + policy.get(actions.get(0)));
-    }
-
-    cdf[0] = policy.get(actions.get(0));
-
-    for (int i = 1; i < actions.size() /* = policy.size() */ ; i++) {
-
-      if (debug) {
-        System.out.print("action ");
-        actions.get(i).print();
-        System.out.println(" has probability " + policy.get(actions.get(i)));
-      }
-
-      cdf[i] = cdf[i-1] + policy.get(actions.get(i));
-    }
-
-    return cdf;
-  }
-
-  private int chooseActionIndex(double[] cdf) {
-    int i = Arrays.binarySearch(cdf, Math.random());
-
-    if (i < 0) {
-      // Arrays.binarySearch returns -i-1 if the insertion index is i (and
-      // the value is not already in the array
-      return (-i) - 1;
-
-    } else if (i < cdf.length) {
-      return i;
-
-    } else { // i == cdf.length
-      return cdf.length - 1;
-    }
   }
 
   // Recalculate action-value function for states that were visited in the most
@@ -318,7 +213,7 @@ public class MonteCarloAgent implements Agent {
         continue;
       }
 
-      updatePolicyForState(s, getBestAction(s));
+      PI.put(s, getBestAction(s));
     }
   }
 
@@ -337,23 +232,5 @@ public class MonteCarloAgent implements Agent {
     }
 
     return bestAction;
-  }
-
-  @VisibleForTesting
-  void updatePolicyForState(State s, Action bestAction) {
-    if (!PI.containsKey(s)) {
-      PI.put(s, new HashMap<>());
-    }
-
-    // Probability for sub-optimal action
-    double randomProb = EPSILON / s.getActions().size();
-
-    for (Action a : s.getActions()) {
-      if (a.equals(bestAction)) {
-        PI.get(s).put(a, 1 - EPSILON + randomProb);
-      } else {  // not the best action
-        PI.get(s).put(a, randomProb);
-      }
-    }
   }
 }
