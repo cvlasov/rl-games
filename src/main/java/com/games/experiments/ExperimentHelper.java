@@ -208,6 +208,7 @@ public final class ExperimentHelper {
 
       int[] wins = new int[3]; // index 0 is draw, 1 is agent1, 2 is agent2
       Game game = null;
+      boolean exploringStarts = false;
       MonteCarloAgent mcAgent = new MonteCarloAgent(epsilon, debug);
       MonteCarloESAgent mcAgentES = new MonteCarloESAgent(debug);
       RandomAgent randAgent = new RandomAgent();
@@ -222,6 +223,7 @@ public final class ExperimentHelper {
             break;
           case NIM_ES:
             game = new NimGameES(mcAgentES, randAgent);
+            exploringStarts = true;
             break;
           case TIC_TAC_TOE_NORMAL:
             game = new TicTacToeNormalGame(mcAgent, randAgent);
@@ -244,7 +246,8 @@ public final class ExperimentHelper {
             String.valueOf(wins[1]),
             String.valueOf(wins[2]),
             String.valueOf(wins[0]),
-            String.valueOf(mcAgent.getPolicy().size())
+            String.valueOf(exploringStarts ? mcAgentES.getPolicy().size()
+                                           : mcAgent.getPolicy().size())
           });
       }
     }
