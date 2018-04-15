@@ -1,7 +1,7 @@
 package com.games.nim;
 
 import static com.games.nim.NimHelper.NUM_PILES;
-import static com.games.nim.NimHelper.TOKENS_PER_PILE;
+import static com.games.nim.NimHelper.MAX_TOKENS_PER_PILE;
 
 import com.games.nim.NimHelper.Player;
 import com.games.nim.NimHelper.Winner;
@@ -39,7 +39,16 @@ public class NimState implements State {
   /** Creates a state with all piles full. */
   public NimState() {
     piles = new int[NUM_PILES];
-    Arrays.fill(piles, TOKENS_PER_PILE);
+    initialisePiles(false /* not with exploring starts */);
+    nextTurn = Player.X;
+    computeActions();
+    isTerminalState();  // ignore result
+  }
+
+  /** Creates a state with all piles full or initialised randomly. */
+  public NimState(boolean withExploringStarts) {
+    piles = new int[NUM_PILES];
+    initialisePiles(withExploringStarts);
     nextTurn = Player.X;
     computeActions();
     isTerminalState();  // ignore result
@@ -158,7 +167,33 @@ public class NimState implements State {
   }
 
 
-  // HELPER METHOD
+  // HELPER METHODS
+
+  /**
+   * Fills the piles with random numbers of tokens, if with exploring starts,
+   * otherwise fills all piles with the maximum number of tokens.
+   */
+  private void initialisePiles(boolean withExploringStarts) {
+    if (withExploringStarts) {
+      int nonEmptyPileCount = 0;
+
+      // To ensure game doesn't end after one move
+      while (nonEmptyPileCount < 2) {
+        nonEmptyPileCount = 0;
+
+        for (int i = 0 ; i < piles.length ; i++) {
+          piles[i] = (int) (Math.random() * (MAX_TOKENS_PER_PILE + 1));
+
+          if (piles[i] > 0) {
+            nonEmptyPileCount++;
+          }
+        }
+      }
+
+    } else {
+      Arrays.fill(piles, MAX_TOKENS_PER_PILE);
+    }
+  }
 
   /**
    * Populates {@link #actions} with all actions that can be taken from this

@@ -5,8 +5,8 @@ public class NimHelper {
   /** Number of piles in the game. */
   public static final int NUM_PILES = 3;
 
-  /** Number of tokens in each pile when the game begins. */
-  public static final int TOKENS_PER_PILE = 7;
+  /** Maximum number of tokens in each pile when the game begins. */
+  public static final int MAX_TOKENS_PER_PILE = 7;
 
   /** Return for an action that causes the game to end and results in a win. */
   public static final int WIN_RETURN = 1;
