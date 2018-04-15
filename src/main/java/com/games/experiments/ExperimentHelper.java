@@ -1,11 +1,13 @@
 package com.games.experiments;
 
 import com.games.agents.MonteCarloAgent;
+import com.games.agents.MonteCarloESAgent;
 import com.games.agents.RandomAgent;
 import com.games.chungtoi.ChungToiGame;
 import com.games.general.Game;
 import com.games.general.State;
 import com.games.nim.NimGame;
+import com.games.nim.NimGameES;
 import com.games.tictactoe.TicTacToeGameWithLimitedActions;
 import com.games.tictactoe.TicTacToeGameWithSymmetricEquality;
 import com.games.tictactoe.TicTacToeNormalGame;
@@ -36,6 +38,7 @@ public final class ExperimentHelper {
   enum GameType {
     CHUNG_TOI ("ChungToi"),
     NIM ("Nim"),
+    NIM_ES ("NimExploringStarts"),
     TIC_TAC_TOE_NORMAL ("TicTacToeNormal"),
     TIC_TAC_TOE_LIMITED_ACTIONS ("TicTacToeLimitedActions"),
     TIC_TAC_TOE_SYMMETRIC_EQUALITY ("TicTacToeSymmetricEquality");
@@ -95,6 +98,7 @@ public final class ExperimentHelper {
 
       csvWriter.writeNext(headerRecord);
 
+      iterate_epsilon:
       for (double epsilon = epsilonStart ;
            epsilon <= epsilonEnd + (epsilonPrecision/10);  // for floating-point error
            epsilon += epsilonPrecision) {
@@ -131,6 +135,8 @@ public final class ExperimentHelper {
             case NIM:
               game = new NimGame(mcAgent, randAgent);
               break;
+            case NIM_ES:
+              break iterate_epsilon;
             case TIC_TAC_TOE_NORMAL:
               game = new TicTacToeNormalGame(mcAgent, randAgent);
               break;
@@ -203,6 +209,7 @@ public final class ExperimentHelper {
       int[] wins = new int[3]; // index 0 is draw, 1 is agent1, 2 is agent2
       Game game = null;
       MonteCarloAgent mcAgent = new MonteCarloAgent(epsilon, debug);
+      MonteCarloESAgent mcAgentES = new MonteCarloESAgent(debug);
       RandomAgent randAgent = new RandomAgent();
 
       for (int gamesSoFar = 1 ; gamesSoFar <= numGames ; gamesSoFar++) {
@@ -212,6 +219,9 @@ public final class ExperimentHelper {
             break;
           case NIM:
             game = new NimGame(mcAgent, randAgent);
+            break;
+          case NIM_ES:
+            game = new NimGameES(mcAgentES, randAgent);
             break;
           case TIC_TAC_TOE_NORMAL:
             game = new TicTacToeNormalGame(mcAgent, randAgent);
