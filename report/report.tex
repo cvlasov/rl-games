@@ -166,9 +166,17 @@ In addition to the terms described in Section \ref{sec:RL}, the following terms 
 This section describes the implementations of Tic-Tac-Toe, Chung Toi, and Nim, as well as the game-playing agents used in this project's experiments.
 
 
-\section{Overview}
+\section{Structure}
 
-The project is written entirely in Java and is built in a modular way, using an object-oriented style. All actions, agents, games, and states implement general interfaces, called \emph{Action}, \emph{Agent}, \emph{Game}, and \emph{State} respectively, that serve as Facades for the complex implementations.
+The project is written entirely in Java and is built in a modular way, using an object-oriented style. All actions, agents, games, and states implement general interfaces, called \emph{Action}, \emph{Agent}, \emph{Game}, and \emph{State} respectively, that serve as Facades for the complex implementations. Figure \ref{code-structure} shows this structure.
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=125mm]{code_structure.png}
+		\caption{Structure of classes in project.}
+		\label{code-structure}
+	\end{center}
+\end{figure}
 
 The \emph{Game} interface has a method \emph{play()} that simulates a single game. This is where the agents are asked to choose actions, receive returns, and complete other tasks, depending on the specific game. Agents do not distinguish between different games and only use methods defined in the general interfaces, which means that the \emph{MonteCarloAgent} class, for example, can be used to play all three games. This modularity provides a nice separation of concerns that enables simpler testing and debugging.
 
