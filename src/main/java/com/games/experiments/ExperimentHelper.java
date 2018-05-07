@@ -20,8 +20,11 @@ import java.nio.file.Paths;
 
 public final class ExperimentHelper {
 
-  private static final String EPSILON_RESULTS_FILE_NAME =
-      "./%s_EpsilonResults_%dGames_WithPolicySize.csv";
+  private static final String EPSILON_TRAINING_RESULTS_FILE_NAME =
+      "./%s_EpsilonResults_%dGames_Training.csv";
+
+  private static final String EPSILON_TEST_RESULTS_FILE_NAME =
+      "./%s_EpsilonResults_%dTrainingGames_%dTestGames.csv";
 
   private static final String PERFORMANCE_RESULTS_FILE_NAME =
       "./%s_PerformanceResults_Epsilon%.2f_%dGames_WithPolicySize.csv";
@@ -67,7 +70,7 @@ public final class ExperimentHelper {
    * @param debug            whether or not to print debugging statements to the
    *                         console
    */
-  static void saveEpsilonResultsInCSV(
+  static void saveEpsilonTrainingResultsInCSV(
       GameType type,
       double epsilonStart,
       double epsilonEnd,
@@ -75,7 +78,7 @@ public final class ExperimentHelper {
       int numGames,
       boolean debug) throws IOException {
 
-    String fileName = String.format(EPSILON_RESULTS_FILE_NAME,
+    String fileName = String.format(EPSILON_TRAINING_RESULTS_FILE_NAME,
                                     type.toString(),
                                     numGames);
 
@@ -124,6 +127,150 @@ public final class ExperimentHelper {
             System.out.println();
             System.out.println("-------------------------------------------");
             System.out.println("GAME #" + gameNum);
+            System.out.println("-------------------------------------------");
+            System.out.println();
+          }
+
+          switch (type) {
+            case CHUNG_TOI:
+              game = new ChungToiGame(mcAgent, randAgent);
+              break;
+            case NIM:
+              game = new NimGame(mcAgent, randAgent);
+              break;
+            case NIM_ES:
+              break iterate_epsilon;
+            case TIC_TAC_TOE_NORMAL:
+              game = new TicTacToeNormalGame(mcAgent, randAgent);
+              break;
+            case TIC_TAC_TOE_LIMITED_ACTIONS:
+              game = new TicTacToeGameWithLimitedActions(mcAgent, randAgent);
+              break;
+            case TIC_TAC_TOE_SYMMETRIC_EQUALITY:
+              game = new TicTacToeGameWithSymmetricEquality(mcAgent, randAgent);
+              break;
+          }
+
+          int winner = game.play();
+          if (winner == -1) System.out.println("ERROR");
+          wins[winner]++;
+        }
+
+        csvWriter.writeNext(new String[] {
+          String.valueOf(epsilon),
+          String.valueOf(wins[1]),
+          String.valueOf(wins[2]),
+          String.valueOf(wins[0]),
+          String.valueOf(mcAgent.getPolicy().size())});
+       }
+     }
+  }
+
+  /**
+   * Makes a Monte Carlo agent play the given type of game against a random
+   * agent the given number of times, repeating for each value of epsilon in the
+   * given range (inclusive) and saves the results in a CSV file.
+   *
+   * @param type             type of two-player game to play
+   * @param epsilonStart     smallest epsilon value to try
+   * @param epsilonEnd       largest epsilon value to try
+   * @param epsilonPrecision difference between consecutive values tried
+   * @param trainingGames    number of games to training with
+   * @param testGames        number of games to test on (i.e. save results for)
+   * @param debug            whether or not to print debugging statements to the
+   *                         console
+   */
+  static void saveEpsilonTestResultsInCSV(
+      GameType type,
+      double epsilonStart,
+      double epsilonEnd,
+      double epsilonPrecision,
+      int trainingGames,
+      int testGames,
+      boolean debug) throws IOException {
+
+    String fileName = String.format(EPSILON_TEST_RESULTS_FILE_NAME,
+                                    type.toString(),
+                                    trainingGames,
+                                    testGames);
+
+    try (
+      CSVWriter csvWriter = new CSVWriter(
+          Files.newBufferedWriter(Paths.get(fileName)),
+          CSVWriter.DEFAULT_SEPARATOR,
+          CSVWriter.NO_QUOTE_CHARACTER,
+          CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+          CSVWriter.DEFAULT_LINE_END);
+    ) {
+      // Headers of CSV file
+      String[] headerRecord = new String[] {
+          EPSILON_HEADER,
+          String.format(WIN_HEADER,  type.toString()),
+          String.format(LOSS_HEADER, type.toString()),
+          String.format(DRAW_HEADER, type.toString()),
+          POLICY_STATES_HEADER
+        };
+
+      csvWriter.writeNext(headerRecord);
+
+      iterate_epsilon:
+      for (double epsilon = epsilonStart ;
+           epsilon <= epsilonEnd + (epsilonPrecision/10);  // for floating-point error
+           epsilon += epsilonPrecision) {
+
+        if (debug) {
+          System.out.println();
+          System.out.println("-------------------------------------------");
+          System.out.println("-------------------------------------------");
+          System.out.println("NEW EPSILON VALUE: " + epsilon);
+        }
+
+        if (epsilon > epsilonEnd) {  // due to floating-point error
+          epsilon = epsilonEnd;
+        }
+
+        int[] wins = new int[3];  // index 0 is draw, 1 is agent1, 2 is agent2
+        Game game = null;
+        MonteCarloAgent mcAgent = new MonteCarloAgent(epsilon, debug);
+        RandomAgent randAgent = new RandomAgent();
+
+        for (int gameNum = 1 ; gameNum <= trainingGames ; gameNum++) {
+          if (debug) {
+            System.out.println();
+            System.out.println("-------------------------------------------");
+            System.out.println("TRAINING GAME #" + gameNum);
+            System.out.println("-------------------------------------------");
+            System.out.println();
+          }
+
+          switch (type) {
+            case CHUNG_TOI:
+              game = new ChungToiGame(mcAgent, randAgent);
+              break;
+            case NIM:
+              game = new NimGame(mcAgent, randAgent);
+              break;
+            case NIM_ES:
+              break iterate_epsilon;
+            case TIC_TAC_TOE_NORMAL:
+              game = new TicTacToeNormalGame(mcAgent, randAgent);
+              break;
+            case TIC_TAC_TOE_LIMITED_ACTIONS:
+              game = new TicTacToeGameWithLimitedActions(mcAgent, randAgent);
+              break;
+            case TIC_TAC_TOE_SYMMETRIC_EQUALITY:
+              game = new TicTacToeGameWithSymmetricEquality(mcAgent, randAgent);
+              break;
+          }
+
+          game.play();
+        }
+
+        for (int gameNum = 1 ; gameNum <= testGames ; gameNum++) {
+          if (debug) {
+            System.out.println();
+            System.out.println("-------------------------------------------");
+            System.out.println("TEST GAME #" + gameNum);
             System.out.println("-------------------------------------------");
             System.out.println();
           }

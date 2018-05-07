@@ -1,7 +1,7 @@
 package com.games.experiments;
 
 import static com.games.experiments.ExperimentHelper.GameType;
-import static com.games.experiments.ExperimentHelper.saveEpsilonResultsInCSV;
+import static com.games.experiments.ExperimentHelper.saveEpsilonTestResultsInCSV;
 
 import java.io.IOException;
 
@@ -12,11 +12,12 @@ import java.io.IOException;
 public final class NimEpsilonExperiment {
 
   public static void main(String[] args) throws IOException {
-    saveEpsilonResultsInCSV(GameType.NIM,
-                            0.0,       /* epsilon start */
-                            1.0,       /* epsilon end */
-                            0.01,      /* epsilon precision */
-                            1000*1000, /* number of games */
-                            false      /* whether to print debugging stmts */);
+    saveEpsilonTestResultsInCSV(GameType.NIM,
+                                0.0,     /* epsilon start */
+                                1.0,     /* epsilon end */
+                                0.01,    /* epsilon precision */
+                                1*1000,  /* number of training games */
+                                10*1000, /* number of test games */
+                                false    /* whether to print debugging stmts */);
   }
 }
