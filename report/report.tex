@@ -5,6 +5,10 @@
 \usepackage{amsfonts}
 \usepackage{cite}
 \usepackage{graphicx}
+%\usepackage{caption}
+%\usepackage{subcaption}
+\usepackage{verbatim}
+\usepackage{subfigure}
 \graphicspath{ {images/} }
 
 \author{Catherine Vlasov}
@@ -159,6 +163,10 @@ In addition to the terms described in Section \ref{sec:RL}, the following terms 
 	\item \textbf{Training episode}: Making a MC agent play one iteration of a game for the purposes of learning/training
 
 	\item \textbf{Training session}: Running some number of training episodes consecutively (e.g. ten thousand, one million)
+
+	\item \textbf{Testing episode}: Making a MC agent play one iteration of a game for the purpose of testing the policy it learned during a training session
+
+	\item \textbf{Testing session}: Running some number of testing episodes consecutively (e.g. ten thousand, one million)
 
 \end{itemize}
 
@@ -520,6 +528,25 @@ The game that is most conducive to applying the Monte Carlo with exploring start
 The policy converges after around 14,000 training episodes and at that point the winning rate is 61.3\% and the number of states encountered is 511 (i.e. all states). This is very interesting because in the convergence experiment with the on-policy $\varepsilon$-soft MC agent, the largest winning rate \emph{at the point when the agent's policy converges} of any value of $\varepsilon$ (among the values in Table \ref{table:nim_convergence_table}) was around 76.5\%, meaning it won 15\% more training episodes than the exploring starts agent.
 
 [\emph{I will add more discussion here. I could also make the two agents *after all the training* play another 100,000 games and see who wins more.}]
+
+
+\section{Effect of Eliminating Symmetry}
+
+\begin{figure}
+    \centering
+
+    \subfigure[10,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_10k_no_legend.png}}
+    \subfigure[20,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_20k_no_legend.png}}
+    \subfigure[40,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_40k_no_legend.png}}
+    \subfigure[80,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_80k_no_legend.png}}
+    \subfigure[160,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_160k_no_legend.png}}
+    \subfigure[320,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_320k_no_legend.png}}
+    \subfigure[640k,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_640k_no_legend.png}}
+    \subfigure[1,280,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_1280k_no_legend.png}}
+
+    \caption{Graphs of the percent of 10,000 test episodes of Tic-Tac-Toe won by the MC agent versus the value of epsilon used, for different numbers of training epsiodes. In each graph, the x-axis shows the value of epsilon, the y-axis shows the percentage of test episodes won, the dotted line shows the agent's performance when playing Normal Tic-Tac-Toe, and the solid line shows the agent's performance when playing Tic-Tac-Toe with Symmetric Equality.}
+    \label{fig:tictactoe-normal-vs-symmetric-equality}
+\end{figure}
 
 
 %-----------------------
