@@ -49,22 +49,23 @@ Over the last few decades, reinforcement learning has seen a large increase in p
 
 \section{Goals}
 
-The specific Monte Carlo algorithm this project investigates is called an ``on-policy $\varepsilon$-soft Monte Carlo control algorithm''. For those unfamiliar with reinforcement learning, Section \ref{sec:Terminology} explains the basics as well as terminology used throughout this report, such as ``on-policy'' and ``$\varepsilon$-soft''. As the name suggests, the algorithm uses a parameter $\varepsilon$ to guide its learning. Effectively, it determines the balance between exploitation (choosing actions that are best, according to what it currently knows) and exploration (trying new actions). Thus, the chosen value of $\varepsilon$ can have a large effect on an agent's learning rate and therefore success at a particular task.
+The specific Monte Carlo algorithm this project implements and investigates is called an ``on-policy $\varepsilon$-soft Monte Carlo control algorithm''. Section \ref{sec:Terminology} explains the basics of reinforcement learning as well as terminology used throughout this report, such as ``on-policy'' and ``$\varepsilon$-soft''. As the name suggests, the algorithm uses a parameter $\varepsilon$ to guide its learning. Effectively, it determines the balance between exploitation (choosing actions that are best, according to what it currently knows) and exploration (trying new actions). Thus, the chosen value of $\varepsilon$ can have a large effect on an agent's learning rate and therefore success at a particular task.
 
-The on-policy $\varepsilon$-soft Monte Carlo control algorithm is not the primary subject of many research papers since it is simple, relative to other popular reinforcement learning techniques. However, this simplicity facilitates an interesting analysis of the effect of the value of $\varepsilon$ on the algorithm's success rate. Hopefully some of the insights and results found along the way can be extended to other reinforcement learning algorithms with parameters that need to configured.
+The on-policy $\varepsilon$-soft Monte Carlo control algorithm is not the primary subject of many research papers since it is simple, relative to other popular reinforcement learning techniques. Consequently, there is a lack of guidance on how to apply the algorithm to real tasks and achieve the greatest success given constraints such as computing power and time.
+
+The simplicity of the algorithm, however, facilitates an interesting analysis of the effect of the value of $\varepsilon$ on the algorithm's success rate. The overarching goal of this project is to develop a general technique for tailoring the algorithm to a particular reinforcement learning task, which can then be extended to other reinforcement learning algorithms with parameters that need to configured.
 
 This project tackles a number of questions:
 
 \begin{itemize}
 	\item Are there ``optimal'' values of $\varepsilon$ that maximise the algorithm's performance?
 	\item How quickly does the algorithm's policy converge? Does it converge to the theoretical optimal policy?
-	\item How does the Monte Carlo with Exploring Starts algorithm (referred to as Monte Carlo ES \cite{rl-book}) affect the convergence rate of the policy?
 	\item When playing games where states have axes of symmetry, how does the agent's 
 performance and learning change when symmetry is eliminated?
 	\item How does the performance of the algorithm differ for different games?
 \end{itemize}
 
-Three games were selected for this project: Tic-Tac-Toe, Chung Toi, and Nim. They are discussed in further detail in Section \ref{sec:DesignImpl}. They form an interesting mix since some have relatively long episodes, others are conducive to a study of the Monte Carlo ES algorithm, and some can be used to investigate symmetry. Thus, it was possible to answer all of the above questions and derive some interesting results.
+Three games were selected for this project: Tic-Tac-Toe, Chung Toi, and Nim. They are discussed in further detail in Section \ref{sec:DesignImpl}. They form an interesting mix since some have relatively long episodes, others can be used to investigate symmetry, and some with a similar state space can be compared against each other. Thus, it was possible to answer all of the above questions and derive some interesting results.
 
 
 
