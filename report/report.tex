@@ -15,6 +15,7 @@
 \title{Optimizing Learning Parameters Used by Reinforcement Learning Algorithms}
 \date{23 April 2018}
 
+\newcommand{\argmax}{\mathop{\mathrm{arg\,max}}}
 
 \begin{document}
 
@@ -64,6 +65,7 @@ This project tackles a number of questions:
 \begin{itemize}
 	\item Are there ``optimal'' values of $\varepsilon$ that maximise the algorithm's performance?
 	\item How quickly does the algorithm's policy converge? Does it converge to the theoretical optimal policy?
+    \item How does the Monte Carlo with Exploring Starts algorithm (Monte Carlo ES \cite{rl-book}) affect the convergence rate of the policy?
 	\item When playing games where states have axes of symmetry, how does the agent's 
 performance and learning change when symmetry is eliminated?
 	\item How does the performance of the algorithm differ for different games?
@@ -459,90 +461,104 @@ Of course, the same number of training episodes will have different optimal $\va
 
 In the context of training a MC agent to play a game, the ``speed'' at which the agent's policy converges is the number of training episodes the agent needs until its policy $\pi$ converges. Naturally, this varies depending on the value of $\varepsilon$ used by the agent.
 
-The policy of the MC agent only converges to the theoretically optimal policy in the limit of infinitely many training episodes \cite{rl-book}. Since running infinitely many episodes is naturally infeasibly, in this project we consider the policy to have converged after $x$ training episodes if the agent's winning rate changes by less than 0.1\% after $x$ training episodes compared to after $x+1000$ training episodes as well as after $x+1000$ training episodes compared to after $x+2000$ training episodes and after $x+2000$ training episodes compared to after $x+3000$ training episodes.
-
 As described in Section \ref{sec:experiment-types}, convergence experiments provide the data needed to compare different values of $\varepsilon$ and to analyse the speed of convergence. Convergence experiments produce the proportions of a MC agent's wins and losses (and draws, if applicable) at regular intervals during a training session, using a specific value of epsilon. Thus, by plotting the proportions of wins, we see how quickly the policy changes. Convergence experiments do not involve any testing episodes because their goal is to analyse the algorithm during training in order to gain insight into what an appropriate number of training episodes is for a particular game.
 
-For instance, as we saw earlier in Figure \ref{fig:nim_win_comparison}, the agent's winning rate when playing Nim changes quite a bit as the number of training episodes increases. The best way to gain an intuition of how the policy converges for different epsilon value is to run convergence experiments with a few different values. Figure \ref{nim-convergence-comparison} shows the results of experiments run for $\varepsilon = 0.01, 0.1, 0.5$.
+The policy of the MC agent only converges to the theoretically optimal policy in the limit of infinitely many training episodes \cite{rl-book}. Since running infinitely many episodes is naturally infeasibly, 100,000 training episodes are run in the convergence experiments and the resulting graphs are inspected to see how long it takes for the winning rate to stabilise.
+
+It might also be natural to define some notion of convergence. For instance, one might consider the policy to have converged after $x$ training episodes if the agent's winning rate changes by less than 0.1\% after $x$ training episodes compared to after $x+1000$ training episodes. This technique was trialled, but the results did not provide any additional insight relative to visual inspection and comparison of the convergence experiment graphs, so they are omitted.
+
+As we saw earlier in Figure \ref{fig:nim_win_comparison}, the agent's winning rate when playing Nim changes quite a bit as the number of training episodes increases. The best way to gain an intuition of how the policy converges for different epsilon value is to run convergence experiments with a few different values. Figure \ref{nim-convergence-comparison} shows the results of experiments run for $\varepsilon = 0.01, 0.02,..., 0.64$.
 
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=\linewidth]{Nim_PerformanceResults_Comparison.png}
-		\caption{Changes in the agent's winning rate for Nim as the number of training episodes increases, for different values of epsilon. The legend entries indicate the values of epsilon used. The highlighted datapoints indicate the places where the policy converges, namely after 52,000 training episodes for $\varepsilon = 0.01$, 28,000 for $\varepsilon = 0.1$, and 22,000 for $\varepsilon = 0.5$ .}
+		\includegraphics[width=\linewidth]{Nim_PerformanceResults_Comparison_001_to_064.png}
+		\caption{Changes in the agent's winning rate for Nim as the number of training episodes increases, for different values of epsilon. The legend entries indicate the values of epsilon used. The highlighted datapoints indicate the places where the policy converges.}
 		\label{nim-convergence-comparison}
 	\end{center}
 \end{figure}
 
-Figure \ref{nim-convergence-comparison} does an excellent job of illustrating the impact of the value of epsilon on the winning rate. When it is too large (like the $\varepsilon = 0.5$ curve on the graph), the winning rate is lower after convergence compared to smaller values. This is simply because the agent does not use its knowledge of the best actions often enough and still chooses actions at random 50\% of the time. As well, the winning rate flattens faster than for smaller values of epsilon. However, it is worth noting that when few training episodes have elapsed, large values of epsilon do perform better. This can be observed in the graph during the first 20,000 training episodes.
+Figure \ref{nim-convergence-comparison} does an excellent job of illustrating the impact of the value of epsilon on the winning rate. There is a very clear trend: as epsilon increases, the policy converges faster (i.e. after fewer training episodes). Also, for the most part, as epsilon increases, the stabilised winning rate decreases -- this trend is particularly clear for the larger value of epsilon.
 
-Small values of epsilon (like $\varepsilon = 0.01$) take much longer to converge because it takes longer for the agent to encounter all (or most) of the states. However, after enough games, its limited exploration reaps its benefits and it then outperforms larger values of epsilon.
+In fact, Figure \ref{nim-convergence-comparison} also turns out to be another way of visualising the balance between the magnitude of epsilon and the number of training episodes that maximises the agent's winning rate. Suppose that performance experiments are run for all values of epsilon from 0 to 1, inclusive at intervals of 0.01 and that all the curves are plotted on the same graph. Consider a vertical ``slice'' of the graph -- namely the winning rate for each value of epsilon after a specific number of training episodes, say 8,000. This slice is actually a projection of the graph of the winning rates from an epsilon experiment for 8,000 training episodes onto the y-axis. Figure \ref{nim-epsilon-flattening} gives a visualisation of such a projection.
 
+\begin{figure}[htbp]
+    \centering
+    \subfigure[Nim winning rate for 1,000 testing episodes after 8,000 training episodes]{\includegraphics[height=0.15\paperheight]{Nim_EpsilonResults_8kTrainingGames_1kTestingGames.png} \label{nim-8k-epsilon-results}}
+    \subfigure[Results projected onto y-axis]{\includegraphics[height=0.15\paperheight]{Nim_EpsilonResults_8kTrainingGames_1kTestingGames_Flattened.png}  \label{nim-8k-epsilon-results-flattened}}
+    \caption{Flattening of Nim epsilon experiment results. \ref{nim-8k-epsilon-results} shows the winning rate from a Nim epsilon experiment for 8,000 training episodes. \ref{nim-8k-epsilon-results-flattened} shows the same results, but projected onto the y-axis. Each data point corresponds to a different value of epsilon.}
+    \label{nim-epsilon-flattening}
+\end{figure}
 
+Each slice corresponds to the results of some epsilon experiment, so the same simple equation is used  in both cases to choose which epsilon to use for a fixed number of training episodes. Specifically:
 
-Convergence experiments were run on several values of epsilon and the results are summarised in Table \ref{table:nim_convergence_table}. As we can see, the results empirically verify the following intuitions:
+\begin{equation}
+	\varepsilon^{optimal} = \argmax_{\varepsilon} WinningRate(\varepsilon)
+\end{equation}
 
-\begin{itemize}
-
-	\item \textbf{$\varepsilon$ should not be too small (otherwise new actions will rarely be chosen) or too large (otherwise the best actions will rarely be chosen).} This is indeed the case since the best value of epsilon is not quite at either extreme of the range of values tried. For Nim, the value with the largest winning rate at convergence is $\varepsilon = 0.04$.
-
-	\item \textbf{In general, as $\varepsilon$ gets larger, the number of training episodes until convergence decreases.}
-
-	\item \textbf{As $\varepsilon$ gets larger, the agent is more likely to encounter all possible states (assuming a reasonably small state space).} This is clearer when looking at Table \ref{table:nim_convergence_table}, which shows the actual data produced by the convergence experiments since it shows how many states were encountered after every additional 1,000 training episodes. Looking at the detailed results in the CSV file produced by the experiment, we can see event more: in the case of $\varepsilon = 0.64$ all states were encountered after only 5,000 episodes whereas it took tens of thousands of episodes for the smaller values of $\varepsilon$ that were tested.
-
-\end{itemize}
-
-\begin{table}[ht]
-	\centering
-	\begin{tabular}{c c c c}
-		Epsilon & Training Episodes & States Encountered & Winning Rate \\
-		\hline
-		0.01 & 42,000 & 494 & 70.7\% \\
-		0.02  & 47,000 & 507 & 75.7\% \\
-		0.04  & 38,000 & 511 & 76.5\% \\
-		0.08  & 21,000 & 508 & 76.1\% \\
-		0.16  & 19,000 & 507 & 72.7\% \\
-		0.32  & 9,000 & 509 & 70.4\% \\
-		0.64 & 8,000 & 511 & 61.5\% \\
-	\end{tabular}
-	\caption{Data About Nim Policy Convergence for Multiple Values of Epsilon}
-	\label{table:nim_convergence_table}
-\end{table}
+Overall, these results verify what was uncovered in Section \ref{sec:optimal_epsilon}. Specifically, the choice of epsilon depends on how many training episodes can be played. For few episodes, larger values of epsilon are better since they converge to their maximal winning rate quickly. For a large number of episodes, smaller value of epsilon are preferable because they provide a better maximal winning rate once they converge.
 
 
 \section{Monte Carlo with Exploring Starts}
 
-The game that is most conducive to applying the Monte Carlo with exploring starts algorithm is Nim because it is easy to create a random starting state. Since Monte Carlo with exploring starts does not have any learning parameters like $\varepsilon$, the only relevant type of experiment is a convergence experiment. Normally, a convergence experiment takes a value of $\varepsilon$ as an argument, but since such a value is not used by an agent that implements the exploring starts algorithm, the argument is ignored. Thus, the only experiment parameter that can be modified is the total number of training episodes. For consistency with the other experiments on Nim, the convergence experiment for Nim with exploring starts was run 100,000 times and the results can be seen in Figure \ref{nim-exploring-starts-convergence}.
+The game that is most conducive to applying the Monte Carlo with Exploring Starts (Monte Carlo ES) algorithm is Nim because it is easy to create a random starting state. Since Monte Carlo ES does not have any learning parameters like $\varepsilon$, the only relevant type of experiment is a convergence experiment. Normally, a convergence experiment takes a value of $\varepsilon$ as an argument, but since such a value is not used by an agent that implements the exploring starts algorithm, the argument is ignored. Thus, the only experiment parameter that can be modified is the total number of training episodes. For consistency with the other Nim experiments, the convergence experiment for Nim with ES was run 100,000 times and the results can be seen in Figure \ref{nim-convergence-comparison-with-ES}.
 
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=125mm]{NimExploringStarts_Convergence.png}
-		\caption{Changes in agent's performance in Nim with exploring starts}
-		\label{nim-exploring-starts-convergence}
+		\includegraphics[width=\linewidth]{Nim_PerformanceResults_Comparison_001_to_064_and_ES.png}
+		\caption{Comparison of the results of convergence experiments for Nim with ES and normal Nim with different values of epsilon. This is identical to the graph in Figure \ref{nim-convergence-comparison} except that the curve for the Monte Carlo ES algorithm is superimposed.}
+		\label{nim-convergence-comparison-with-ES}
 	\end{center}
 \end{figure}
 
-The policy converges after around 14,000 training episodes and at that point the winning rate is 61.3\% and the number of states encountered is 511 (i.e. all states). This is very interesting because in the convergence experiment with the on-policy $\varepsilon$-soft MC agent, the largest winning rate \emph{at the point when the agent's policy converges} of any value of $\varepsilon$ (among the values in Table \ref{table:nim_convergence_table}) was around 76.5\%, meaning it won 15\% more training episodes than the exploring starts agent.
+As we can see, Monte Carlo ES performs similarly to Monte Carlo with a relatively large value of epsilon (like $\varepsilon$ = 0.64 in Figure \ref{nim-convergence-comparison-with-ES}). This seems reasonable because as epsilon approaches 1, the agent chooses actions randomly more and more often. Thus, the agent is increasingly likely to choose actions that lead to suboptimal or losing states (i.e. states where the other player can win in their next move), regardless of whether or not they know better. In a similar way, Monte Carlo ES forces the agent into certain states (right at the start of each episode), many of which are sub-optimal or losing states. This element of randomness when Monte Carlo ES determines the starting state appears to have a similar effect to the element of randomness that the on-policy $\varepsilon$-soft MC algorithm exhibits when epsilon is large.
 
-[\emph{I will add more discussion here. I could also make the two agents *after all the training* play another 100,000 games and see who wins more.}]
+Clearly, Monte Carlo ES does converge to some policy, but it is clear that there are better policies since many values of epsilon cause an on-policy $\varepsilon$-soft MC agent to converge to a policy with a higher winning rate.
 
 
 \section{Effect of Eliminating Symmetry}
 
+Tic-Tac-Toe is used to study the effect of eliminating all axes of symmetry from a game on a MC agent's performance. As discussed in Section \ref{sec:TicTacToeImplementation}, each Tic-Tac-Toe state can be symmetrical with up to seven other states. The game has four axes of symmetry (horizontal, vertical, and two diagonals) and reflecting states in one or more of them produces all possible reflections and rotations. The ``normal'' Tic-Tac-Toe implementation does not implement any symmetry-breaking, whereas the ``symmetric equality'' (SE) Tic-Tac-Toe implementation breaks all symmetry between states -- these are discussed in more detail in Section \ref{sec:TicTacToeImplementation}.
+
+Naturally, an implementation that breaks symmetries should be expected to perform better because it can combine its knowledge about symmetrical states and therefore produce a more accurate estimate $Q^{\pi}$ of the action-value function. This intuition is confirmed by running epsilon experiments for different numbers of training episoides for both normal Tic-Tac-Toe and SE Tic-Tac-Toe and the results are shown in Figure \ref{fig:tictactoe-normal-vs-symmetric-equality-epsilon}.
+
 \begin{figure}
     \centering
 
-    \subfigure[10,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_10k.png}}
+    \subfigure[10,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_10k.png} \label{ttt-n-vs-se-10k}}
     \subfigure[20,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_20k.png}}
     \subfigure[40,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_40k.png}}
     \subfigure[80,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_80k.png}}
     \subfigure[160,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_160k.png}}
     \subfigure[320,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_320k.png}}
-    \subfigure[640k,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_640k.png}}
-    \subfigure[1,280,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_1280k.png}}
+    \subfigure[640,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_640k.png}}
+    \subfigure[1,280,000 training episodes]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_1280k.png} \label{ttt-n-vs-se-1280k}}
 
-    \caption{Graphs of the percent of 10,000 testing episodes of Tic-Tac-Toe won by the MC agent versus the value of epsilon used, for different numbers of training epsiodes. In each graph, the x-axis shows the value of epsilon, the y-axis shows the percentage of testing episodes won, the dotted line shows the agent's performance when playing Normal Tic-Tac-Toe, and the solid line shows the agent's performance when playing Tic-Tac-Toe with Symmetric Equality.}
-    \label{fig:tictactoe-normal-vs-symmetric-equality}
+    \caption{Graphs of the percent of 10,000 testing episodes of Tic-Tac-Toe won by the MC agent versus the value of epsilon used, for different numbers of training epsiodes. In each graph, the x-axis shows the value of epsilon, the y-axis shows the percentage of testing episodes won, the dotted line shows the agent's performance in normal Tic-Tac-Toe, and the solid line shows the agent's performance in SE Tic-Tac-Toe.}
+    \label{fig:tictactoe-normal-vs-symmetric-equality-epsilon}
 \end{figure}
+
+In all eight experiments, the SE implementation outperformed the normal implementation by roughly 10\%. Upon closer inspection, the normal implementation's best winning rate is around 60\% after the agent was trained for only 10,000 episodes (Figure \ref{ttt-n-vs-se-10k}) and this increases to around 70\% after 1,280,000 training episodes (Figure \ref{ttt-n-vs-se-1280k}). On the other hand, the SE implementation already reaches a winning rate of around 80\% after only 10,000 episodes (Figure \ref{ttt-n-vs-se-10k}) and this only improves by a few percentage points after 1,280,000 training episodes (Figure \ref{ttt-n-vs-se-1280k}).
+
+This suggests that the SE implementation causes the MC agent's policy to converge much faster. To test this, we run performance experiments on both implementations for several values of epsilon and compare the results in Figure \ref{fig:tictactoe-normal-vs-symmetric-equality-performance}.
+
+\begin{figure}
+    \centering
+
+    \subfigure[$\varepsilon$ = 0.01]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_001.png} \label{ttt-n-vs-se-0-01}}
+    \subfigure[$\varepsilon$ = 0.02]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_002.png} \label{ttt-n-vs-se-0-02}}
+    \subfigure[$\varepsilon$ = 0.04]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_004.png}}
+    \subfigure[$\varepsilon$ = 0.08]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_008.png}}
+    \subfigure[$\varepsilon$ = 0.16]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_016.png}}
+    \subfigure[$\varepsilon$ = 0.32]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_032.png}}
+    \subfigure[$\varepsilon$ = 0.64]{\includegraphics[width=0.49\linewidth]{TicTacToe_Normal_Vs_Symmetric_Equality_064.png}}
+
+    \caption{Graphs of the MC agent's winning rate for increasing numbers of training episodes of normal Tic-Tac-Toe and of SE Tic-Tac-Toe. In each graph, the x-axis shows the number of training episodes ($10^4$), the y-axis shows the percentage of episodes won, the dotted line shows the agent's performance in normal Tic-Tac-Toe, and the solid line shows the agent's performance in SE Tic-Tac-Toe.}
+    \label{fig:tictactoe-normal-vs-symmetric-equality-performance}
+\end{figure}
+
+The results are very interesting because the two curves are almost perfectly parallel in most of the seven experiments, particularly for the larger values of epsilon. In the first few experiments where epsilon is small, the normal implementation, which does not break symmetries, takes quite a bit longer to converge. This is particularly clear in Figures \ref{ttt-n-vs-se-0-01} and \ref{ttt-n-vs-se-0-02} because there is no visible ``elbow'' in the curve and the winning rate increases more gradually. This makes sense because when epsilon is small, more training episodes are needed in order for the agent to encounter more of the good/optimal state-action pairs. This effect is more subdued for the SE implementation because knowledge from symmetrical states is merged together, which has the same effect as playing more episodes.
+
+All in all, it is quite clear that breaking symmetries in RL tasks can be hugely beneficial in terms of the agent's success rate (not to mention the reduced size of the state-value function). In the case of Tic-Tac-Toe, this can lead to a winning rate that is up to 10\% larger and for games or tasks with more axes of symmetry, it is reasonable to expect this figure to be even larger.
 
 
 %-----------------------
