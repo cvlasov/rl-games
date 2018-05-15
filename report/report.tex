@@ -181,25 +181,39 @@ In addition to the terms described in Section \ref{sec:RL}, the following terms 
 This section describes the implementations of Tic-Tac-Toe, Chung Toi, and Nim, as well as the game-playing agents used in this project's experiments.
 
 
-\section{Structure}
+\section{Code Structure}
 
-The project is written entirely in Java and is built in a modular way, using an object-oriented style. All actions, agents, games, and states implement general interfaces, called \emph{Action}, \emph{Agent}, \emph{Game}, and \emph{State} respectively, that serve as Facades for the complex implementations. Figure \ref{code-structure} shows this structure.
+The project is written entirely in Java and is built in a modular way, using an object-oriented style. Figure \ref{code-structure} shows the project's structure, which consists of five packages: \emph{agents}, \emph{general}, \emph{tictactoe}, \emph{chungtoi}, and \emph{nim}.
 
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=125mm]{code_structure.png}
-		\caption{Structure of classes in project.}
+		\includegraphics[width=\linewidth]{code_structure.png}
+		\caption{Project's code structure. The boxes with a black outline indicate packages, whose names are written in black above them. The filenames with grey backgrounds are interfaces and those with italicised names are abstract classes. An arrow from A to B indicates that B implements or extends A, depending on whether A is an interface or abstract class, respectively. The colourful boxes around each file name indicates which interface it implements (or is) and is intended to visualise inheritance.}
 		\label{code-structure}
 	\end{center}
 \end{figure}
 
-The \emph{Game} interface has a method \emph{play()} that simulates a single game. This is where the agents are asked to choose actions, receive returns, and complete other tasks, depending on the specific game. Agents do not distinguish between different games and only use methods defined in the general interfaces, which means that the \emph{MonteCarloAgent} class, for example, can be used to play all three games. This modularity provides a nice separation of concerns that enables simpler testing and debugging.
+The \emph{general} package contains interfaces for agents, games, states, and actions, and each concrete class in the project implements one of the four interfaces. The interfaces serve as Facades for the implementations, which are often quite complex.
+
+The \emph{tictactoe} package contains an abstract class \emph{TicTacToeGame} that implements the \emph{Game} interface by providing the logic of the game. Two concrete classes, \emph{TicTacToeNormalGame} and \emph{TicTacToeGameWithSymmetricEquality} extend it and all they do is override the constructors in order to initialise the game's state to the right subclass of \emph{TicTacToeState}. Similar to \emph{TicTacToeGame}, \emph{TicTacToeState} is an abstract class that implements the necessary behaviours of a game state, such as providing a list of available actions and producing the result of applying an action to it. It has two concrete subclasses: \emph{TicTacToeNormalState}, which slightly modifies the constructors, and \emph{TicTacToeWithSymmetricEquality}, which implements the symmetry-breaking described in Section \ref{sec:TicTacToeImplementation}.
+
+The \emph{chungtoi} package has three types of actions, so there are three concrete classes that implement the \emph{Action} interface. The logic in \emph{ChungToiState} for producing a list of available actions is more complex than in the other two games due to the number of possible move combinations as well as the two game phases, as described in more detail in Section \ref{sec:ChungToiRules}.
+
+The \emph{nim} package is relatively simple and there are two classes that implement the \emph{Game} interface: \emph{NimGame} and \emph{NimGameES}. The game logic in the latter forces the game to start with a random state-action pair, as required by the Monte Carlo ES algorithm described in Section \ref{sec:MonteCarloAlgorithms}. Further implementation details can be found in Section \ref{sec:NimImplementation}.
+
+The \emph{agents} package has two classes (\emph{RandomAgent} and \emph{MonteCarloAgent}) that implement the \emph{Agent} interface. As Figure \ref{code-structure} clearly shows, the agent implementations are totally independent on the games. That is, agents do not distinguish between different games and only use methods defined in the general interfaces. This means that the \emph{MonteCarloAgent} class, for example, can be used to play all three games. This modularity provides a nice separation of concerns that enables simpler testing and debugging.
+
+The place where everything comes together and all these classes interact is in the \emph{play()} method from the \emph{Game} interface. The method simulates one episode (e.g. one ``game'' of Tic-Tac-Toe) by asking agents to choose actions, giving agents returns returns, and completing other tasks, depending on the specific game.
+
+The independence of the agents and the game implementations makes the project easily extensible to other agents (i.e. learning algorithms) and games. If the reader wanted to test out the MC agent on some other game, Connect Four for example, they would just have to provide appropriate implementations of the \emph{Game}, \emph{State}, and \emph{Action} interfaces. Similarly, if the reader wanted to test out another RL algorithm, Temporal Difference for instance, they would have to  write a single class that implements the \emph{Agent} interface.
+
+In a way, this flexibility is a secondary goal of this project. More concretely, the project provides a framework for testing learning algorithms on games. It can be built on in a variety of ways in order to do further research in the field of RL.
 
 
 \section{Agents}
 \label{sec:Agents}
 
-Two agents were implemented: \emph{RandomAgent} and \emph{MonteCarloAgent}.
+Two learning agents were implemented: \emph{RandomAgent} and \emph{MonteCarloAgent}.
 
 \emph{MonteCarloAgent} implements the $\epsilon$-soft on-policy MC control algorithm, as discussed in Section \ref{sec:MonteCarloAlgorithms}. In its \emph{chooseAction(State s)} method, it chooses an action according to its policy for states it has encountered in previous games, and randomly otherwise. In its \emph{gameOver()} method it calls two private helper methods \emph{policyEvaluation()} and \emph{policyImprovement()} that update $Q^{\pi}$ and $\pi$, respectively, as described in Section \ref{sec:monteCarloPseudocode}. Hash maps are used to store $Q^{\pi}$ and $\pi$ for constant time access and insertion.
 
@@ -286,6 +300,7 @@ The second game used in the project is Chung Toi, a more complex version of Tic-
 
 
 \subsection{Rules}
+\label{sec:ChungToiRules}
 
 The main idea behind Chung Toi \cite{chung-toi-rules} is the same as that behind Tic-Tac-Toe in the sense that the game is played on a 3x3 grid and each player's goal is to get three of their pieces in a row. However, that is the entire extent of their overlap. Although the two games may seem similar, finding a good strategy for Chung Toi is not at all intuitive, unlike in Tic-Tac-Toe.
 
