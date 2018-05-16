@@ -161,9 +161,9 @@ In addition to the terms described in Section \ref{sec:RL}, the following terms 
 			\item In particular, it refers to an instance of the \emph{MonteCarloAgent} class described in Section \ref{sec:Agents}
 		\end{itemize}
 
-	\item \textbf{Epsilon granularity}: the difference between consecutive values of $\varepsilon$ used in experiments.
+	\item \textbf{Epsilon precision}: the difference between consecutive values of $\varepsilon$ used in experiments.
 		\begin{itemize}
-			\item For example, if the granularity is 0.01, then the values of $\varepsilon$ used would be 0.0, 0.01, 0.02, ..., 0.99, and 1.0.
+			\item For example, if the precision is 0.01, then the values of $\varepsilon$ used would be 0.0, 0.01, 0.02, ..., 0.99, and 1.0.
 		\end{itemize}
 
 	\item \textbf{Game}: Examples are Tic-Tac-Toe, Connect Four, and Chess
@@ -410,7 +410,7 @@ Two types of experiments were used to investigate the behaviour of the MC agent 
 
 \begin{itemize}
 
-	\item \textbf{``Epsilon'' Experiment}: This type of experiment iterates through all values of epsilon in a particular range and makes a MC agent (initialised with each value of epsilon) play a specific game against another agent a fixed number of times for training and then another fixed number of times for testing. Then it records the results (i.e. wins, losses, draws) for each value of epsilon during the testing phase in a CSV file. Thus, it is possible to produce graphs with the tested values of epsilon on the x-axis and the number of testing episodes resulting in a win, loss, and draw on the y-axis. These graphs are used to determine the optimal value of epsilon for a particular game.
+	\item \textbf{``Epsilon'' Experiment}: This type of experiment iterates through all values of epsilon in a particular range (see Section \ref{sec:epsilon-precision}) and makes a MC agent (initialised with each value of epsilon) play a specific game against another agent a fixed number of times for training and then another fixed number of times for testing. Then it records the results (i.e. wins, losses, draws) for each value of epsilon during the testing phase in a CSV file. Thus, it is possible to produce graphs with the tested values of epsilon on the x-axis and the number of testing episodes resulting in a win, loss, and draw on the y-axis. These graphs are used to determine the optimal value of epsilon for a particular game.
 
 	\item \textbf{``Convergence'' Experiment}: This type of experiment makes a MC agent (initialised with a particular value of epsilon) play a specific game against another agent a fixed number of times. Throughout the process, it records the cumulative results (i.e. wins, losses, draws) at regular intervals, as more and more episodes are played, in a CSV file. Thus, it is possible to plot the winning rate against the cumulative number of training episodes. These graphs are used to visualise the convergence rate of a MC agent's policy when using a specific value of epsilon.
 
@@ -432,6 +432,14 @@ This process was reasonable for Tic-Tac-Toe and Nim because they have relatively
 It is worth making a short digression to point out that this is one of the limitations of Monte Carlo algorithms and is one of the main reasons they are not used heavily in practice where reinforcement learning tasks have very large state spaces. In particular, since the agent learns only from its experience, without attempting to draw any conclusions about states it has not encountered, its success and therefore usefulness for tasks with a lot of states becomes rather limited. This is why ``pure'' Monte Carlo algorithms (i.e. algorithms that do not combine Monte Carlo techniques with other techniques like dynamic programming) tend to be applied only to simple tasks with small state spaces and are generally used for educational rather than practical purposes. On the other hand, algorithms like Temporal Difference learning, as briefly discussed in Section \ref{sec:learning-algorithms}, are much better suited to situations like these where the state space cannot be fully explored. Nevertheless, it was interesting to put a MC agent to the test with Chung Toi to see what success rate it could achieve.
 
 Since there was no clear way of determining a reasonable number of training and testing episodes for Chung Toi, the numbers used for Tic-Tac-Toe were also used for Chung Toi. This meant that experiments could be run in a reasonable amount of time (i.e. on the order of hours rather than days or weeks).
+
+
+\section{Epsilon Precision}
+\label{sec:epsilon-precision}
+
+Another decision was which values of epsilon to use for the epsilon experiments. The graphs with the experiment results have the values of epsilon on the x-axis and the win/loss/draw rates on the y-axis as a percentage of the testing episodes. Thus, in order to have a relatively smooth graph, epsilon values were chosen at regular intervals. Since epsilon can range from 0.0 to 1.0, the size of these intervals (aka. the epsilon precision, as defined in Section \ref{sec:Terminology}) was chosen to be 0.01. Using 0.1 made it difficult to compare the results of epsilon experiments where the curves were similar. Using 0.05 was a bit better, but 0.01 was good because it provided a clear visualisation of the differences between experiments without saving unnecessary amounts of data.
+
+As with any decision like this one, there is a point ``of diminishing returns'' after which having more detailed data does not enable more meaningful conclusions to be drawn. Thus, for the purposes of this project, the line was drawn at an epsilon precision of 0.01.
 
 
 \section{Optimal Value of $\varepsilon$}
@@ -583,7 +591,7 @@ All in all, it is quite clear that breaking symmetries in RL tasks can be hugely
 
 
 %-----------------------
-\chapter{Discussion}
+\chapter{Discussion \& Future Work}
 
 This chapter discusses a number of discrete ideas considered or investigated in this project, how some of these ideas have been studied, and what further work can be conducted.
 
@@ -594,7 +602,7 @@ A concept that was experimented with as part of this project was using a MC agen
 
 Since the \emph{MonteCarloAgent} class knows how to play games, this task was formulated as a game, with the usual classes that implement the \emph{Game}, \emph{State}, and \emph{Action} interfaces. The game was called ``Find Epsilon'', it was a one-player game, and each episode ended after the player chose one action. The state space consisted of a single state that contained no information and the actions available from that state were all possible values of epsilon from 0.0 to 1.0 inclusive (at some regular interval, such as 0.01). The return the agent received for choosing an action (i.e. value of epsilon, call it $x$) was the number of episodes a MC agent initialised with $\varepsilon = x$ won when playing Tic-Tac-Toe 100,000 times against an agent that plays randomly.
 
-This seemed like a reasonable setup because the returns accurately reflected how well the agent was performing. However, when a MC agent was trained to play this game, it became clear that this was a highly inefficient way of finding good epsilon values. Since the game consisted of only one action, it would have been much more efficient to iterate through all possible epsilon values from 0.0 to 1.0 and for each one initialise a MC agent with that value and make it play Tic-Tac-Toe 100,000 times against an agent that plays randomly. For an epsilon granularity of 0.01, this would mean that sessions of 100,000 Tic-Tac-Toe episodes would have to be played 101 times (one session per epsilon value) and then it would be clear which epsilon value resulted in the highest winning rate. In fact, this is precisely what the epsilon experiments described in Section \ref{sec:experiment-types} do. On the other hand, when the task is formulated as a Find Epsilon game, it takes much more than 101 sessions of 100,000 episodes before all values of epsilon are tried. The MC agent's policy is only useful if the agent has tried all possible epsilon values and so a lot of time and computational power is wasted while waiting for the agent to eventually try all values. Thus, this idea was abandoned and epsilon experiments were adopted instead.
+This seemed like a reasonable setup because the returns accurately reflected how well the agent was performing. However, when a MC agent was trained to play this game, it became clear that this was a highly inefficient way of finding good epsilon values. Since the game consisted of only one action, it would have been much more efficient to iterate through all possible epsilon values from 0.0 to 1.0 and for each one initialise a MC agent with that value and make it play Tic-Tac-Toe 100,000 times against an agent that plays randomly. For an epsilon precision of 0.01, this would mean that sessions of 100,000 Tic-Tac-Toe episodes would have to be played 101 times (one session per epsilon value) and then it would be clear which epsilon value resulted in the highest winning rate. In fact, this is precisely what the epsilon experiments described in Section \ref{sec:experiment-types} do. On the other hand, when the task is formulated as a Find Epsilon game, it takes much more than 101 sessions of 100,000 episodes before all values of epsilon are tried. The MC agent's policy is only useful if the agent has tried all possible epsilon values and so a lot of time and computational power is wasted while waiting for the agent to eventually try all values. Thus, this idea was abandoned and epsilon experiments were adopted instead.
 
 The idea of using RL to learn good values for meta-parameters is not new -- in fact, a variety of research has been conducted on the topic of finding the right balance between exploration and exploitation in RL by finding good meta-parameters \cite{meta-optimization} \cite{meta-param-evolution} \cite{exploration-exploitation-meta-param} \cite{meta-learning-rl}. As a result, a number of algorithms have been developed in order to tailor meta-parameters that control this balance to the task at hand, including some based on genetic algorithms \cite{meta-param-evolution} for instance.
 
@@ -619,7 +627,6 @@ In the limit of infinitely many games, however, the MC agent would encounter all
 \chapter{Conclusion}
 
 
-\section{Future Work}
 
 
 \section{Personal Reflections}
