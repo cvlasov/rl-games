@@ -11,7 +11,7 @@
 
 \author{Catherine Vlasov}
 \title{Optimizing Learning Parameters Used by Reinforcement Learning Algorithms}
-\date{23 April 2018}
+\date{17 May 2018}
 
 \newcommand{\argmax}{\mathop{\mathrm{arg\,max}}}
 
@@ -22,12 +22,20 @@
 		\vspace*{\fill}
 		\begin{center}
 			{\huge \bfseries \@title }
-			\\[4ex]
-			{\LARGE  \@author}
-			\\[2ex]
-			{\large \@date}
-			\\[50ex]
+			\\[20ex]
 			\includegraphics[width=30mm]{oxlogo.png}
+			\\[10ex]
+			{\LARGE \@author}
+			\\[3ex]
+			{\Large University College}
+			\\[1ex]
+			{\Large University of Oxford}
+			\\[8ex]
+			{\Large Honour School of Computer Science}
+			\\[1ex]
+			{\Large \emph{Computer Science Project (Part B)}}
+			\\[10ex]
+			{\LARGE May 2018}
 		\end{center}
 		\vspace*{\fill}
 	\end{titlepage}
@@ -443,7 +451,7 @@ As with any decision like this one, there is a point ``of diminishing returns'' 
 \section{Optimal Value of $\varepsilon$}
 \label{sec:optimal_epsilon}
 
-It is not unreasonable to expect each game to have a specific value of epsilon that results in the fastest convergence of the MC agent's policy. If this was the case, then one would expect the graph of the winning rate produced by an epsilon experiment with $\varepsilon$ ranging from 0.0 to 1.0 (inclusive) to be convex with a global maximum. This belief is vaildated by running an epsilon experiment on any game for some number of training episodes. For example, Figure \ref{chung-toi-epsilon-160ktrain-10ktest} displays the results of 10,000 Chung Toi testing episodes after 160,000 training episodes.
+It is not unreasonable to expect each game to have a specific value of epsilon that results in the fastest convergence of the MC agent's policy. If this was the case, then one would expect the graph of the winning rate produced by an epsilon experiment with $\varepsilon$ ranging from 0.0 to 1.0 (inclusive) to be convex with a global maximum. This belief is validated by running an epsilon experiment on any game for some number of training episodes. For example, Figure \ref{chung-toi-epsilon-160ktrain-10ktest} displays the results of 10,000 Chung Toi testing episodes after 160,000 training episodes.
 
 \begin{figure}[htbp]
 	\begin{center}
@@ -490,7 +498,7 @@ In the context of training a MC agent to play a game, the ``speed'' at which the
 
 As described in Section \ref{sec:experiment-types}, convergence experiments provide the data needed to compare different values of $\varepsilon$ and to analyse the speed of convergence. Convergence experiments produce the proportions of a MC agent's wins and losses (and draws, if applicable) at regular intervals during a training session, using a specific value of epsilon. Thus, by plotting the proportions of wins, we see how quickly the policy changes. Convergence experiments do not involve any testing episodes because their goal is to analyse the algorithm during training in order to gain insight into what an appropriate number of training episodes is for a particular game.
 
-The policy of the MC agent only converges to the theoretically optimal policy in the limit of infinitely many training episodes \cite{rl-book}. Since running infinitely many episodes is naturally infeasibly, 100,000 training episodes are run in the convergence experiments and the resulting graphs are inspected to see how long it takes for the winning rate to stabilise.
+The policy of the MC agent only converges to the theoretically optimal policy in the limit of infinitely many training episodes \cite{rl-book}. Since running infinitely many episodes is naturally infeasible, 100,000 training episodes are run in the convergence experiments and the resulting graphs are inspected to see how long it takes for the winning rate to stabilise.
 
 It might also be natural to define some notion of convergence. For instance, one might consider the policy to have converged after $x$ training episodes if the agent's winning rate changes by less than 0.1\% after $x$ training episodes compared to after $x+1000$ training episodes. This technique was trialled, but the results did not provide any additional insight relative to visual inspection and comparison of the convergence experiment graphs, so they are omitted.
 
@@ -537,7 +545,7 @@ The game that is most conducive to applying the Monte Carlo with Exploring Start
 	\end{center}
 \end{figure}
 
-As we can see, Monte Carlo ES performs similarly to Monte Carlo with a relatively large value of epsilon (like $\varepsilon$ = 0.64 in Figure \ref{nim-convergence-comparison-with-ES}). This seems reasonable because as epsilon approaches 1, the agent chooses actions randomly more and more often. Thus, the agent is increasingly likely to choose actions that lead to suboptimal or losing states (i.e. states where the other player can win in their next move), regardless of whether or not they know better. In a similar way, Monte Carlo ES forces the agent into certain states (right at the start of each episode), many of which are sub-optimal or losing states. This element of randomness when Monte Carlo ES determines the starting state appears to have a similar effect to the element of randomness that the on-policy $\varepsilon$-soft MC algorithm exhibits when epsilon is large.
+As we can see, Monte Carlo ES performs similarly to Monte Carlo with a relatively large value of epsilon (like $\varepsilon$ = 0.64 in Figure \ref{nim-convergence-comparison-with-ES}). This seems reasonable because as epsilon approaches 1, the agent chooses actions randomly more and more often. Thus, the agent is increasingly likely to choose actions that lead to sub-optimal or losing states (i.e. states where the other player can win in their next move), regardless of whether or not they know better. In a similar way, Monte Carlo ES forces the agent into certain states (right at the start of each episode), many of which are sub-optimal or losing states. This element of randomness when Monte Carlo ES determines the starting state appears to have a similar effect to the element of randomness that the on-policy $\varepsilon$-soft MC algorithm exhibits when epsilon is large.
 
 Clearly, Monte Carlo ES does converge to some policy, but it is clear that there are better policies since many values of epsilon cause an on-policy $\varepsilon$-soft MC agent to converge to a policy with a higher winning rate.
 
@@ -546,7 +554,7 @@ Clearly, Monte Carlo ES does converge to some policy, but it is clear that there
 
 Tic-Tac-Toe is used to study the effect of eliminating all axes of symmetry from a game on a MC agent's performance. As discussed in Section \ref{sec:TicTacToeImplementation}, each Tic-Tac-Toe state can be symmetrical with up to seven other states. The game has four axes of symmetry (horizontal, vertical, and two diagonals) and reflecting states in one or more of them produces all possible reflections and rotations. The ``normal'' Tic-Tac-Toe implementation does not implement any symmetry-breaking, whereas the ``symmetric equality'' (SE) Tic-Tac-Toe implementation breaks all symmetry between states -- these are discussed in more detail in Section \ref{sec:TicTacToeImplementation}.
 
-Naturally, an implementation that breaks symmetries should be expected to perform better because it can combine its knowledge about symmetrical states and therefore produce a more accurate estimate $Q^{\pi}$ of the action-value function. This intuition is confirmed by running epsilon experiments for different numbers of training episoides for both normal Tic-Tac-Toe and SE Tic-Tac-Toe and the results are shown in Figure \ref{fig:tictactoe-normal-vs-symmetric-equality-epsilon}.
+Naturally, an implementation that breaks symmetries should be expected to perform better because it can combine its knowledge about symmetrical states and therefore produce a more accurate estimate $Q^{\pi}$ of the action-value function. This intuition is confirmed by running epsilon experiments for different numbers of training episodes for both normal Tic-Tac-Toe and SE Tic-Tac-Toe and the results are shown in Figure \ref{fig:tictactoe-normal-vs-symmetric-equality-epsilon}.
 
 \begin{figure}
     \centering
@@ -631,9 +639,6 @@ Another way of eliminating symmetry in Tic-Tac-Toe was also considered: limiting
 In the limit of infinitely many games, however, the MC agent would encounter all states and choose all possible moves an equal number of times, thus computing an accurate expected return for each action. It would be interesting to compare the performance of such a Limited Actions implementation with the Symmetric Equality implementation. Both should perform equally well on any game given enough training, but it is possible that they might improve at different rates.
 
 
-\section{More... to be discussed}
-
-
 %-----------------------
 \chapter{Conclusion}
 
@@ -644,7 +649,7 @@ In the limit of infinitely many games, however, the MC agent would encounter all
 
 This has been a really great learning experience, not only in terms of discovering the field of reinforcement learning and its applications, but also in terms of gaining experience with building up a large, complex programming project from scratch using a variety of technical tools.
 
-When I was in high school, I designed and implemented the classic board game Nine Men’s Morris where a user plays against an algorithm I wrote. My plan for the project was to ask my friends and family to play my game and to store the moves made in each game so that I could build up a database of sequences of moves and outcomes of the game. I hoped to somehow compute which moves were the best and get my algorithm to learn which moves made winning the most likely. Little did I know, I wanted to invent RL from scratch – unaware of its existence or of the amount of research in the field. Several years later, I am delighted to have had the chance to work on a similar project, but this time on a deeper level using well-known computational algorithms. [\emph{I don't know if this paragraph should stay in my final version...}]
+When I was in high school, I designed and implemented the classic board game Nine Men’s Morris where a user plays against an algorithm I wrote. My plan for the project was to ask my friends and family to play my game and to store the moves made in each game so that I could build up a database of sequences of moves and outcomes of the game. I hoped to somehow compute which moves were the best and get my algorithm to learn which moves made winning the most likely. Little did I know, I wanted to invent RL from scratch – unaware of its existence or of the amount of research in the field. Several years later, I am delighted to have had the chance to work on a similar project, but this time on a deeper level using well-known computational algorithms.
 
 When I started working on this project, I decided to treat it as an opportunity to develop many skills that are critical for a career in software engineering:
 
@@ -667,6 +672,9 @@ Overall, I really enjoyed learning about RL algorithms and exploring their appli
 %--------------------------------
 \chapter{Acknowledgements}
 
+I would like to thank my supervisor Dr. Irina Voiculescu for all her help over the past year. Her support and guidance as well as academic and personal advice were incredibly valuable throughout the process.
+
+I would also like to thank the students with whom I discussed my ideas and who helped me formulate my thoughts and find new ways to approach problems I encountered.
 
 
 %--------------------------------
