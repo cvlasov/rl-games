@@ -5,8 +5,6 @@
 \usepackage{amsfonts}
 \usepackage{cite}
 \usepackage{graphicx}
-%\usepackage{caption}
-%\usepackage{subcaption}
 \usepackage{verbatim}
 \usepackage{subfigure}
 \graphicspath{ {images/} }
@@ -106,7 +104,7 @@ More intuitively, having the Markov property means that the environment's respon
 
 A task that satisfies the Markov property is called a MDP and furthermore, if it has finitely many states and actions (i.e. $\mathcal{S}$ and $\mathcal{A}$ are both finite), then it is called a \emph{finite} MDP. 
 
-The reason finite MDP's are important is that it has been shown that they all have an optimal policy $\pi^{\ast}$ \cite{rl-book}. Since the games used in this project all have finite state spaces and action spaces, this result is very useful since it facilitates the study of the convergence of an agent's policy as it gains experience playing the games.
+The reason finite MDP's are important is that it has been shown that they all have an optimal policy $\pi^{\ast}$ \cite{rl-book} \cite{mdp-convergence}. Since the games used in this project all have finite state spaces and action spaces, this result is very useful since it informs the study of the convergence of an agent's policy as it gains experience playing the games.
 
 
 \section{Learning Algorithms}
@@ -410,9 +408,9 @@ Two types of experiments were used to investigate the behaviour of the MC agent 
 
 \begin{itemize}
 
-	\item \textbf{``Epsilon'' Experiment}: This type of experiment iterates through all values of epsilon in a particular range (see Section \ref{sec:epsilon-precision}) and makes a MC agent (initialised with each value of epsilon) play a specific game against another agent a fixed number of times for training and then another fixed number of times for testing. Then it records the results (i.e. wins, losses, draws) for each value of epsilon during the testing phase in a CSV file. Thus, it is possible to produce graphs with the tested values of epsilon on the x-axis and the number of testing episodes resulting in a win, loss, and draw on the y-axis. These graphs are used to determine the optimal value of epsilon for a particular game.
+	\item \textbf{``Epsilon'' Experiment}: This type of experiment iterates through all values of epsilon in a particular range (see Section \ref{sec:epsilon-precision}) and makes a MC agent (initialised with each value of epsilon) play a specific game against another agent a fixed number of times for training and then another fixed number of times for testing. Then it records the results (i.e. wins, losses, draws) for each value of epsilon during the testing phase in a CSV file. Thus, it is possible to produce graphs with the tested values of epsilon on the x-axis and the number of testing episodes resulting in a win, loss, and draw on the y-axis. These graphs are used to determine the optimal value of epsilon for a particular game and to decide which valuesof epsilon to use for ``convergence'' experiments.
 
-	\item \textbf{``Convergence'' Experiment}: This type of experiment makes a MC agent (initialised with a particular value of epsilon) play a specific game against another agent a fixed number of times. Throughout the process, it records the cumulative results (i.e. wins, losses, draws) at regular intervals, as more and more episodes are played, in a CSV file. Thus, it is possible to plot the winning rate against the cumulative number of training episodes. These graphs are used to visualise the convergence rate of a MC agent's policy when using a specific value of epsilon.
+	\item \textbf{``Convergence'' Experiment}: This type of experiment makes a MC agent (initialised with a particular value of epsilon) play a specific game against another agent a fixed number of times. Throughout the process, it records the cumulative results (i.e. wins, losses, draws) at regular intervals, as more and more episodes are played, in a CSV file. Thus, it is possible to plot the winning rate against the cumulative number of training episodes. These graphs are used to visualise the convergence rate of a MC agent's policy when using a specific value of epsilon. A deeper analysis of the significance of measuring convergence and the meaning of the winning rates when the policy converges can be found in Section \ref{sec:policy-optimality}.
 
 \end{itemize}
 
@@ -611,6 +609,19 @@ In particular, one paper \cite{meta-learning-rl} studied use of the soft-max fun
 This finding makes a lot of sense and corresponds exactly to the conclusions drawn at the end of Section \ref{sec:convergence-results}. Since in this project $\varepsilon$ was fixed throughout training/testing sessions, the conclusion drawn from epsilon and convergence experiments was that a large value of epsilon (which corresponds to high exploration) should be used when relatively few training episodes can be run and a small value should be used when relatively many can be run. Combining these two ideas together, for any number of training episodes, epsilon should ideally start off large and then start decreasing for the best possible performance.
 
 Thus, it would be very interesting to implement some of the algorithms developed to regulate the exploration-exploitation balance and combine them with the MC algorithm studied in this project. Most of the papers on this topic study algorithms that ``bootstrap'' (i.e. update the values of states using estimates of the values of subsequent states \cite{rl-book}) such as Temporal Difference learning. Studying how an algorithm that allows $\varepsilon$ to dynamically adapt during training works with a learning technique that does not bootstrap might therefore produce novel results.
+
+
+\section{Optimality of Learned Policies}
+\label{sec:policy-optimality}
+
+Section \ref{sec:experiment-types} is intentionally vague about what a policy might converge to and whether it converges to some optimal policy. It is important to note two important results before continuing:
+
+\begin{itemize}
+    \item The $\varepsilon$-soft on-policy MC control algorithm studied in this project has \emph{not} yet been proven to converge to an optimal policy \cite{open-rl-questions}. This means that even if the curve produced by a convergence experiment clearly flattens, it may very well be that the agent has found some local maximum.
+    \item There is a stationary deterministic optimal policy for every Markov Decision Process (MDP) \cite{mdp-convergence}, which means that, at the very least, there \emph{is} some optimal policy for all three games studied in this project. However, there is no way of knowing for sure whether this is the policy that the MC agent converges to.
+\end{itemize}
+
+Having mentioned these two results, it is clear that the results of the convergence experiments described in Section \ref{sec:convergence-results} are not very conclusive because all they show is that the MC agent converges to \emph{some} policy after sufficient training episodes. Nevertheless, this is still a useful result because a reasonably quick convergence to a good policy is often preferable to a slow convergence to the optimal policy \cite{rl-a-survey}.
 
 
 \section{Alternative Tic-Tac-Toe Implementation That Breaks Symmetry}
