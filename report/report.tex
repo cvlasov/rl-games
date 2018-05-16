@@ -161,6 +161,11 @@ In addition to the terms described in Section \ref{sec:RL}, the following terms 
 			\item In particular, it refers to an instance of the \emph{MonteCarloAgent} class described in Section \ref{sec:Agents}
 		\end{itemize}
 
+	\item \textbf{Epsilon granularity}: the difference between consecutive values of $\varepsilon$ used in experiments.
+		\begin{itemize}
+			\item For example, if the granularity is 0.01, then the values of $\varepsilon$ used would be 0.0, 0.01, 0.02, ..., 0.99, and 1.0.
+		\end{itemize}
+
 	\item \textbf{Game}: Examples are Tic-Tac-Toe, Connect Four, and Chess
 
 	\item \textbf{Training episode}: Making a MC agent play one iteration of a game for the purposes of learning/training
@@ -223,7 +228,7 @@ As its name suggests, \emph{RandomAgent} randomly selects an action from the lis
 \section{Tic-Tac-Toe}
 \label{sec:TicTacToe}
 
-The first game used in this project is Tic-Tac-Toe. It was chosen as a first experiment because it has a small state space and it is a conceptually simple game that most people are familiar with.
+The first game used in this project is Tic-Tac-Toe. It was chosen because it has a small state space, it is a conceptually simple game that most people are familiar with, and it can be used to investigate the effect of breaking symmetries on a MC agent's performance.
 
 
 \subsection{Rules}
@@ -473,6 +478,7 @@ Of course, the same number of training episodes will have different optimal $\va
 
 
 \section{Convergence to the Optimal Policy}
+\label{sec:convergence-results}
 
 In the context of training a MC agent to play a game, the ``speed'' at which the agent's policy converges is the number of training episodes the agent needs until its policy $\pi$ converges. Naturally, this varies depending on the value of $\varepsilon$ used by the agent.
 
@@ -579,11 +585,27 @@ All in all, it is quite clear that breaking symmetries in RL tasks can be hugely
 %-----------------------
 \chapter{Discussion}
 
-\section{Learning Optimal Epsilon}
+This chapter discusses a number of discrete ideas considered or investigated in this project, how some of these ideas have been studied, and what further work can be conducted.
 
-[\emph{Discussion of how I tried this but it didn't really work conceptually.}]
 
-\section{Alternative Implementations of Symmetry-Breaking}
+\section{Using RL to Learn Epsilon}
+
+A concept that was experimented with as part of this project was using a MC agent to learn the best value of epsilon to use for a certain game (Tic-Tac-Toe was arbitrarily chosen) and number of training episodes. The hope was that instead of making a human run the epsilon and convergence experiments described in Section \ref{sec:experiment-types} in order to manually determine an appropriate value of epsilon, a MC agent itself could learn such a value on its own. This can be thought of as ``meta-RL'' since RL is used to train a MC agent to choose epsilon parameters and then its findings (i.e. policy) are in turn used to initialise some other MC agent that is playing a game like Tic-Tac-Toe.
+
+Since the \emph{MonteCarloAgent} class knows how to play games, this task was formulated as a game, with the usual classes that implement the \emph{Game}, \emph{State}, and \emph{Action} interfaces. The game was called ``Find Epsilon'', it was a one-player game, and each episode ended after the player chose one action. The state space consisted of a single state that contained no information and the actions available from that state were all possible values of epsilon from 0.0 to 1.0 inclusive (at some regular interval, such as 0.01). The return the agent received for choosing an action (i.e. value of epsilon, call it $x$) was the number of episodes a MC agent initialised with $\varepsilon = x$ won when playing Tic-Tac-Toe 100,000 times against an agent that plays randomly.
+
+This seemed like a reasonable setup because the returns accurately reflected how well the agent was performing. However, when a MC agent was trained to play this game, it became clear that this was a highly inefficient way of finding good epsilon values. Since the game consisted of only one action, it would have been much more efficient to iterate through all possible epsilon values from 0.0 to 1.0 and for each one initialise a MC agent with that value and make it play Tic-Tac-Toe 100,000 times against an agent that plays randomly. For an epsilon granularity of 0.01, this would mean that sessions of 100,000 Tic-Tac-Toe episodes would have to be played 101 times (one session per epsilon value) and then it would be clear which epsilon value resulted in the highest winning rate. In fact, this is precisely what the epsilon experiments described in Section \ref{sec:experiment-types} do. On the other hand, when the task is formulated as a Find Epsilon game, it takes much more than 101 sessions of 100,000 episodes before all values of epsilon are tried. The MC agent's policy is only useful if the agent has tried all possible epsilon values and so a lot of time and computational power is wasted while waiting for the agent to eventually try all values. Thus, this idea was abandoned and epsilon experiments were adopted instead.
+
+The idea of using RL to learn good values for meta-parameters is not new -- in fact, a variety of research has been conducted on the topic of finding the right balance between exploration and exploitation in RL by finding good meta-parameters \cite{meta-optimization} \cite{meta-param-evolution} \cite{exploration-exploitation-meta-param} \cite{meta-learning-rl}. As a result, a number of algorithms have been developed in order to tailor meta-parameters that control this balance to the task at hand, including some based on genetic algorithms \cite{meta-param-evolution} for instance.
+
+In particular, one paper \cite{meta-learning-rl} studied use of the soft-max function to compute the probability of taking an action. The formula for this probability function involves a meta-parameter $\beta$ called the ``inverse temperature'' that controls the exploration-exploitation tradeoff, just like $\varepsilon$ in the MC algorithm. A low value of $\beta$ corresponds to high exploration and a high value corresponds to high exploitation. The paper found that the best results were produced when $\beta$ \emph{dynamically adjusted} during a training session. It was found that even if $\beta$ was given a high value initially, it would start by decreasing to enable large exploration and then as the number of training episodes increased and its learning progressed, $\beta$ would start increasing to minimise exploration.
+
+This finding makes a lot of sense and corresponds exactly to the conclusions drawn at the end of Section \ref{sec:convergence-results}. Since in this project $\varepsilon$ was fixed throughout training/testing sessions, the conclusion drawn from epsilon and convergence experiments was that a large value of epsilon (which corresponds to high exploration) should be used when relatively few training episodes can be run and a small value should be used when relatively many can be run. Combining these two ideas together, for any number of training episodes, epsilon should ideally start off large and then start decreasing for the best possible performance.
+
+Thus, it would be very interesting to implement some of the algorithms developed to regulate the exploration-exploitation balance and combine them with the MC algorithm studied in this project. Most of the papers on this topic study algorithms that ``bootstrap'' (i.e. update the values of states using estimates of the values of subsequent states \cite{rl-book}) such as Temporal Difference learning. Studying how an algorithm that allows $\varepsilon$ to dynamically adapt during training works with a learning technique that does not bootstrap might therefore produce novel results.
+
+
+\section{Alternative Tic-Tac-Toe Implementation That Breaks Symmetry}
 
 Another way of eliminating symmetry in Tic-Tac-Toe was also considered: limiting the actions available from each state such that no two actions result in symmetrical states. An interesting result of this idea is that it would slightly alter the way the game is played. Suppose a random agent is asked to select a move from the game's initial state (i.e. empty grid). In the Normal implementation, there are nine possible actions: putting an \textbf{X} token in one of the nine grid cells. In this ``Limited Actions'' version, there are only three possible actions: putting an \textbf{X} token in a corner, in the middle of the grid, and in the middle of one of the sides. To give a specific example of how this would change the game, notice that the probability of the agent choosing the action that involves placing their token in the middle of the grid is $\frac{1}{9}$ in the Normal implementation and $\frac{1}{3}$ in the Limited Actions version. Thus, the agent will end up choosing this action three times as frequently in the latter version.
 
