@@ -45,9 +45,9 @@
 %-----------------------
 \begin{abstract}
 
-This project investigates the best parameter settings for a class of reinforcement learning algorithms called Monte Carlo algorithms. The main goal is to determine whether there are optimal parameters for different games and how to go about finding such values. Three games -- Tic-Tac-Toe, Chung Toi, and Nim -- are studied and factors like the state space size, the speed of the algorithm's convergence, and the effect of breaking game symmetries are considered in the analysis.
+This project investigates the best parameter settings for a class of reinforcement learning algorithms called Monte Carlo algorithms. The main goal is to determine whether there are optimal parameters for different games and how to go about finding such values. Three games -- Tic-Tac-Toe, Chung Toi, and Nim -- are implemented and studied. Factors like the state space size, the speed of the algorithm's convergence, and the effect of breaking game symmetries are considered in the analysis.
 
-The project finds that there is no single optimal parameter value, but rather there is a balance between the value and the amount of training. This is an important result that should inform the application of Monte Carlo algorithms to reinforcement learning tasks in order to maximise the algorithm's success during testing.
+It is found that there is no single optimal parameter value, but rather there is a balance between its value and the amount of training. This is an important result that should inform the application of Monte Carlo algorithms to any reinforcement learning task in order to maximise the algorithm's success during testing.
 
 \end{abstract}
 
@@ -59,29 +59,34 @@ The project finds that there is no single optimal parameter value, but rather th
 %-----------------------
 \chapter{Introduction}
 
-Over the last few decades, reinforcement learning has seen a large increase in popularity. It amazes the world again and again, whether playing Go \cite{go}, Backgammon \cite{backgammon}, or Atari \cite{atari} games, and its potential continues to grow. These successes were not lucky, but rather they were a product of studying the nature, size, and complexity of each task, choosing the algorithm best suited to it, and then setting up the algorithm appropriately. The last of these steps is crucial to the success of reinforcement learning for a particular task and must be done carefully. Thus, this project aims to elucidate how to set up a reinforcement learning algorithm by tuning its parameters, specifically for a particular class of algorithms called Monte Carlo algorithms.
+Over the last few decades, reinforcement learning has seen a large increase in popularity. It amazes the world again and again, whether playing Go \cite{go}, Backgammon \cite{backgammon}, or Atari \cite{atari} games, and its potential continues to grow. These successes were not lucky, but rather they were a product of studying the nature, size, and complexity of each task, choosing the algorithm best suited to it, and then setting up the algorithm appropriately. The last of these steps is crucial to the success of reinforcement learning for a particular task and must be done carefully.
+
+Thus, this project aims to elucidate how to set up a reinforcement learning algorithm by tuning its parameters, specifically for a class of algorithms called Monte Carlo algorithms.
 
 
-\section{Goals}
-\label{sec:goals}
+\section{Motivation}
 
 The specific Monte Carlo algorithm this project implements and investigates is called an ``on-policy $\varepsilon$-soft Monte Carlo control algorithm''. Section \ref{sec:Terminology} explains the basics of reinforcement learning as well as terminology used throughout this report, such as ``on-policy'' and ``$\varepsilon$-soft''. As the name suggests, the algorithm uses a parameter $\varepsilon$ to guide its learning. Effectively, it determines the balance between exploitation (choosing actions that are best, according to what it currently knows) and exploration (trying new actions). Thus, the chosen value of $\varepsilon$ can have a large effect on an agent's learning rate and therefore success at a particular task.
 
 The on-policy $\varepsilon$-soft Monte Carlo control algorithm is not the primary subject of many research papers since it is simple, relative to other popular reinforcement learning techniques. Consequently, there is a lack of guidance on how to apply the algorithm to real tasks and achieve the greatest success given constraints such as computing power and time.
 
-The simplicity of the algorithm, however, facilitates an interesting analysis of the effect of the value of $\varepsilon$ on the algorithm's success rate. The overarching goal of this project is to develop a general technique for tailoring the algorithm to a particular reinforcement learning task, which can then be extended to other reinforcement learning algorithms with parameters that need to configured.
+The simplicity of the algorithm, however, facilitates an interesting analysis of the effect of the value of $\varepsilon$ on the algorithm's success. The overarching goal of this project is to develop general guidelines for tailoring the algorithm to any particular reinforcement learning task. These guidelines can then hopefully be extended to other reinforcement learning algorithms with parameters that need to configured.
+
+
+\section{Goals}
+\label{sec:goals}
 
 This project tackles a number of questions:
 
 \begin{enumerate}
 	\item Are there ``optimal'' values of $\varepsilon$ that maximise the algorithm's performance?
 	\item How quickly does the algorithm's policy converge? Does it converge to an optimal policy?
-    \item How does the Monte Carlo with Exploring Starts algorithm (Monte Carlo ES \cite{rl-book}) affect the convergence rate of the policy?
-	\item When playing games where states have axes of symmetry, how does the agent's performance and learning change when symmetry is eliminated?
-	\item How does the performance of the algorithm differ for different games?
+    \item How does the Monte Carlo with Exploring Starts algorithm \cite{rl-book} compare to the ``normal'' Monte Carlo algorithm in terms of its success and convergence rate?
+	\item When playing games where states have axes of symmetry, how does the agent's performance change when symmetry is eliminated?
+	\item How does the performance of the algorithm differ from game to game?
 \end{enumerate}
 
-Three games were selected for this project: Tic-Tac-Toe, Chung Toi, and Nim. They are discussed in further detail in Section \ref{sec:DesignImpl}. They form an interesting mix since some have relatively long episodes, others can be used to investigate symmetry, and some with a similar state space can be compared against each other. Thus, it was possible to answer all of the above questions and derive some interesting results.
+Three games were selected for this project: Tic-Tac-Toe, Chung Toi, and Nim. They are discussed in further detail in Section \ref{sec:DesignImpl}. They form an interesting mix since some have relatively long episodes, others can be used to investigate symmetry, and some have state spaces of similar sizes and can be compared to each other. Thus, it was possible to answer all of the above questions and derive some interesting results.
 
 
 
@@ -93,11 +98,11 @@ This section provides an overview of the theory behind reinforcement learning an
 \section{Reinforcement Learning}
 \label{sec:RL}
 
-Reinforcement learning (RL) is an area of machine learning in which an agent interacts with an environment by choosing actions, with the goal of maximizing the cumulative reward it receives for these actions.
+Reinforcement learning (RL) is an area of machine learning in which an agent interacts with an environment by choosing actions, with the goal of maximising the cumulative reward it receives for these actions.
 
 The beauty of RL is that the agent is not given any information about \emph{how} to solve a problem, but rather it has to find out what works and what does not through trial-and-error. For this reason, RL is different from supervised learning because the agent is not provided with any input-output pairs to learn from. Instead, it learns and improves purely based on its own experiences.
 
-RL is now described more formally. An \emph{agent} is a learner and the \emph{environment} is everything outside the agent, namely the thing that the agent interacts with. These interactions occur at discrete time steps $t = 0, 1, 2, 3, ...$. An \emph{episode} is a natural subsequence of interactions, such as a one game of Tic-Tac-Toe. There is a set of states $\mathcal{S}$ and a function $\mathcal{A}$ such that for any state $s \in \mathcal{S}$, $\mathcal{A}(s)$ is the set of actions that are available from state $s$. There is a function $\mathcal{R}$ that specifies the \emph{reward} (or \emph{return}) $r$ that an agent receives for choosing an action $a$ at a state $s$. The ultimate goal of an agent is to maximize the total sum of all the rewards it receives. Based on its experience, an agent builds a \emph{policy} $\pi$, which maps each state $s$ to the probabilities of selecting each of the actions available from $s$.
+RL is now described more formally. An \emph{agent} is a learner and the \emph{environment} is everything outside the agent, namely the thing that the agent interacts with. These interactions occur at discrete time steps $t = 0, 1, 2, 3, ...$. An \emph{episode} is a natural sub-sequence of interactions, such as one game of Tic-Tac-Toe. There is a set of states $\mathcal{S}$ and a function $\mathcal{A}$ such that for any state $s \in \mathcal{S}$, $\mathcal{A}(s)$ is the set of actions that are available from state $s$. There is a function $\mathcal{R}$ that specifies the \emph{return} (or \emph{reward}) $r$ that an agent receives for choosing an action $a$ at a state $s$. The ultimate goal of an agent is to maximise the total sum of all the returns it receives. Based on its experience, an agent builds a \emph{policy} $\pi$, which maps each state $s$ to the probabilities of selecting each of the actions available from $s$.
 
 It is worth making a quick digression to explain what a Markov Decision Process (MDP) is. First, we define the \emph{Markov property}.
 
@@ -114,21 +119,21 @@ A RL task has the Markov propety if and only if \ref{complete-prob-distr} and \r
 
 More intuitively, having the Markov property means that the environment's response (i.e. state it transitions to and return it gives to the agent) at a particular time step should only depend on what happened during the previous time step. Thus, this response should be independent of what happened before the previous time step.
 
-A task that satisfies the Markov property is called a MDP and furthermore, if it has finitely many states and actions (i.e. $\mathcal{S}$ and $\mathcal{A}$ are both finite), then it is called a \emph{finite} MDP. 
+A task that satisfies the Markov property is called a MDP and if it has finitely many states and actions (i.e. $\mathcal{S}$ and $\mathcal{A}$ are both finite), then it is called a \emph{finite} MDP. 
 
-The reason finite MDP's are important is that it has been shown that they all have an optimal policy $\pi^{\ast}$ \cite{rl-book} \cite{mdp-convergence}. Since the games used in this project all have finite state spaces and action spaces, this result is very useful since it informs the study of the convergence of an agent's policy as it gains experience playing the games.
+Since the games used in this project all have finite state spaces and action spaces, they are all finite MDP's. The reason finite MDP's are important is that they all have an optimal policy $\pi^{\ast}$ \cite{rl-book} \cite{mdp-convergence}. This result is very useful since it informs the study of the convergence of an agent's policy as it gains experience playing the games.
 
 
 \section{Learning Algorithms}
 \label{sec:learning-algorithms}
 
-One of the goals of RL algorithms is to estimate a \emph{state-value function} that indicates the ``strength'' of being in a particular state. This ``strength'' refers to the expected return that the agent will receive from the environment if it follows a certain policy. Formally the state-value function for a policy $\pi$ is $V^{\pi} : \mathcal{S} \rightarrow \mathbb{R}$.
+One of the goals of RL algorithms is to estimate a \emph{state-value function} that indicates the ``strength'' of being in a particular state. This ``strength'' refers to the expected return the agent will receive from the environment if it follows a certain policy. Formally, the state-value function for a policy $\pi$ is $V^{\pi} : \mathcal{S} \rightarrow \mathbb{R}$.
 
 Similarly, RL algorithms also estimate an \emph{action-value function} that indicates the ``strength'' of choosing a particular action from a particular state. The action-value function for a policy $\pi$ is $Q^{\pi} : \mathcal{S} \times \mathcal{A} \rightarrow \mathbb{R}$.
 
-RL algorithms estimate $V^{\pi}$ and $Q^{\pi}$ from experience and their goal is to build estimates as close to $V^{\ast}$ and $Q^{\ast}$ -- the optimal state-value and action-value functions -- as possible. We know that such optimal functions exist because, as explained in Section \ref{sec:RL}, all finite MDP's have an optimal policy.
+RL algorithms estimate $V^{\pi}$ and $Q^{\pi}$ from experience and their goal is to build estimates as close to $V^{\ast}$ and $Q^{\ast}$ -- optimal state-value and action-value functions -- as possible. We know that such optimal functions exist because, as explained in Section \ref{sec:RL}, all finite MDP's have an optimal policy.
 
-A final distinction to make between RL algorithms is between \emph{on-policy} and \emph{off-policy} algorithms. On-policy algorithms update their estimates of the value functions solely using the experience they gain from choosing actions and interacting with the environment. On the other hand, off-policy algorithms update their estimates based on actions they might not even take.
+A final distinction to make between RL algorithms is between \emph{on-policy} and \emph{off-policy} algorithms. On-policy algorithms update their estimates of  $V^{\pi}$ and  $Q^{\pi}$ solely using the experience they gain from interacting with the environment. On the other hand, off-policy algorithms update their estimates based on actions they might not even take.
 
 There are a number of well-known RL techniques that estimate $V^{\pi}$ and improve policies in different ways. One of the most popular and well-understood \cite{challenges-of-rl} algorithms is Q-learning \cite{q-learning}, an off-policy algorithm. Most notably, a variant of Q-learning was used to train a convolutional neural network to play Atari 2600 games, outperforming human experts \cite{atari}. Q-learning is based in part on a category of RL algorithms called Temporal Difference, which are on-policy algorithms. One called TD($\lambda$) gained notoriety when it was successfully used to train a neural network to play Backgammon at a level that surpassed other similar networks as well as human experts \cite{backgammon}. Temporal Difference, in turn, combines techniques from dynamic programming approaches to RL as well another category of algorithms called Monte Carlo, which are mostly on-policy algorithms. The latter category is the focus of this project since such algorithms are simple and intuitive, but still reveal a lot about how policies converge and how performance varies from game to game.
 
@@ -140,17 +145,17 @@ Monte Carlo (MC) algorithms are online algorithms that try to solve RL problems 
 
 MC learning works by saving the average of all returns received for choosing action $a$ from $s$, for each state $s$ and action $a$ available from $s$, over the course of all episodes. This is stored in the action-value function $Q^{\pi}$.
 
-There are two variations of MC with respect to averaging returns: \emph{every-visit} MC and \emph{first-visit} MC. Every-visit MC computes its estimate of each expected return $Q(s,a)$ using the average of the returns after \emph{all} the times $a$ was chosen from $s$. In contrast, first-visit MC does so using only the returns received the \emph{first} time $a$ was chosen from $s$ in each episode. Both versions converge to the true expected values in the limit of infinitely many encounters with each state-action pair, so the first-visit version was arbitrarily chosen for this project.
+There are two variations of MC with respect to averaging returns: \emph{every-visit} MC and \emph{first-visit} MC. Every-visit MC computes its estimate of each expected return $Q(s,a)$ using the average of the returns after \emph{all} the times $a$ was chosen from $s$. In contrast, first-visit MC does so using only the returns received the \emph{first} time in each episode $a$ was chosen from $s$. Both versions converge to the true expected values in the limit of infinitely many encounters with each state-action pair, so the first-visit version was arbitrarily chosen for this project.
 
-A problem arises when a policy is completely deterministic because many state-actions pairs will never be encountered, regardless of how many episodes take place. More specifically, only one action from each state will be chosen whenever the state is encountered, so the algorithm will never improve. Thus, a concept called \emph{exploring starts} is assumed. This means that the each episode begins with a random state-action pair, where all pairs have a non-zero probability of being selected. In this way, all states and actions are guaranteed to be encountered infinitely many times over the course of infinitely many episodes.
+A problem arises when a policy is completely deterministic because many state-actions pairs will never be encountered, regardless of how many episodes take place. More specifically, for each state only one action will ever be chosen when that state is encountered, so the algorithm will never improve. Thus, a concept called \emph{exploring starts} is assumed. This means that each episode begins with a random state-action pair, where all pairs have a non-zero probability of being selected. In this way, all states and actions are guaranteed to be encountered infinitely many times over the course of infinitely many episodes.
 
 However, exploring starts cannot be assumed to hold for all RL tasks and one solution to this problem is an on-policy control method. Policies resulting from these methods are called \emph{$\varepsilon$-soft} if $\pi(s,a) > 0$ for all $s \in \mathcal{S}$ and all $a \in \mathcal{A}(s)$. A specific type of $\varepsilon$-soft policy is an $\varepsilon$-greedy policy and this is the type used in this project. The way they work is that the majority of the time, the agent chooses the best action, but with probability $\varepsilon$ it chooses an action randomly. Specifically, the best action is assigned a probability of $1 - \varepsilon + \frac{\varepsilon}{|\mathcal{A}(s)|}$ and all other actions are assigned a probability of $\frac{\varepsilon}{|\mathcal{A}(s)|}$ in the policy.
 
-With all of this in mind, we can now understand the on-policy $\varepsilon$-soft MC control algorithm used in this project:
+With all this in mind, we can now understand the on-policy $\varepsilon$-soft MC control algorithm used in this project:
 
 \label{sec:monteCarloPseudocode}
 \begin{center}
-	\emph{[will figure out how to use the algorithm package to write pseudocode here]}
+	\emph{[PSEUDOCODE HERE]}
 \end{center}
 
 
@@ -168,7 +173,7 @@ In addition to the terms described in Section \ref{sec:RL}, the following terms 
 
 	\item \textbf{MC agent}: Agent that uses the on-policy $\varepsilon$-soft Monte Carlo control algorithm for learning
 		\begin{itemize}
-			\item In particular, it refers to an instance of the \emph{MonteCarloAgent} class described in Section \ref{sec:Agents}
+			\item In particular, it refers to an instance of the \emph{MonteCarloAgent} class described in Section \ref{sec:code-structure}
 		\end{itemize}
 
 	\item \textbf{Epsilon precision}: the difference between consecutive values of $\varepsilon$ used in experiments.
@@ -193,10 +198,11 @@ In addition to the terms described in Section \ref{sec:RL}, the following terms 
 \chapter{Design \& Implementation}
 \label{sec:DesignImpl}
 
-This section describes the implementations of Tic-Tac-Toe, Chung Toi, and Nim, as well as the game-playing agents used in this project's experiments.
+This section describes the structure of the code written for this project, the implementations of Tic-Tac-Toe, Chung Toi, and Nim, and the game-playing agents used in this project's experiments.
 
 
 \section{Code Structure}
+\label{sec:code-structure}
 
 The project is written entirely in Java and is built in a modular way, using an object-oriented style. Figure \ref{code-structure} shows the project's structure, which consists of five packages: \emph{agents}, \emph{general}, \emph{tictactoe}, \emph{chungtoi}, and \emph{nim}.
 
@@ -208,74 +214,70 @@ The project is written entirely in Java and is built in a modular way, using an 
 	\end{center}
 \end{figure}
 
-The \emph{general} package contains interfaces for agents, games, states, and actions, and each concrete class in the project implements one of the four interfaces. The interfaces serve as Facades for the implementations, which are often quite complex.
+The \emph{general} package contains interfaces for agents, games, states, and actions, which serve as Facades for the implementations, which are often quite complex.
 
-The \emph{tictactoe} package contains an abstract class \emph{TicTacToeGame} that implements the \emph{Game} interface by providing the logic of the game. Two concrete classes, \emph{TicTacToeNormalGame} and \emph{TicTacToeGameWithSymmetricEquality} extend it and all they do is override the constructors in order to initialise the game's state to the right subclass of \emph{TicTacToeState}. Similar to \emph{TicTacToeGame}, \emph{TicTacToeState} is an abstract class that implements the necessary behaviours of a game state, such as providing a list of available actions and producing the result of applying an action to it. It has two concrete subclasses: \emph{TicTacToeNormalState}, which slightly modifies the constructors, and \emph{TicTacToeWithSymmetricEquality}, which implements the symmetry-breaking described in Section \ref{sec:TicTacToeImplementation}.
+The \emph{tictactoe} package contains an abstract class \emph{TicTacToeGame} that implements the game logic. Two concrete classes, \emph{TicTacToeNormalGame} and \emph{TicTacToeGameWithSymmetricEquality} extend it and all they do is override the constructors in order to initialise the game's state to the right subclass of \emph{TicTacToeState}. Like \emph{TicTacToeGame}, \emph{TicTacToeState} is an abstract class that implements the necessary behaviours of a game state, such as providing a list of available actions and producing the result of applying an action to it. It has two concrete subclasses: \emph{TicTacToeNormalState}, which slightly modifies the constructors, and \emph{TicTacToeWithSymmetricEquality}, which implements the symmetry-breaking described in Section \ref{sec:TicTacToeImplementation}.
 
-The \emph{chungtoi} package has three types of actions, so there are three concrete classes that implement the \emph{Action} interface. The logic in \emph{ChungToiState} for producing a list of available actions is more complex than in the other two games due to the number of possible move combinations as well as the two game phases, as described in more detail in Section \ref{sec:ChungToiRules}.
+The \emph{chungtoi} package has three concrete classes that implement the \emph{Action} interface since Chung Toi involves three types of moves. The logic in \emph{ChungToiState} for producing a list of available actions is more complex than in the other two games due to the number of possible move combinations as well as the two game phases. All of this is described in more detail in Section \ref{sec:ChungToiRules}.
 
 The \emph{nim} package is relatively simple and there are two classes that implement the \emph{Game} interface: \emph{NimGame} and \emph{NimGameES}. The game logic in the latter forces the game to start with a random state-action pair, as required by the Monte Carlo ES algorithm described in Section \ref{sec:MonteCarloAlgorithms}. Further implementation details can be found in Section \ref{sec:NimImplementation}.
 
-The \emph{agents} package has two classes (\emph{RandomAgent} and \emph{MonteCarloAgent}) that implement the \emph{Agent} interface. As Figure \ref{code-structure} clearly shows, the agent implementations are totally independent on the games. That is, agents do not distinguish between different games and only use methods defined in the general interfaces. This means that the \emph{MonteCarloAgent} class, for example, can be used to play all three games. This modularity provides a nice separation of concerns that enables simpler testing and debugging.
+The \emph{agents} package has two classes (\emph{RandomAgent} and \emph{MonteCarloAgent}) that implement the \emph{Agent} interface. As Figure \ref{code-structure} clearly shows, the agent implementations are totally independent of the games. That is, agents do not distinguish between different games and only use methods defined in the general interfaces. This means that the \emph{MonteCarloAgent} class, for example, can be used to play all three games. This modularity provides a nice separation of concerns that enabled simpler testing and debugging.
 
-The place where everything comes together and all these classes interact is in the \emph{play()} method from the \emph{Game} interface. The method simulates one episode (e.g. one ``game'' of Tic-Tac-Toe) by asking agents to choose actions, giving agents returns returns, and completing other tasks, depending on the specific game.
+The place where everything comes together and all of these classes interact is the \emph{play()} method from the \emph{Game} interface. This method simulates one episode of a game by asking agents to choose actions and giving agents returns returns, for instance.
 
 The independence of the agents and the game implementations makes the project easily extensible to other agents (i.e. learning algorithms) and games. If the reader wanted to test out the MC agent on some other game, Connect Four for example, they would just have to provide appropriate implementations of the \emph{Game}, \emph{State}, and \emph{Action} interfaces. Similarly, if the reader wanted to test out another RL algorithm, Temporal Difference for instance, they would have to  write a single class that implements the \emph{Agent} interface.
 
-In a way, this flexibility is a secondary goal of this project. More concretely, the project provides a framework for testing learning algorithms on games. It can be built on in a variety of ways in order to do further research in the field of RL.
+In a way, a secondary goal of this project is to be flexible in order to provide a framework for testing learning algorithms on games. It can be built on in a variety of ways in order to do further research on applying RL to games.
 
 
 \section{Agents}
 \label{sec:Agents}
 
-Two learning agents were implemented: \emph{RandomAgent} and \emph{MonteCarloAgent}.
+As mentioned in Section \ref{sec:code-structure}, two learning agents were implemented: \emph{RandomAgent} and \emph{MonteCarloAgent}.
 
-\emph{MonteCarloAgent} implements the $\epsilon$-soft on-policy MC control algorithm, as discussed in Section \ref{sec:MonteCarloAlgorithms}. In its \emph{chooseAction(State s)} method, it chooses an action according to its policy for states it has encountered in previous games, and randomly otherwise. In its \emph{gameOver()} method it calls two private helper methods \emph{policyEvaluation()} and \emph{policyImprovement()} that update $Q^{\pi}$ and $\pi$, respectively, as described in Section \ref{sec:monteCarloPseudocode}. Hash maps are used to store $Q^{\pi}$ and $\pi$ for constant time access and insertion.
+\emph{MonteCarloAgent} implements the $\epsilon$-soft on-policy MC control algorithm, as discussed in Section \ref{sec:MonteCarloAlgorithms}. In its \emph{chooseAction(State s)} method, it chooses an action according to its policy for states it has encountered in previous games, and randomly otherwise. In its \emph{gameOver()} method it calls two private helper methods \emph{policyEvaluation()} and \emph{policyImprovement()} that update $Q^{\pi}$ and $\pi$, respectively, as described in Section \ref{sec:monteCarloPseudocode}. Hash maps are used to store $Q^{\pi}$ and $\pi$ for constant time access and insertion. This choice was important because accessing and updating $Q^{\pi}$ and $\pi$ are the algorithm's most computationally expensive tasks.
 
-As its name suggests, \emph{RandomAgent} randomly selects an action from the list of available actions at any given state. In total, the logic for this agent is equivalent to one line of code and this agent is only used to play against the MC agent during training.
+As its name suggests, \emph{RandomAgent} randomly selects an action from the available actions at any given state. In total, the logic for this agent is equivalent to one line of code and \emph{RandomAgent} is only used to train and test the MC agent.
 
 
 \section{Tic-Tac-Toe}
 \label{sec:TicTacToe}
 
-The first game used in this project is Tic-Tac-Toe. It was chosen because it has a small state space, it is a conceptually simple game that most people are familiar with, and it can be used to investigate the effect of breaking symmetries on a MC agent's performance.
+The first game used in this project is Tic-Tac-Toe. It was chosen because it has a small state space relative to other games and it can be used to investigate the effect of breaking symmetries on a MC agent's performance.
 
 
 \subsection{Rules}
 
 Although this is a widely-known game, the rules \cite{tic-tac-toe-rules} are still included here for reference and clarity.
 
-First, one of the two players is randomly selected to use X tokens (the other player uses O tokens). These players are referred to as the ``X-player'' and ``O-player'', respectively, and they both have an unlimited number of tokens at their disposal. The game then consists of the two players alternately placing their tokens in empty spaces on a 3x3 grid, starting with the X-player. Figure \ref{tic-tac-toe-grid-example} is an example of a possible state of the grid.
+First, one of the two players is randomly selected to use X tokens (the other player uses O tokens). These players are referred to as the ``X-player'' and ``O-player'', respectively, and each has an unlimited number of their tokens at their disposal.
+
+The game consists of the players alternately placing their tokens in empty spaces on a 3x3 grid, starting with the X-player. Figure \ref{tic-tac-toe-grid-example} is an example of a possible grid state.
 
 \begin{figure}[htbp]
 	\begin{center}
 		\includegraphics[width=50mm]{tictactoe_grid_example.png}
-		\caption{Example of a Tic-Tac-Toe grid. Each of the nine cells can be in one of three states: empty, X, or O.}
+		\caption{Example of a Tic-Tac-Toe grid. Each cell has three possible states: empty, X, or O.}
 		\label{tic-tac-toe-grid-example}
 	\end{center}
 \end{figure}
 
-The game has three possible endings:
-
-\begin{itemize}
-	\item \textbf{X-player wins}: three X tokens form a horizontal, vertical, or diagonal row
-	\item \textbf{O-player wins}: three O tokens form a horizontal, vertical, or diagonal row
-	\item \textbf{Draw}: the grid is filled and neither player has won
-\end{itemize}
+The winner is the first player to place three of their tokens in a horizontal, vertical, or diagonal row. If the grid is filled and neither player has won, it is a draw.
 
 
 \subsection{State Space}
 \label{sec:TicTacToeStateSpace}
 
-Since each cell has three possible states, there are at most $3^9 = 19683$ states. In practice, strictly fewer than 19,683 possible states can be reached because technically the grid can be filled only with X tokens, with more O tokens than X tokens, or even with a row of three X tokens \emph{and} a row of three O tokens. None of these examples are valid game states so none of them will ever be encountered in a real game.
+Since each cell has three possible states, there are at most $3^9 = 19683$ states. In practice, strictly fewer than 19,683 possible states can be reached because there are a lot of invalid grid states (e.g. more O tokens than X tokens, a row of X tokens \emph{and} a row of O tokens) that can never be reached.
 
-Preliminary experiments reveal that, in fact, only 4520 states are reachable, without taking into account the four axes of symmetry of a Tic-Tac-Toe grid. If these are taken into account, we find that there are only 640 unique (quotiented by equality by symmetry) reachable states.
+Preliminary experiments reveal that, in fact, only 4520 states are reachable without symmetry-breaking and only 640 states are reachable if all symmetries are eliminated.
 
 
 \subsection{Implementation}
 \label{sec:TicTacToeImplementation}
 
-One of the aims of this project is to investigate the effect of eliminating a game's state symmetries on the Monte Carlo algorithm's learning rate and optimal learning parameters. In the game of Tic-Tac-Toe, a state can be symmetrical with up to seven other states as result of flipping it in the following ways:
+One of the aims of this project is to investigate the effect of eliminating a game's symmetries on the MC agent's learning rate and optimal learning parameters. In Tic-Tac-Toe, a state can have up to seven other symmetrical states as result of flipping it in the following ways:
 
 \begin{itemize}
 	\item horizontal axis
@@ -289,21 +291,21 @@ One of the aims of this project is to investigate the effect of eliminating a ga
 
 Of course, for some states, the result of some of these flips are the same, which is why a state might have strictly less than seven other symmetrical states.
 
-With this goal in mind, Tic-Tac-Toe was implemented in two ways:
+With the goal of studying game symmetries in mind, Tic-Tac-Toe was implemented in two ways:
 
 \begin{itemize}
 
 	\item \textbf{``Normal''}:
-This version does not break any symmetry and was used as a baseline.
+does not break any symmetry
 
-	\item \textbf{``Symmetric Equality''}: 
-This version breaks the symmetry between states by considering two objects representing states to be ``equal'' if they are symmetrical.
+	\item \textbf{``Symmetric Equality'' (SE)}: 
+breaks all symmetries by considering two objects representing states to be ``equal'' if they are symmetrical
 
 \end{itemize}
 
-Implementing the desired behaviour for the Symmetric Equality version was not as simple as initially expected. Overriding the \emph{equals()} method inherited from Java's \emph{Object} class was straightforward. However, overriding the inherited \emph{hashCode()} method was tricky.
+Implementing the desired behaviour for the SE version was not as simple as initially expected. Overriding the \emph{equals()} method inherited from Java's \emph{Object} class was straightforward. However, overriding the inherited \emph{hashCode()} method was tricky.
 
-A Java \emph{HashMap} places key-value pairs in buckets depending on the value returned by calling \emph{hashCode()} on the keys. Thus, if two keys have different hash codes, then they are placed in two different buckets, even if they are ``equal'' according to both of their \emph{equals()} methods. So, two key-value pairs with ``equal'' keys can both end up being stored in a hash map at the same time if they have different hash codes. This is why it was crucial for the \emph{hashCode()} method in \emph{TicTacToeStateWithSymmetricEquality} to produce exactly the same result for symmetrical states. After considering a few solutions, this behaviour was ultimately implemented by silently converting each state to a canonical form in such a way that symmetrical states have the same canonical form. Each state's canonical form is used to compute the state's hash code, which results in all symmetrical states having the same hash code, as required.
+A Java \emph{HashMap} places key-value pairs in buckets depending on the value returned by calling \emph{hashCode()} on the keys. No two key-value pairs in a \emph{HashMap} have keys with the same hash code. Thus, if two keys have different hash codes, they are placed in different buckets, even if they are ``equal'' according to both of their \emph{equals()} methods. So, two key-value pairs with ``equal'' keys can both end up being stored in a hash map at the same time if they have different hash codes. This is why it was crucial for the \emph{hashCode()} method in \emph{TicTacToeStateWithSymmetricEquality} to produce exactly the same result for symmetrical states. After considering a few solutions, this behaviour was implemented by silently converting each state to a canonical form in such a way that symmetrical states have the same canonical form. Each state's canonical form is used to compute the state's hash code, which results in all symmetrical states having the same hash code, as required.
 
 In both Tic-Tac-Toe implementations, agents receive a return of 1 for an action resulting a win, -1 for an action resulting in a loss, and 0 for an action resulting in a draw or a non-terminal state.
 
@@ -317,9 +319,9 @@ The second game used in the project is Chung Toi, a more complex version of Tic-
 \subsection{Rules}
 \label{sec:ChungToiRules}
 
-The main idea behind Chung Toi \cite{chung-toi-rules} is the same as that behind Tic-Tac-Toe in the sense that the game is played on a 3x3 grid and each player's goal is to get three of their pieces in a row. However, that is the entire extent of their overlap. Although the two games may seem similar, finding a good strategy for Chung Toi is not at all intuitive, unlike in Tic-Tac-Toe.
+The main idea behind Chung Toi \cite{chung-toi-rules} is the same as that behind Tic-Tac-Toe in the sense that the game is played on a 3x3 grid and each player's goal is to get three of their pieces in a row. However, that is the entire extent of their overlap. Although they may seem similar, finding a good strategy for Chung Toi is not at all intuitive, unlike for Tic-Tac-Toe.
 
-Before the game begins, one of the two players is randomly selected to use red tokens (the other player uses white tokens). These players are referred to as the ``red player'' and ``white player'', respectively. Each player has three tokens at their disposal and each token can be used in two possible orientations, as shown in Figure \ref{chung-toi-tokens}.
+Before the game begins, one of the players is randomly selected to use red tokens (the other player uses white tokens). These players are referred to as the ``red player'' and ``white player'', respectively. Each player has three tokens at their disposal and each token can be used in two possible orientations, as shown in Figure \ref{chung-toi-tokens}.
 
 \begin{figure}[htbp]
 	\begin{center}
@@ -329,7 +331,7 @@ Before the game begins, one of the two players is randomly selected to use red t
 	\end{center}
 \end{figure}
 
-The game consists of the players alternately making a move, starting with the red player. Throughout the game, the red player can only move red tokens and the white player can only move white tokens. The game has two phases and both players start in Phase 1. Once a player places all three of their tokens, that player proceeds to Phase 2. The following actions are available in each phase:
+The game consists of the players alternately making a move, starting with the red player. Throughout the game, the red player can only touch red tokens and the white player can only touch white tokens. The game has two phases and both players start in Phase 1. Once a player places all three of their tokens, that player proceeds to Phase 2. The following actions are available in each phase:
 
 \begin{itemize}
 
@@ -355,7 +357,7 @@ Figure \ref{chung-toi-grid-example} is an example of a possible state of the gri
 \begin{figure}[htbp]
 	\begin{center}
 		\includegraphics[width=50mm]{chung_toi_grid_example.png}
-		\caption{Example of a Chung Toi grid. Each of the nine cells can be in one of five states: empty, red-straight, red-diagonal, white-straight, or white-diagonal.}
+		\caption{Example of a Chung Toi grid. Each cell has five possible states: empty, red-straight, red-diagonal, white-straight, or white-diagonal.}
 		\label{chung-toi-grid-example}
 	\end{center}
 \end{figure}
@@ -368,9 +370,9 @@ Since each cell has five possible states, there are at most $5^9 = 1,953,125$ st
 
 \subsection{Implementation}
 
-A standard implementation of Chung Toi was developed for this project. It enables two agents to play the game, exactly as described above.
+A standard implementation of Chung Toi was developed for this project.
 
-The role of Chung Toi in this project was to learn more about the effect of the MC learning parameter $\varepsilon$ on an agent's learning rate and winning rate. Chung Toi has roughly 100 times more states than Tic-Tac-Toe, which is expected to have an effect on the optimal value of $\varepsilon$ and therefore the MC agent's learning rate. It has the same axes of symmetry as Tic-Tac-Toe, so similar results would be expected from a Chung Toi implementation that breaks symmetries. For this reason, such an implementation was not developed to reduce redundancy and instead only a normal implementation with all symmetrical states present was developed.
+The role of Chung Toi in this project was to learn more about the effect of the MC learning parameter $\varepsilon$ on an agent's learning rate and winning rate. Chung Toi has roughly 100 times more states than Tic-Tac-Toe, which is expected to have an effect on the optimal value of $\varepsilon$ and therefore the MC agent's learning rate. It has the same axes of symmetry as Tic-Tac-Toe, so similar results would be expected from a Chung Toi implementation that breaks symmetries. For this reason, such an implementation was not developed to reduce redundancy.
 
 Just like in Tic-Tac-Toe, agents receive a return of 1 when they win, -1 when they lose, and 0 when the game ends in a draw or the game has not yet ended.
 
@@ -378,31 +380,31 @@ Just like in Tic-Tac-Toe, agents receive a return of 1 when they win, -1 when th
 \section{Nim}
 \label{sec:Nim}
 
-The third game used in the project is Nim, a simple game with an interesting mathematical theory behind it \cite{nim-rules}. It has a large number of variations and can be configured in many ways, so its state space can vary widely. For the purposes of this project, a ``small'' version of the game is used in order to reduce the running time of the experiments.
+The third game in this project is Nim, a simple game with an interesting mathematical theory behind it \cite{nim-rules}. It has many variations and can be configured in many ways, so its state space can vary widely. For the purposes of this project, a ``small'' version of the game was used in order to reduce the running time of the experiments.
 
 
 \subsection{Rules}
 
 The general idea of Nim \cite{nim-rules} is that two players alternately remove objects from several piles. The first player is chosen randomly and then on each turn, a player can remove any number of objects from any one of the piles. Each player must remove at least one object on each turn. The game ends when all the piles are empty.
 
-Which player wins depends on which version of the game is being played. In the ``normal play'' version the last move is the winning move, whereas in the ``mis\`ere'' version the player who moves last loses \cite{winning-ways-math-plays}. The mis\`ere version is implemented in this project.
+Which player wins depends on the version of the game being played. In the ``normal play'' version the last move is the winning move, whereas in the ``mis\`ere'' version the player who moves last loses \cite{winning-ways-math-plays}. The mis\`ere version is implemented in this project.
 
 
 \subsection{State Space}
 
-As explained in Section \ref{sec:NimImplementation}, the ``small'' version of Nim used in this project  consists of three piles, initially with seven objects each. Since each pile can have between zero and seven objects, inclusive, there are $8^3 = 512$ possible states.
+The ``small'' version of Nim used in this project  consists of three piles, initially with seven objects each. Since each pile can have between zero and seven objects (inclusive) there are $8^3 = 512$ possible states.
 
 
 \subsection{Implementation}
 \label{sec:NimImplementation}
 
-Nim is traditionally played with three piles of objects. The first of two versions of Nim implemented in this project is standard and initialises all piles with a fixed number of objects. In particular, in order to keep the state space relatively small, all three piles start off with seven objects.
+Nim is traditionally played with three piles of objects. The first of two versions of Nim implemented is standard and initialises all piles with a fixed number of objects. In particular, all three piles start with seven objects each.
 
-A second version of Nim was implemented since the game is well-suited to investigating the performance of Monte Carlo ES. This is because instead of initialising all piles with a fixed number of objects, all piles can be initialised with random numbers of objects.
+A second version of Nim was implemented since the game is well-suited to investigating the performance of Monte Carlo with exploring starts (Monte Carlo ES). This is because instead of initialising all piles with a fixed number of objects, all piles can be initialised with random numbers of objects.
 
-In this second implementation, piles are initialised with a random number of objects between zero and seven, in such a way that at least two piles are non-empty. This last condition was necessary because if all piles are empty or if there is only one non-empty pile and the other agent goes first and removes all the objects, then the game ends and the MC agent must receive a return without having chosen any action. This creates problems in the policy improvement phase of the algorithm since there is an outstanding return relative to the number of actions taken (i.e. zero).
+In this second implementation, piles are initialised with a random number of objects between zero and seven, in such a way that at least two piles are non-empty. This last condition was necessary because if there is only one non-empty pile and the other agent goes first and removes all the objects or if all piles are empty, then the game ends and the MC agent must receive a return without having chosen any action. This creates problems in the policy improvement phase of the algorithm since there is an outstanding return relative to the number of actions taken (i.e. zero).
 
-Since the concept of exploring starts relies on games starting with random state-action pairs, the implementation of the MC agent (as well as the \emph{Agent} interface and random agent) had to be modified and a slightly modified version of Nim was created. This is because in addition to randomly initialising the piles, an action has to be randomly selected. Then, the agent that is randomly selected to go first has to be forced to choose that random action. In this way, in the limit of infinitely many games, all actions from all states are explored and the agent is able to determine the overall best return it can receive from each state.
+Since the concept of exploring starts relies on games starting with random state-action pairs, the implementation of the MC agent (as well as the \emph{Agent} interface and random agent) had to be modified and the \emph{NimGameES} class described in Section \ref{code-structure} had to thbe implemented. This is because in addition to randomly initialising the piles, an action has to be randomly selected. Then, the agent that is selected to go first must be forced to choose that action.
 
 At the end of the game, the winner receives a return of 1 and the loser receives a return of -1. Throughout the rest of the game, both players receive returns of 0 for all their actions.
 
@@ -410,46 +412,46 @@ At the end of the game, the winner receives a return of 1 and the loser receives
 %------------------
 \chapter{Results \& Analysis}
 
-This section describes the outcomes of a variety of experiments and discusses why these outcomes were expected, or unexpected, and what can be learned from them.
+This section describes the outcomes of a variety of experiments and what can be learned from them.
 
 
 \section{Types of Experiments}
 \label{sec:experiment-types}
 
-Two types of experiments were used to investigate the behaviour of the MC agent when playing games:
+Two types of experiments were used to investigate the behaviour and performance of the MC agent:
 
 \begin{itemize}
 
-	\item \textbf{``Epsilon'' Experiment}: This type of experiment iterates through all values of epsilon in a particular range (see Section \ref{sec:epsilon-precision}) and makes a MC agent (initialised with each value of epsilon) play a specific game against another agent a fixed number of times for training and then another fixed number of times for testing. Then it records the results (i.e. wins, losses, draws) for each value of epsilon during the testing phase in a CSV file. Thus, it is possible to produce graphs with the tested values of epsilon on the x-axis and the number of testing episodes resulting in a win, loss, and draw on the y-axis. These graphs are used to determine the optimal value of epsilon for a particular game and to decide which valuesof epsilon to use for ``convergence'' experiments.
+	\item \textbf{Epsilon Experiment}: This type of experiment iterates through all values of epsilon in a particular range (see Section \ref{sec:epsilon-precision}) and makes a MC agent (initialised with each value of epsilon) play a specific game against a \emph{RandomAgent} a fixed number of times for training and then another fixed number of times for testing. Then it records the results (i.e. wins, losses, draws) for each value of epsilon during the testing phase in a CSV file. Thus, it is possible to produce graphs with the tested values of epsilon on the x-axis and the number of testing episodes resulting in a win, loss, and draw on the y-axis (see Figure \ref{chung-toi-epsilon-160ktrain-10ktest} for an example). These graphs are used to determine the optimal value of epsilon for a particular game and to decide which values of epsilon to use for convergence experiments.
 
-	\item \textbf{``Convergence'' Experiment}: This type of experiment makes a MC agent (initialised with a particular value of epsilon) play a specific game against another agent a fixed number of times. Throughout the process, it records the cumulative results (i.e. wins, losses, draws) at regular intervals, as more and more episodes are played, in a CSV file. Thus, it is possible to plot the winning rate against the cumulative number of training episodes. These graphs are used to visualise the convergence rate of a MC agent's policy when using a specific value of epsilon. A deeper analysis of the significance of measuring convergence and the meaning of the winning rates when the policy converges can be found in Section \ref{sec:policy-optimality}.
+	\item \textbf{Convergence Experiment}: This type of experiment makes a MC agent (initialised with a particular value of epsilon) play a specific game against a \emph{RandomAgent} a fixed number of times. Throughout the process, it records the cumulative results (i.e. wins, losses, draws) at regular intervals, as more and more episodes are played, in a CSV file. Thus, it is possible to plot the winning rate against the cumulative number of training episodes (see Figure \ref{nim-convergence-comparison} for an example). These graphs are used to visualise the convergence rate of a MC agent's policy when using a specific value of epsilon. A deeper analysis of the significance of measuring convergence and the meaning of the winning rates when the policy converges can be found in Section \ref{sec:policy-optimality}.
 
 \end{itemize}
 
-The data from running these experiments on different games and with a MC agent playing testing and training episodes against other agents different numbers of times was combined to produce a number of interesting graphs that reveal interesting properties of the MC control algorithm.
+The data from running these experiments on different games and with different training and testing sessions lengths was combined to produce a number of interesting graphs that reveal interesting properties of the MC control algorithm.
 
 
 \section{Number of Training Episodes}
 
 An important decision made as part of the design and execution of these experiments was the number of training and testing episodes to use for each game. Two different approaches were used: one for Tic-Tac-Toe and Nim since they have relatively small state spaces ($<$5,000 states) and one for Chung Toi since it has a very large state space.
 
-For Tic-Tac-Toe and Nim, a structured process of trial-and-error was used to determine roughly how many episodes a MC agent needed to play in order for it to encounter all possible states for at least \emph{some} values of epsilon. This was done by training an agent with 100, 1,000, 10,000, and 100,000 games for each value of epsilon and inspecting the size of its policy in each case. A particular number of training episodes was deemed suitable if it resulted in a non-trivial proportion of the values of epsilon causing the agent to reach all possible states (4520 states in the case of Tic-Tac-Toe and 511 states in the case of Nim). These values of epsilon were always large (i.e. close to 1.0) because as epsilon gets larger, the agent is expected to encounter more and more states because it chooses actions at random increasingly often.
+For Tic-Tac-Toe and Nim, a structured process of trial-and-error was used to determine roughly how many episodes a MC agent needed to play in order for it to encounter all possible states for at least \emph{some} values of epsilon. This was done by training an agent with 100, 1,000, 10,000, and 100,000 games for each value of epsilon and inspecting the size of its policy in each case. A particular number of training episodes was deemed suitable if it resulted in a non-trivial proportion of the values of epsilon causing the agent to reach all possible states (4520 states in the case of Tic-Tac-Toe and 511 states in the case of Nim). These values of epsilon were always large (i.e. closer to 1.0 than to 0.0) because as epsilon gets larger, the agent is expected to encounter more and more states because it chooses actions at random increasingly often.
 
-The results indicated that 1,000 episodes sufficed for Nim and 10,000 episodes sufficed for Tic-Tac-Toe. These numbers differ by one order of magnitude, which matches the difference in the number of states the two games have. So, the number of training episodes used for Nim started at 1,000 and was repeatedly doubled until 128,000 (inclusive) and similarly for Tic-Tac-Toe it started at 10,000 and was repeatedly doubled until 1,280,000 (inclusive). For the sake of simplicity, the number of testing episodes was 1,000 for Nim and 10,000 for Tic-Tac-Toe.
+The results indicated that 1,000 episodes sufficed for Nim and 10,000 episodes sufficed for Tic-Tac-Toe. These numbers differ by one order of magnitude, which matches the difference in the number of states the two games have. So, the number of training episodes used for Nim started at 1,000 and was repeatedly doubled until 128,000 (inclusive) and similarly for Tic-Tac-Toe it started at 10,000 and was repeatedly doubled until 1,280,000 (inclusive). For simplicity, the number of testing episodes was 1,000 for Nim and 10,000 for Tic-Tac-Toe.
 
 This process was reasonable for Tic-Tac-Toe and Nim because they have relatively small state spaces and so it was possible to make an agent play enough episodes for it to encounter all possible states in a sensible amount of time. Chung Toi, on the other hand, has roughly 100 times as many states as Tic-Tac-Toe and it was not feasible to make an agent play millions or billions of games to reach them all.
 
-It is worth making a short digression to point out that this is one of the limitations of Monte Carlo algorithms and is one of the main reasons they are not used heavily in practice where reinforcement learning tasks have very large state spaces. In particular, since the agent learns only from its experience, without attempting to draw any conclusions about states it has not encountered, its success and therefore usefulness for tasks with a lot of states becomes rather limited. This is why ``pure'' Monte Carlo algorithms (i.e. algorithms that do not combine Monte Carlo techniques with other techniques like dynamic programming) tend to be applied only to simple tasks with small state spaces and are generally used for educational rather than practical purposes. On the other hand, algorithms like Temporal Difference learning, as briefly discussed in Section \ref{sec:learning-algorithms}, are much better suited to situations like these where the state space cannot be fully explored. Nevertheless, it was interesting to put a MC agent to the test with Chung Toi to see what success rate it could achieve.
+It is worth making a short digression to point out that this inability to handle RL tasks with very large state spaces in a reasonable amount of time is one of the limitations of Monte Carlo algorithms and is one of the main reasons they are not used heavily in practice. In particular, since the agent learns only from its experience, without attempting to draw any conclusions about states it has not encountered, its success and therefore usefulness for tasks with a lot of states becomes rather limited. This is why ``pure'' Monte Carlo algorithms (i.e. algorithms that do not combine Monte Carlo techniques with other techniques like dynamic programming) tend to be applied only to simple tasks with small state spaces and are generally used for educational rather than practical purposes. On the other hand, algorithms like Temporal Difference learning, as briefly discussed in Section \ref{sec:learning-algorithms}, are much better suited to situations like these where the state space cannot be fully explored. Nevertheless, it was interesting to put a MC agent to the test with Chung Toi to see what winning rate it could achieve.
 
-Since there was no clear way of determining a reasonable number of training and testing episodes for Chung Toi, the numbers used for Tic-Tac-Toe were also used for Chung Toi. This meant that experiments could be run in a reasonable amount of time (i.e. on the order of hours rather than days or weeks).
+Since there was no clear way of determining a reasonable number of training and testing episodes for Chung Toi, the numbers used for Tic-Tac-Toe were also used for Chung Toi. This meant that experiments could be run in a reasonable amount of time (i.e. on the order of hours rather than days or weeks), at the expense of never reaching all possible states
 
 
 \section{Epsilon Precision}
 \label{sec:epsilon-precision}
 
-Another decision was which values of epsilon to use for the epsilon experiments. The graphs with the experiment results have the values of epsilon on the x-axis and the win/loss/draw rates on the y-axis as a percentage of the testing episodes. Thus, in order to have a relatively smooth graph, epsilon values were chosen at regular intervals. Since epsilon can range from 0.0 to 1.0, the size of these intervals (aka. the epsilon precision, as defined in Section \ref{sec:Terminology}) was chosen to be 0.01. Using 0.1 made it difficult to compare the results of epsilon experiments where the curves were similar. Using 0.05 was a bit better, but 0.01 was good because it provided a clear visualisation of the differences between experiments without saving unnecessary amounts of data.
+Another decision was which values of epsilon to use for the epsilon experiments. The graphs displaying the results of such experiments have the values of epsilon on the x-axis and the win/loss/draw rates on the y-axis. Thus, in order to have a relatively smooth graph, epsilon values were chosen at regular intervals. Since epsilon can range from 0.0 to 1.0, the size of these intervals (aka. the epsilon precision, as defined in Section \ref{sec:Terminology}) was chosen to be 0.01. Using 0.1 made it difficult to compare the results of epsilon experiments where the curves were similar. Using 0.05 was a bit better, but 0.01 was good because it provided a clear visualisation of the differences between experiments without saving unnecessary amounts of data.
 
-As with any decision like this one, there is a point ``of diminishing returns'' after which having more detailed data does not enable more meaningful conclusions to be drawn. Thus, for the purposes of this project, the line was drawn at an epsilon precision of 0.01.
+As with any decision like this one, there is a point of ``diminishing returns'' after which having more detailed data does not enable more meaningful conclusions to be drawn. Thus, for the purposes of this project, the line was drawn at an epsilon precision of 0.01.
 
 
 \section{Optimal Value of $\varepsilon$}
@@ -460,12 +462,12 @@ It is not unreasonable to expect each game to have a specific value of epsilon t
 \begin{figure}[htbp]
 	\begin{center}
 		\includegraphics[width=\linewidth]{ChungToi_EpsilonResults_160kTrainingGames_10kTestingGames.png}
-		\caption{MC agent's performance on 10,000 Chung Toi testing episodes after 160,000 training episodes. There is a global maximum at $\varepsilon \approx 0.15$, which suggests that this is the best value of epsilon to use, at least for these numbers of training and testing episodes.}
+		\caption{MC agent's performance on 10,000 Chung Toi testing episodes after 160,000 training episodes. There is a global maximum at $\varepsilon \approx 0.15$, which suggests that this is the best value of epsilon to use.}
 		\label{chung-toi-epsilon-160ktrain-10ktest}
 	\end{center}
 \end{figure}
 
-However, with some experimentation it becomes clear that there is another key factor in the equation: the number of training episodes. If a game is judged based on the results of a single epsilon experiment (which uses some number of training episodes), the belief that each game has an optimal epsilon value seems to be true. However, when many epsilon experiments that use different numbers of training episodes are considered, an interesting relationship between the number of training episodes and the optimal value of epsilon is uncovered. Figure \ref{epsilon-win-comparisons} demonstrates this relationship for all three games.
+However, with some experimentation it becomes clear that there is another key factor in the equation: the number of training episodes. If a game is judged based on the results of a single epsilon experiment (which uses some number of training episodes), the belief that each game has an optimal epsilon value seems to be true. However, when many epsilon experiments using different numbers of training episodes are considered, an interesting relationship between the number of training episodes and the optimal value of epsilon is uncovered. Figure \ref{epsilon-win-comparisons} demonstrates this relationship for all three games.
 
 \begin{figure}[htbp]
     \centering
@@ -476,37 +478,37 @@ However, with some experimentation it becomes clear that there is another key fa
     \label{epsilon-win-comparisons}
 \end{figure}
 
-Thus, as the number of training episodes increases, the highest winning rate increases and the value of epsilon that produces the highest winning rate (``optimal'' value of epsilon) decreases. In particular, if we look at the optimal value of epsilon for each number of training episodes tried and plot these results for any game, we get a graph that looks like Figure \ref{nim-training-vs-opt-epsilon}. This shows that there is an inverse relationship between the two. This means that if there are no time or computational limitations and therefore a lot of training episodes can be played, a smaller value of epsilon will produce a higher win rate. In fact, as the number of training episodes approaches infinity, the optimal value of epsilon approaches zero. However, if the MC agent can only play a limited number of training episodes due to time or computational limitations, then a larger value of epsilon will produce better results.
+As the number of training episodes increases, the highest winning rate increases and the value of epsilon that produces the highest winning rate decreases. In particular, if we look at the optimal value of epsilon for different numbers of training episodes and plot these results, we get graphs that looks like those in Figure \ref{nim-training-vs-opt-epsilon}, showing that there is an inverse relationship between the two. This means that if there are no time or computational limitations and therefore a lot of training episodes can be played, a smaller value of epsilon will produce a higher winning rate. In fact, as the number of training episodes approaches infinity, the optimal value of epsilon approaches zero. However, if the MC agent can only play a limited number of training episodes due to time or computational limitations, then a larger value of epsilon will produce better results.
 
 \begin{figure}[htbp]
 	\begin{center}
 		\includegraphics[width=\linewidth]{Nim_OptimalEpsilon_vs_Training.png}
-		\caption{Graph of the optimal epsilon value for different numbers of Nim training episodes, showing an inverse relationship. These values were extracted from the CSV files produced by the epsilon experiments, where each experiment used a different number of training episodes -- call this $N$. The optimal value of epsilon for each experiment is the value for which the MC agent trained for $N$ episodes using that value of epsilon had the highest winning rate during the testing session. More intuitively, the datapoints correspond to the global maxima of each of the curves in \ref{fig:nim_win_comparison}. }
+		\caption{WIL INSERT THE SAME GRAPH FOR TIC-TAC-TOE AND CHUNG TOI HERE AS WELL. Graphs of the optimal epsilon values for different numbers of training episodes, showing an inverse relationship. These values were extracted from the CSV files produced by the epsilon experiments, where each experiment used a different number of training episodes -- call this $N$. The optimal value of epsilon for each experiment is the value for which the MC agent trained for $N$ episodes using that value of epsilon had the highest winning rate during the testing session. More intuitively, the datapoints correspond to the global maxima of the curves in \ref{fig:nim_win_comparison}. }
 		\label{nim-training-vs-opt-epsilon}
 	\end{center}
 \end{figure}
 
 This behaviour makes sense and should, in fact, be expected because of the role of $\varepsilon$ in the Monte Carlo control algorithm. As discussed in Section \ref{sec:MonteCarloAlgorithms}, $\varepsilon$ is used during policy improvement. In particular, the probability of choosing an action (other than the best action encountered so far) is $\frac{\varepsilon}{N}$ where $N$ is the number of available actions. On the other hand, the probability of choosing the best action encountered so far is  $1 - \epsilon + \frac{\varepsilon}{N}$. Thus, as $\varepsilon$ approaches 0, the probability of choosing the best action encountered so far approaches one.
 
-A larger value of $\varepsilon$ benefits an agent in the short-term because it speeds up learning. This is because a larger $\varepsilon$ value corresponds to more exploration, relative to exploitation, which means the best actions will be found faster. Thus, when few training episodes can be played, a value of $\varepsilon$ closer to 1 is better. However, it is disadvantageous in the long-term because even though the agent knows which actions produce the largest returns, the agent will still be forced to choose other sub-optimal actions relatively often. So, when a large number of training episodes can be played, a value of $\varepsilon$ closer to 0 is better.
+A larger value of $\varepsilon$ benefits an agent in the short-term because it speeds up learning. This is because a larger $\varepsilon$ value corresponds to more exploration than exploitation, which means the best actions will be found faster. Thus, when few training episodes can be played, a value of $\varepsilon$ closer to 1.0 is better. However, it is disadvantageous in the long-term because even though the agent knows which actions produce the largest returns, it will still be forced to choose other sub-optimal actions relatively often. So, when a large number of training episodes can be played, a value of $\varepsilon$ closer to 0.0 is better.
 
-Overall, there is no single value of $\varepsilon$ that maximises an agent's performance in a particular game. However, for any \emph{specific} number of training episodes, there \emph{is} a value that results in the best winning rate by striking the right balance between exploration and exploitation for \emph{that} amount of training.
+Overall, there is no single value of $\varepsilon$ that maximises an agent's winning rate in a particular game. However, for any \emph{specific} number of training episodes, there \emph{is} a value that results in the best winning rate by striking the right balance between exploration and exploitation for \emph{that} amount of training.
 
-Of course, the same number of training episodes will have different optimal $\varepsilon$ for games with different state space sizes and even game lengths (i.e. average number of actions until the game ends). The key point, however, is still the same and it is that a training episode number and epsilon combination that works well for one game is unlikely to work as well for another and so each game needs to be studied separately.
+Of course, the same number of training episodes will have different optimal values of $\varepsilon$ for games with different state space sizes and even average episode lengths. The key point, however, is still the same and it is that a training episode count and epsilon combination that works well for one game is unlikely to work as well for another and so each game must be studied separately.
 
 
 \section{Convergence to the Optimal Policy}
 \label{sec:convergence-results}
 
-In the context of training a MC agent to play a game, the ``speed'' at which the agent's policy converges is the number of training episodes the agent needs until its policy $\pi$ converges. Naturally, this varies depending on the value of $\varepsilon$ used by the agent.
+In the context of training a MC agent to play a game, the ``speed'' at which the agent's policy converges is the number of training episodes the agent needs until its winning rate stagnates. Naturally, this varies depending on the value of $\varepsilon$ used by the agent.
 
-As described in Section \ref{sec:experiment-types}, convergence experiments provide the data needed to compare different values of $\varepsilon$ and to analyse the speed of convergence. Convergence experiments produce the proportions of a MC agent's wins and losses (and draws, if applicable) at regular intervals during a training session, using a specific value of epsilon. Thus, by plotting the proportions of wins, we see how quickly the policy changes. Convergence experiments do not involve any testing episodes because their goal is to analyse the algorithm during training in order to gain insight into what an appropriate number of training episodes is for a particular game.
+As described in Section \ref{sec:experiment-types}, convergence experiments provide the data needed to compare different values of $\varepsilon$ and to analyse the speed of convergence. Convergence experiments produce the proportions of a MC agent's wins and losses (and draws, if applicable) at regular intervals during a training session, using a specific value of epsilon. Thus, by plotting the winning rates, we see how quickly the policy changes. Note that convergence experiments do not involve any testing episodes because their goal is to analyse the algorithm during training in order to gain insight into what an appropriate number of training episodes is for a particular game.
 
-The policy of the MC agent only converges to the theoretically optimal policy in the limit of infinitely many training episodes \cite{rl-book}. Since running infinitely many episodes is naturally infeasible, 100,000 training episodes are run in the convergence experiments and the resulting graphs are inspected to see how long it takes for the winning rate to stabilise.
+The policy of a MC agent only converges in the limit of infinitely many training episodes \cite{rl-book}. Since running infinitely many episodes is naturally infeasible, 100,000 training episodes are run in the convergence experiments and the resulting graphs are inspected to see how long it takes for the winning rate to start stabilising.
 
-It might also be natural to define some notion of convergence. For instance, one might consider the policy to have converged after $x$ training episodes if the agent's winning rate changes by less than 0.1\% after $x$ training episodes compared to after $x+1000$ training episodes. This technique was trialled, but the results did not provide any additional insight relative to visual inspection and comparison of the convergence experiment graphs, so they are omitted.
+It might also be natural to define a more concrete notion of convergence. For instance, one might consider the policy to have converged after $x$ training episodes if the agent's winning rate changes by less than 0.1\% after $x$ training episodes compared to after $x+1000$ training episodes. This technique was trialled, but the results did not provide any additional insight relative to visual inspection of the convergence experiment graphs, so they are omitted.
 
-As we saw earlier in Figure \ref{fig:nim_win_comparison}, the agent's winning rate when playing Nim changes quite a bit as the number of training episodes increases. The best way to gain an intuition of how the policy converges for different epsilon value is to run convergence experiments with a few different values. Figure \ref{nim-convergence-comparison} shows the results of experiments run for $\varepsilon = 0.01, 0.02,..., 0.64$.
+As seen earlier in Figure \ref{fig:nim_win_comparison}, the agent's winning rate when playing Nim changes quite a bit as the number of training episodes increases. The best way to gain an intuition of how the policy converges for different epsilon value is to run convergence experiments with a few different values. Figure \ref{nim-convergence-comparison} shows the results of experiments run for $\varepsilon = 0.01, 0.02,..., 0.64$.
 
 \begin{figure}[htbp]
 	\begin{center}
@@ -516,9 +518,9 @@ As we saw earlier in Figure \ref{fig:nim_win_comparison}, the agent's winning ra
 	\end{center}
 \end{figure}
 
-Figure \ref{nim-convergence-comparison} does an excellent job of illustrating the impact of the value of epsilon on the winning rate. There is a very clear trend: as epsilon increases, the policy converges faster (i.e. after fewer training episodes). Also, for the most part, as epsilon increases, the stabilised winning rate decreases -- this trend is particularly clear for the larger values of epsilon.
+Figure \ref{nim-convergence-comparison} does an excellent job of illustrating the impact of the value of epsilon on the winning rate. There is a very clear trend: as epsilon increases, the policy converges faster. Also, for the most part, as epsilon increases, the stabilised winning rate decreases -- this trend is particularly clear for the larger values of epsilon.
 
-In fact, Figure \ref{nim-convergence-comparison} also turns out to be another way of visualising the balance between the magnitude of epsilon and the number of training episodes that maximises the agent's winning rate. Suppose that convergence experiments are run for all values of epsilon from 0.0 to 1.0, inclusive at intervals of 0.01 and that all the curves are plotted on the same graph. Consider a vertical ``slice'' of the graph -- namely the winning rate for each value of epsilon after a specific number of training episodes, say 8,000. This slice is actually a projection of the graph of the winning rates from an epsilon experiment for 8,000 training episodes onto the y-axis. Figure \ref{nim-epsilon-flattening} gives a visualisation of such a projection.
+In fact, Figure \ref{nim-convergence-comparison} turns out to be another way of visualising the balance between the magnitude of epsilon and the number of training episodes that maximises the agent's winning rate. Suppose that convergence experiments are run for all values of epsilon from 0.0 to 1.0 at intervals of 0.01 and that all the curves are plotted on the same graph. Consider a vertical ``slice'' of the graph -- namely the winning rate for each value of epsilon after a specific number of training episodes, say $N_{train}$. This slice is actually a projection of the graph of the winning rates from an epsilon experiment for $N_{train}$ training episodes onto the y-axis. Figure \ref{nim-epsilon-flattening} gives a visualisation of such a projection.
 
 \begin{figure}[htbp]
     \centering
@@ -528,19 +530,19 @@ In fact, Figure \ref{nim-convergence-comparison} also turns out to be another wa
     \label{nim-epsilon-flattening}
 \end{figure}
 
-Each slice corresponds to the results of some epsilon experiment, so the same simple equation is used  in both cases to choose which epsilon to use for a fixed number of training episodes. Specifically:
+Each slice corresponds to the results of some epsilon experiment, so the same simple equation is used  in both cases to choose which epsilon value to use for a fixed number of training episodes. Specifically:
 
 \begin{equation}
 	\varepsilon^{optimal} = \argmax_{\varepsilon} WinningRate(\varepsilon)
 \end{equation}
 
-Overall, these results verify what was uncovered in Section \ref{sec:optimal_epsilon}. Specifically, the choice of epsilon depends on how many training episodes can be played. For few episodes, larger values of epsilon are better since they converge to their maximal winning rate quickly. For a large number of episodes, smaller value of epsilon are preferable because they provide a better maximal winning rate once they converge.
+Overall, these results verify what was uncovered in Section \ref{sec:optimal_epsilon}. Specifically, the choice of epsilon depends on how many training episodes can be played. For few episodes, larger values of epsilon are better since they converge to their maximal winning rate quickly. For a large number of episodes, smaller values of epsilon are preferable because they provide a better maximal winning rate once they converge.
 
 
 \section{Monte Carlo with Exploring Starts}
 \label{sec:exploring-starts}
 
-The game that is most conducive to applying the Monte Carlo with Exploring Starts (Monte Carlo ES) algorithm is Nim because it is easy to create a random starting state. Since Monte Carlo ES does not have any learning parameters like $\varepsilon$, the only relevant type of experiment is a convergence experiment. Normally, a convergence experiment takes a value of $\varepsilon$ as an argument, but since such a value is not used by an agent that implements the exploring starts algorithm, the argument is ignored. Thus, the only experiment parameter that can be modified is the total number of training episodes. For consistency with the other Nim experiments, the convergence experiment for Nim with ES was run 100,000 times and the results can be seen in Figure \ref{nim-convergence-comparison-with-ES}.
+The game that is most conducive to applying the Monte Carlo with Exploring Starts (Monte Carlo ES) algorithm is Nim because it is easy to create a random starting state. Since Monte Carlo ES does not have any learning parameters like $\varepsilon$, the only relevant type of experiment is a convergence experiment. Normally, a convergence experiment takes a value of $\varepsilon$ as a parameter, but since such a value is not used by an agent that implements Monte Carlo ES, it is ignored. Thus, the only experiment parameter that can be modified is the total number of training episodes. For consistency with the other Nim experiments, the convergence experiment for Nim with ES was run with 100,000 training episodes and the results can be seen in Figure \ref{nim-convergence-comparison-with-ES}.
 
 \begin{figure}[htbp]
 	\begin{center}
@@ -550,17 +552,17 @@ The game that is most conducive to applying the Monte Carlo with Exploring Start
 	\end{center}
 \end{figure}
 
-As we can see, Monte Carlo ES performs similarly to Monte Carlo with a relatively large value of epsilon (like $\varepsilon$ = 0.64 in Figure \ref{nim-convergence-comparison-with-ES}). This seems reasonable because as epsilon approaches 1, the agent chooses actions randomly more and more often. Thus, the agent is increasingly likely to choose actions that lead to sub-optimal or losing states (i.e. states where the other player can win in their next move), regardless of whether or not they know better. In a similar way, Monte Carlo ES forces the agent into certain states (right at the start of each episode), many of which are sub-optimal or losing states. This element of randomness when Monte Carlo ES determines the starting state appears to have a similar effect to the element of randomness that the on-policy $\varepsilon$-soft MC algorithm exhibits when epsilon is large.
+As we can see, Monte Carlo ES performs similarly to a normal MC agent using a relatively large value of epsilon (like $\varepsilon$ = 0.64 in Figure \ref{nim-convergence-comparison-with-ES}). This seems reasonable because as epsilon approaches 1, the agent chooses actions randomly more and more often. Thus, the agent is increasingly likely to choose actions that lead to sub-optimal or losing states (i.e. states where the other player can win with their next action), regardless of whether or not they know better. In a similar way, Monte Carlo ES forces the agent into certain states (at the start of each episode), many of which are sub-optimal or losing states. This element of randomness when Monte Carlo ES determines the starting state appears to have an effect similar to that of the element of randomness that the on-policy $\varepsilon$-soft MC algorithm exhibits when epsilon is large.
 
-In Figure \ref{nim-convergence-comparison-with-ES} we see that Monte Carlo ES does converge to some policy, but it is clear that there are better policies since many values of epsilon cause an on-policy $\varepsilon$-soft MC agent to converge to a policy with a higher winning rate.
+In Figure \ref{nim-convergence-comparison-with-ES} we see that Monte Carlo ES does converge to \emph{some} policy, but it is clear that there are better policies since many values of epsilon cause an on-policy $\varepsilon$-soft MC agent to converge to a policy with a higher winning rate.
 
 
 \section{Effect of Eliminating Symmetry}
 \label{sec:eliminate-symmetry}
 
-Tic-Tac-Toe is used to study the effect of eliminating a game's axes of symmetry on a MC agent's performance. As discussed in Section \ref{sec:TicTacToeImplementation}, each Tic-Tac-Toe state can be symmetrical with up to seven other states. The game has four axes of symmetry (horizontal, vertical, and two diagonals) and reflecting states in one or more of them produces all possible reflections and rotations. The ``normal'' Tic-Tac-Toe implementation does not implement any symmetry-breaking, whereas the ``symmetric equality'' (SE) Tic-Tac-Toe implementation breaks all symmetry between states -- these are discussed in more detail in Section \ref{sec:TicTacToeImplementation}.
+Tic-Tac-Toe is used to study the effect of eliminating a game's axes of symmetry on a MC agent's performance. As discussed in Section \ref{sec:TicTacToeImplementation}, each Tic-Tac-Toe state can be symmetrical to up to seven other states. The game has four axes of symmetry (horizontal, vertical, and two diagonals) and reflecting states in one or more of them produces all possible reflections and rotations. The ``normal'' Tic-Tac-Toe implementation does not implement any symmetry-breaking, whereas the ``symmetric equality'' (SE) implementation breaks all symmetry between states -- these were discussed in more detail in Section \ref{sec:TicTacToeImplementation}.
 
-Naturally, an implementation that breaks symmetries should be expected to perform better because it can combine its knowledge about symmetrical states and therefore produce a more accurate estimate $Q^{\pi}$ of the action-value function. This intuition is confirmed by running epsilon experiments for different numbers of training episodes for both normal Tic-Tac-Toe and SE Tic-Tac-Toe and the results are shown in Figure \ref{fig:tictactoe-normal-vs-symmetric-equality-epsilon}.
+Naturally, an implementation that breaks symmetries should be expected to perform better because it can combine its knowledge about symmetrical states and therefore produce a more accurate estimate $Q^{\pi}$ of the action-value function. This intuition is confirmed by running epsilon experiments with different numbers of training episodes for both normal and SE Tic-Tac-Toe -- the results are shown in Figure \ref{fig:tictactoe-normal-vs-symmetric-equality-epsilon}.
 
 \begin{figure}
     \centering
@@ -580,7 +582,7 @@ Naturally, an implementation that breaks symmetries should be expected to perfor
 
 In all eight experiments, the SE implementation outperformed the normal implementation by roughly 10\%. Upon closer inspection, the normal implementation's best winning rate is around 60\% after the agent was trained for only 10,000 episodes (Figure \ref{ttt-n-vs-se-10k}) and this increases to around 70\% after 1,280,000 training episodes (Figure \ref{ttt-n-vs-se-1280k}). On the other hand, the SE implementation already reaches a winning rate of around 80\% after only 10,000 episodes (Figure \ref{ttt-n-vs-se-10k}) and this only improves by a few percentage points after 1,280,000 training episodes (Figure \ref{ttt-n-vs-se-1280k}).
 
-This suggests that the SE implementation causes the MC agent's policy to converge much faster. To test this, we run performance experiments on both implementations for several values of epsilon and compare the results in Figure \ref{fig:tictactoe-normal-vs-symmetric-equality-performance}.
+This suggests that the SE implementation makes the MC agent's policy converge much faster. To test this, we run convergence experiments on both implementations for several values of epsilon and compare the results in Figure \ref{fig:tictactoe-normal-vs-symmetric-equality-performance}.
 
 \begin{figure}
     \centering
@@ -597,111 +599,124 @@ This suggests that the SE implementation causes the MC agent's policy to converg
     \label{fig:tictactoe-normal-vs-symmetric-equality-performance}
 \end{figure}
 
-The results are very interesting because the two curves are almost perfectly parallel in most of the seven experiments, particularly for the larger values of epsilon. In the first few experiments where epsilon is small, the normal implementation, which does not break symmetries, takes quite a bit longer to converge. This is particularly clear in Figures \ref{ttt-n-vs-se-0-01} and \ref{ttt-n-vs-se-0-02} because there is no visible ``elbow'' in the curve and the winning rate increases more gradually. This makes sense because when epsilon is small, more training episodes are needed in order for the agent to encounter more of the good/optimal state-action pairs. This effect is more subdued for the SE implementation because knowledge from symmetrical states is merged together, which has the same effect as playing more episodes.
+The results are very interesting because the two curves exhibit almost exactly the same trend in most of the seven experiments, particularly for the larger values of epsilon. In the first few experiments where epsilon is small, the normal implementation takes quite a bit longer to converge. This is particularly clear in Figures \ref{ttt-n-vs-se-0-01} and \ref{ttt-n-vs-se-0-02} because there is no visible ``elbow'' in the curve and the winning rate increases more gradually. This makes sense because when epsilon is small, more training episodes are needed in order for the agent to encounter more of the good/optimal state-action pairs. This effect is more subdued for the SE implementation because knowledge from symmetrical states is merged together, which has the same effect as playing more episodes.
 
-All in all, it is quite clear that breaking symmetries in RL tasks can be hugely beneficial in terms of the agent's success rate (not to mention the reduced size of the state-value function). In the case of Tic-Tac-Toe, this can lead to a winning rate that is up to 10\% larger and for games or tasks with more axes of symmetry, it is reasonable to expect this figure to be even larger.
+All in all, it is quite clear that breaking symmetries in RL tasks can be hugely beneficial in terms of the agent's winning rate (not to mention the reduced size of the state-value function). In the case of Tic-Tac-Toe, this can lead to a winning rate that is up to 10\% larger and for games or tasks with more axes of symmetry, it is reasonable to expect this figure to be even larger.
 
 
 %-----------------------
 \chapter{Discussion \& Future Work}
 
-This chapter discusses a number of discrete ideas considered or investigated in this project, how some of these ideas have been studied, and what further work can be conducted.
+This chapter discusses a number of discrete ideas considered or investigated during this project and what might be interesting to investigate further.
 
 
 \section{Using RL to Learn Epsilon}
 
-A concept that was experimented with as part of this project was using a MC agent to learn the best value of epsilon to use for a certain game (Tic-Tac-Toe was arbitrarily chosen) and number of training episodes. The hope was that instead of making a human run the epsilon and convergence experiments described in Section \ref{sec:experiment-types} in order to manually determine an appropriate value of epsilon, a MC agent itself could learn such a value on its own. This can be thought of as ``meta-RL'' since RL is used to train a MC agent to choose epsilon parameters and then its findings (i.e. policy) are in turn used to initialise some other MC agent that is playing a game like Tic-Tac-Toe.
+A concept that was experimented with as part of this project was using a MC agent to \emph{learn} the best value of epsilon to use for a certain game (Tic-Tac-Toe was arbitrarily chosen) and number of training episodes. The hope was that instead of making a human run the epsilon and convergence experiments described in Section \ref{sec:experiment-types} in order to manually determine an appropriate value of epsilon, a MC agent itself could learn such a value on its own. This can be thought of as ``meta-RL'' since RL is used to train a MC agent to choose epsilon parameters and then its findings (i.e. policy) are in turn used to initialise some other MC agent that is playing a game like Tic-Tac-Toe.
 
-Since the \emph{MonteCarloAgent} class knows how to play games, this task was formulated as a game, with the usual classes that implement the \emph{Game}, \emph{State}, and \emph{Action} interfaces. The game was called ``Find Epsilon'', it was a one-player game, and each episode ended after the player chose one action. The state space consisted of a single state that contained no information and the actions available from that state were all possible values of epsilon from 0.0 to 1.0 inclusive (at some regular interval, such as 0.01). The return the agent received for choosing an action (i.e. value of epsilon, call it $x$) was the number of episodes a MC agent initialised with $\varepsilon = x$ won when playing Tic-Tac-Toe 100,000 times against an agent that plays randomly.
+Since the \emph{MonteCarloAgent} class knows how to play games, this task was formulated as a game, with the usual classes that implement the \emph{Game}, \emph{State}, and \emph{Action} interfaces. The game was called ``Find Epsilon'', it was a one-player game, and each episode ended after the player chose one action. The state space consisted of a single state that contained no information and the actions available from that state were all possible values of epsilon from 0.0 to 1.0 inclusive (using an epsilon precision of 0.01). The return the agent received for choosing an action (i.e. value of epsilon, call it $x$) was the number of episodes a MC agent initialised with $\varepsilon = x$ won when playing Tic-Tac-Toe 100,000 times against a \emph{RandomAgent}.
 
-This seemed like a reasonable setup because the returns accurately reflected how well the agent was performing. However, when a MC agent was trained to play this game, it became clear that this was a highly inefficient way of finding good epsilon values. Since the game consisted of only one action, it would have been much more efficient to iterate through all possible epsilon values from 0.0 to 1.0 and for each one initialise a MC agent with that value and make it play Tic-Tac-Toe 100,000 times against an agent that plays randomly. For an epsilon precision of 0.01, this would mean that sessions of 100,000 Tic-Tac-Toe episodes would have to be played 101 times (one session per epsilon value) and then it would be clear which epsilon value resulted in the highest winning rate. In fact, this is precisely what the epsilon experiments described in Section \ref{sec:experiment-types} do. On the other hand, when the task is formulated as a Find Epsilon game, it takes much more than 101 sessions of 100,000 episodes before all values of epsilon are tried. The MC agent's policy is only useful if the agent has tried all possible epsilon values and so a lot of time and computational power is wasted while waiting for the agent to eventually try all values. Thus, this idea was abandoned and epsilon experiments were adopted instead.
+This seemed like a reasonable setup because the returns accurately reflected how well the agent was performing. However, when a MC agent was trained to play this game, it became clear that this was a highly inefficient way of finding good epsilon values. Since the game consisted of only one action, it would have been much more efficient to iterate through all possible epsilon values from 0.0 to 1.0 and for each one initialise a MC agent with that value and make it play Tic-Tac-Toe 100,000 times. For an epsilon precision of 0.01, this would mean that sessions of 100,000 Tic-Tac-Toe episodes would have to be played 101 times (one session per epsilon value). However, it would then be clear which epsilon value resulted in the highest winning rate. In fact, this is precisely what the epsilon experiments described in Section \ref{sec:experiment-types} do. On the other hand, when the task is formulated as the Find Epsilon game, it takes much more than 101 sessions of 100,000 episodes before all values of epsilon are tried. The MC agent's policy is only useful if the agent has tried all possible epsilon values and so a lot of time and computational power is wasted while waiting for the agent to eventually try all values. Thus, this idea was abandoned and epsilon experiments were adopted instead.
 
-The idea of using RL to learn good values for meta-parameters is not new -- in fact, a variety of research has been conducted on the topic of finding the right balance between exploration and exploitation in RL by finding good meta-parameters \cite{meta-optimization} \cite{meta-param-evolution} \cite{exploration-exploitation-meta-param} \cite{meta-learning-rl}. As a result, a number of algorithms have been developed in order to tailor meta-parameters that control this balance to the task at hand, including some based on genetic algorithms \cite{meta-param-evolution} for instance.
+The idea of using RL to learn good values for meta-parameters of RL algorithms (like $\epsilon$) is not new. In fact, a variety of research has been conducted on the topic of finding the right balance between exploration and exploitation in RL by finding good meta-parameters \cite{meta-optimization} \cite{meta-param-evolution} \cite{exploration-exploitation-meta-param} \cite{meta-learning-rl}. As a result, a number of algorithms have been developed in order to tailor meta-parameters that control this balance to the task at hand, including (for instance) some based on genetic algorithms \cite{meta-param-evolution}.
 
-In particular, one paper \cite{meta-learning-rl} studied use of the soft-max function to compute the probability of taking an action. The formula for this probability function involves a meta-parameter $\beta$ called the ``inverse temperature'' that controls the exploration-exploitation trade off, just like $\varepsilon$ in the MC algorithm. A low value of $\beta$ corresponds to high exploration and a high value corresponds to high exploitation. The paper found that the best results were produced when $\beta$ \emph{dynamically adjusted} during a training session. It was found that even if $\beta$ was given a high value initially, it would start by decreasing to enable large exploration and then as the number of training episodes increased and its learning progressed, $\beta$ would start increasing to minimise exploration.
+In particular, one paper \cite{meta-learning-rl} studied use of the soft-max function to compute the probability of taking an action. The formula for this probability function involves a meta-parameter $\beta$ called the ``inverse temperature'' that controls the exploration-exploitation trade off, just like $\varepsilon$ in the MC algorithm. A low value of $\beta$ corresponds to high exploration and a high value corresponds to high exploitation. The paper found that the best results were produced when $\beta$ was \emph{dynamically adjusted} during a training session. It was found that even if $\beta$ was given a high value initially, it would start by decreasing to enable large exploration and then as the number of training episodes increased and its learning progressed, $\beta$ would start increasing to minimise exploration.
 
-This finding makes a lot of sense and corresponds exactly to the conclusions drawn at the end of Section \ref{sec:convergence-results}. Since in this project $\varepsilon$ was fixed throughout training/testing sessions, the conclusion drawn from epsilon and convergence experiments was that a large value of epsilon (which corresponds to high exploration) should be used when relatively few training episodes can be run and a small value should be used when relatively many can be run. Combining these two ideas together, for any number of training episodes, epsilon should ideally start off large and then start decreasing for the best possible performance.
+This finding makes a lot of sense and corresponds exactly to the conclusions drawn at the end of Section \ref{sec:convergence-results}. Since in this project $\varepsilon$ was fixed throughout training/testing sessions, the conclusion drawn from epsilon experiments and convergence experiments was that a large value of epsilon (which corresponds to high exploration) should be used when relatively few training episodes can be run and a small value should be used when relatively many can be run. Combining these two ideas together, $\varepsilon$ should ideally start off large and then start decreasing for the best possible performance. Then, the number of training episodes would not matter because $\varepsilon$ would increase or decrease as necessary.
 
-Thus, it would be very interesting to implement some of the algorithms developed to regulate the exploration-exploitation balance and combine them with the MC algorithm studied in this project. Most of the papers on this topic study algorithms that ``bootstrap'' (i.e. update the values of states using estimates of the values of subsequent states \cite{rl-book}) such as Temporal Difference learning. Studying how an algorithm that allows $\varepsilon$ to dynamically adapt during training works with a learning technique that does not bootstrap might therefore produce novel results.
+Thus, it would be very interesting to implement some of the algorithms developed to regulate the exploration-exploitation balance and combine them with the MC algorithm studied in this project. Most of the papers on the topic of the exploration-exploitation trade-off study algorithms that ``bootstrap'' (i.e. update the values of states using estimates of the values of subsequent states \cite{rl-book}), such as Temporal Difference learning. Thus, studying the combination of an algorithm that allows $\varepsilon$ to dynamically adapt during training and a learning technique that does not bootstrap could produce novel results.
 
 
 \section{Optimality of Learned Policies}
 \label{sec:policy-optimality}
 
-Section \ref{sec:experiment-types} is intentionally vague about what a policy might converge to and whether it converges to some optimal policy. It is important to note two important results before continuing:
+Section \ref{sec:experiment-types} is intentionally vague about what a policy might converge to and whether it converges to an optimal policy. It is important to note two important results before continuing:
 
 \begin{itemize}
-    \item The $\varepsilon$-soft on-policy MC control algorithm studied in this project has \emph{not} yet been proven to converge to an optimal policy \cite{open-rl-questions}. This means that even if the curve produced by a convergence experiment clearly flattens, it may very well be that the agent has found some local maximum.
+    \item The $\varepsilon$-soft on-policy MC control algorithm studied in this project has \emph{not} yet been proven to converge to an optimal policy \cite{open-rl-questions}. This means that even if the curve produced by a convergence experiment clearly flattens, it may very well be that the agent has found some local maximum or a saddle point.
     \item There is a stationary deterministic optimal policy for every Markov Decision Process (MDP) \cite{mdp-convergence}, which means that, at the very least, there \emph{is} some optimal policy for all three games studied in this project. However, there is no way of knowing for sure whether this is the policy that the MC agent converges to.
 \end{itemize}
 
-Having mentioned these two results, it is clear that the results of the convergence experiments described in Section \ref{sec:convergence-results} are not very conclusive because all they show is that the MC agent converges to \emph{some} policy after sufficient training episodes. Nevertheless, this is still a useful result because a reasonably quick convergence to a good policy is often preferable to a slow convergence to the optimal policy \cite{rl-a-survey}.
+Having mentioned these two results, it is clear that the results of the convergence experiments described in Section \ref{sec:convergence-results} are not very conclusive because all they show is that the MC agent's policy converges to \emph{some} policy after sufficient training episodes. Nevertheless, this is still a useful result because a reasonably quick convergence to a good policy is often preferable to a slow convergence to the optimal policy \cite{rl-a-survey}.
 
 
 \section{Alternative Tic-Tac-Toe Implementation}
 
-Another way of eliminating symmetry in Tic-Tac-Toe was also considered: limiting the actions available from each state such that no two actions result in symmetrical states. An interesting result of this idea is that it would slightly alter the way the game is played. Suppose a random agent is asked to select a move from the game's initial state (i.e. empty grid). In the Normal implementation, there are nine possible actions: putting an \textbf{X} token in one of the nine grid cells. In this ``Limited Actions'' version, there are only three possible actions: putting an \textbf{X} token in a corner, in the middle of the grid, and in the middle of one of the sides. To give a specific example of how this would change the game, notice that the probability of the agent choosing the action that involves placing their token in the middle of the grid is $\frac{1}{9}$ in the Normal implementation and $\frac{1}{3}$ in the Limited Actions version. Thus, the agent will end up choosing this action three times as frequently in the latter version.
+Another way of eliminating symmetry in Tic-Tac-Toe was also considered: limiting the actions available from each state such that no two actions result in symmetrical states. An interesting result of this idea is that it would slightly alter the way the game is played. Suppose a random agent is asked to select a move from the game's initial state (i.e. empty grid). In the normal Tic-Tac-Toe implementation, which does not break any symmetries, there are nine possible actions since there are nine empty grid cells in which an X token can be placed. In this ``Limited Actions'' (LA) version, there are only three possible actions: putting an \textbf{X} token in a corner, in the middle of the grid, or in the middle of one of the sides. To give a specific example of how this would change the game, notice that the probability of the agent choosing the action that involves placing their X token in the middle of the grid is $\frac{1}{9}$ in the normal implementation and $\frac{1}{3}$ in the LA version. Thus, the agent will end up choosing this action three times as frequently in the latter version.
 
-In the limit of infinitely many games, however, the MC agent would encounter all states and choose all possible moves an equal number of times, thus computing an accurate expected return for each action. It would be interesting to compare the performance of such a Limited Actions implementation with the Symmetric Equality implementation. Both should perform equally well on any game given enough training, but it is possible that they might improve at different rates.
-
-
-\section{Training Episode Format}
-
-% make MC agent play against itself to double (?) training speed
+In the limit of infinitely many games, however, the MC agent would encounter all states and choose all possible moves an equal (infinite) number of times, thus computing an accurate expected return for each action. It would be interesting to compare the performance of such a Limited Actions implementation with the Symmetric Equality implementation. Both should perform equally well on any game given enough training, but it is possible that they might improve at different rates.
 
 
 %-----------------------
 \chapter{Conclusion}
 
-This chapter summarises what was accomplished by this project, how and if the goals outlined in Section \ref{sec:goals} were achieved, and what was learned throughout the process.
+This chapter summarises what this project accomplished, how the goals outlined in Section \ref{sec:goals} were achieved, and what was learned throughout the process.
+
 
 \section{Achievements}
 
-In order to assess this project's success, it is worth repeating the questions posed in Section \ref{sec:goals}: 
+In order to assess this project's success, it is worth spelling out the answers to the questions posed in Section \ref{sec:goals}: 
 
 \begin{enumerate}
 	\item Are there ``optimal'' values of $\varepsilon$ that maximise the algorithm's performance?
+	\begin{itemize}
+	    \item 
+Section \ref{sec:optimal_epsilon} discusses the results of a variety of epsilon experiments run on all three games with different numbers of training episodes. It was found that a game does \emph{not} have one fixed value of epsilon that produces the best performance, which is measured by the winning rate. The value of epsilon that produces the highest winning rate varies with the number of training episodes: as the number of training episodes increases, the best value of epsilon to use \emph{for that number of training episodes} decreases. More specifically, an inverse relationship between the number of training episodes and the best epsilon for each number of training episodes was observed for all three games.
+        \item
+The conclusion drawn at the end of the section has to do with the fact that all games are different. Even if two MC agents are trained for the same number of training episodes to play two different games, they will likely perform best if they use different values of epsilon during training. This is because games can vary in a number of different ways such as state space size, average episode length, and average number of actions available from each state. For this reason, each game needs to be studied independently in order to achieve the best results.
+	\end{itemize}
+	
 	\item How quickly does the algorithm's policy converge? Does it converge to an optimal policy?
+	\begin{itemize}
+	    \item 
+This was addressed in Section \ref{sec:convergence-results} and discussed further in Section \ref{sec:policy-optimality}. The conclusion was that the MC algorithm does indeed converge after sufficient training episodes. However, it has not been proven that the MC algorithm used in this project converges to an optimal policy, so it is possible that the policy that it converges to is a local maximum or even at a saddle point. However, it is known that there \emph{exists} an optimal policy for all three games studied in this project (and, more generally, for all RL tasks that are finite MDP's).
+	\end{itemize}
+	
     \item How does the Monte Carlo with Exploring Starts algorithm (Monte Carlo ES \cite{rl-book}) affect the convergence rate of the policy?
+	\begin{itemize}
+	    \item 
+Section \ref{sec:exploring-starts} addresses this by applying the Monte Carlo ES algorithm to Nim. The results showed that the policy still converges with Monte Carlo ES, though to a policy with a winning rate that is low relative to the best winning rate achieved by the normal MC algorithm. This was attributed to the randomness introduced at the beginning of each episode played by a Monte Carlo ES agent, where it is forced to start with a random state-action pair.
+	\end{itemize}
+    
 	\item When playing games where states have axes of symmetry, how does the agent's performance and learning change when symmetry is eliminated?
+	\begin{itemize}
+	    \item 
+The results described in Section \ref{sec:eliminate-symmetry} answer this question. In particular, eliminating all axes of symmetry in Tic-Tac-Toe resulted in a winning rate increase of over 10\% in the best cases. Since the implementation of symmetry-breaking used in this project effectively collapsed all symmetrical states into one state, the agent's policy also converged after fewer training episodes. Therefore a general result that is applicable to any RL task is that eliminating game symmetries can reap very large rewards, especially when constrained by the number of training episodes that can be played.
+	\end{itemize}
+	
 	\item How does the performance of the algorithm differ for different games?
+	\begin{itemize}
+	    \item 
+All the experiments run and analysed in this report make it clear that no two games will require the same combination of epsilon value, number of training episodes, and number of testing episodes in order to achieve the same performance. The experiments described in Section \ref{sec:experiment-types} are general purpose and should be used whenever applying the $\varepsilon$-soft on-policy MC control algorithm to a game.
+        \item 
+The main take-away from this project is that a game does not have one single best epsilon value. There is, however, an important balance between the best epsilon value and the number of training episodes and the key to maximising performance is finding this balance.
+	\end{itemize}
+	
 \end{enumerate}
-
-Indeed, this project answers all five questions.
-
-With regards to question 1, Section \ref{sec:optimal_epsilon} discusses the results of a variety of epsilon experiments, where different values of $\varepsilon$ are used for the three games in combination with different numbers of training episodes. It was found that a games does \emph{not} have one fixed value of epsilon that produces the best performance, which is measured by the winning rate. The value of epsilon that produces the highest winning rate varies with the number of training episodes: as the number of training episodes increases, the best value of epsilon to use \emph{for that number of training episodes} decreases. More specifically, an inverse relationship between the number of training episodes and the best epsilon for the tested numbers of training episodes was observed for the game of Nim. The conclusion drawn at the end of the section has to do with the fact that all games are different. Even if two MC agents are trained for the same number of training episodes to play two different games, they will very likely perform best if they use different values of epsilon during training. This is because games can vary in a number of different ways such as the state space size, average length of an episode, and average number of actions available from each state. For this reason, each game needs to be studied independently in order to achieve the best results.
-
-Question 2 was addressed in Section \ref{sec:convergence-results} and discussed further in Section \ref{sec:policy-optimality}. The conclusion drawn was that the MC algorithm does indeed converge after sufficient training episodes. However, it has not been proven that the MC algorithm used in this project converges to an optimal policy, so it is possible that the policy that it converges to is a local maximum or even on a ``plateau''. However, it is known that there \emph{exists} an optimal policy for all three games studied in this project (and, more generally, for all RL tasks that are finite MDP's).
-
-Section \ref{sec:exploring-starts} addresses question 3 by applying the Monte Carlo ES algorithm to Nim. The results showed that the policy still converges with Monte Carlo ES, though to a policy with a lower winning rate (relative to the best winning rate achieved by the normal MC algorithm). This was attributed to the randomness introduced at the beginning of each episode played by a Monte Carlo ES agent, where the episode is forced to start with a random state-action pair.
-
-The results described in Section \ref{sec:eliminate-symmetry} answer Question 4. In particular, eliminating all axes of symmetry in Tic-Tac-Toe resulted in a winning rate increase of over 10\% in the best cases. Since the implementation of symmetry-breaking used in this project effectively collapsed all symmetrical states into one state, the agent's policy also converged after fewer training episodes. Therefore a general result that is applicable to any RL task is that eliminating any game symmetries can reap very large rewards, especially when constrained in the number of training episodes that can be run.
-
-Finally, to answer question 5, all the experiments run and analysed in this report make it clear that no two games will require the same combination of epsilon value, number of training episodes, and number of testing episodes in order to achieve and demonstrate the same performance. The experiments described in Section \ref{sec:experiment-types} are general purpose and should be used whenever applying the $\varepsilon$-soft on-policy MC control algorithm to a game. Overall, the main take-away from this project is that a game does not have one single best epsilon value. There is, however, an important balance between the best epsilon value and the number of training episodes and the key to maximising performance is finding this balance.
 
 
 \section{Personal Reflections}
 
-This has been a really great learning experience, not only in terms of discovering the field of reinforcement learning and its applications, but also in terms of gaining experience with building up a large, complex programming project from scratch using a variety of technical tools.
+This has been a really great learning experience, not only in terms of discovering the field of RL and its applications, but also in terms of gaining experience with building a large, complex programming project from scratch using a variety of technical tools.
 
-When I was in high school, I designed and implemented the classic board game Nine Men’s Morris where a user plays against an algorithm I wrote. My plan for the project was to ask my friends and family to play my game and to store the moves made in each game so that I could build up a database of sequences of moves and outcomes of the game. I hoped to somehow compute which moves were the best and get my algorithm to learn which moves made winning the most likely. Little did I know, I wanted to invent RL from scratch – unaware of its existence or of the amount of research in the field. Several years later, I am delighted to have had the chance to work on a similar project, but this time on a deeper level using well-known computational algorithms.
+When I was in high school, I designed and implemented the classic board game Nine Men’s Morris, such that a user could play against an algorithm I wrote. My plan for the project was to ask my friends and family to play my game and to store the moves made in each game so that I could build up a database of sequences of moves and outcomes of the games. I hoped to somehow compute which moves were the best and get my algorithm to learn which moves made winning the most likely. Little did I know, I wanted to invent RL from scratch, unaware of its existence or of the amount of research in the field. Several years later, I am delighted to have had the chance to work on a similar project, but this time on a deeper level using well-known computational algorithms.
 
-When I started working on this project, I decided to treat it as an opportunity to develop many skills that are critical for a career in software engineering:
+When I started working on this project, I decided to treat it as an opportunity to develop many important software engineering skills:
 
 \begin{itemize}
 	\item Writing clean, maintainable, well-documented code
-	\item Designing and implementing tests for my code
-	\item Using a build tool to manage dependencies between packages in my project as well as with external libraries
+	\item Designing and implementing tests
+	\item Using a build tool to manage dependencies between packages and between my project and external libraries
 	\item Using version control effectively
 \end{itemize}
 
-I tested the methods in my API using a unit-testing framework for Java called JUnit. I also used a testing framework for Java called Mockito – this allowed me to verify the behaviour of objects with external dependencies by creating “mock objects” for theses dependencies, which mimic real objects but do so in a particular way that I can specify.
+I tested the methods in my API using a unit-testing framework for Java called JUnit. I also used a testing framework for Java called Mockito. This allowed me to verify the behaviour of objects with external dependencies by creating “mock objects” for these dependencies, which mimic real objects but do so in a way that I can specify.
 
 In order to save my experiment results in a format that would facilitate the creation of graphs, I used opencsv, a CSV parser library for Java.
 
-To manage my project’s dependencies, I used a build tool developed by Google called Bazel and I used Git for version control.
+To manage my project's dependencies, I used a build tool developed by Google called Bazel and I used Git for version control.
 
-Overall, I really enjoyed learning about RL algorithms and exploring their applications and success rates, all while developing strong programming skills that will help me throughout my career.
+Overall, I really enjoyed learning about RL algorithms and exploring their applications, all while developing strong programming skills that will help me throughout my career.
 
 
 %--------------------------------
