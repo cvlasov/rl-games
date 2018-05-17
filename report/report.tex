@@ -7,6 +7,10 @@
 \usepackage{graphicx}
 \usepackage{verbatim}
 \usepackage{subfigure}
+\usepackage{algorithm}
+\usepackage{amsmath}
+\usepackage[noend]{algpseudocode}
+
 \graphicspath{ {images/} }
 
 \author{Catherine Vlasov}
@@ -153,10 +157,40 @@ However, exploring starts cannot be assumed to hold for all RL tasks and one sol
 
 With all this in mind, we can now understand the on-policy $\varepsilon$-soft MC control algorithm used in this project:
 
-\label{sec:monteCarloPseudocode}
-\begin{center}
-	\emph{[PSEUDOCODE HERE]}
-\end{center}
+\begin{algorithm}
+    \caption{$\varepsilon$-soft on-policy Monte Carlo control algorithm} \label{sec:monteCarloPseudocode}
+    \begin{algorithmic}[1]
+        \Procedure{Monte Carlo}{}
+        
+        \State Initialise, for all $s \in \mathcal{S}, a \in \mathcal{A}(s)$:
+            \State\hspace{\algorithmicindent} $Q(s,a) \gets \text{arbitrary}$
+            \State\hspace{\algorithmicindent} $Returns(s,a) \gets \textit{empty list}$
+            \State\hspace{\algorithmicindent} $\pi \gets \textit{policy where all actions are chosen randomly}$
+        
+        \For{$count=0 \to \textit{desired number of episodes}$}
+            \State Play an episode using $\pi$
+            
+            \ForAll{pairs ($s$,$a$) that appeared in the episode}
+                 \State $R \gets \textit{return after the first occurrence of (s,a)}$
+                 \State \textit{Append R to Returns(s,a)}
+                 \State $Q(s,a) \gets average\textit{(Returns(s,a))}$
+            \EndFor
+            
+            \ForAll{states $s$ that appeared in the episode}
+                \State $a^{\ast} \gets \argmax_a Q(s,a)$
+                
+                \ForAll{$a \in \mathcal{A}(s)$}
+                    \State $\pi(s,a) \gets
+                        \begin{cases}
+                            1 - \varepsilon + \frac{\varepsilon}{|\mathcal{A}(s)|} & \text{if } a = a^{\ast} \\
+                            \frac{\varepsilon}{|\mathcal{A}(s)|}  & \text{if } a \neq a^{\ast} \\
+                        \end{cases}$
+                \EndFor
+            \EndFor
+        \EndFor
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
 
 
 \section{Terminology}
@@ -168,7 +202,7 @@ In addition to the terms described in Section \ref{sec:RL}, the following terms 
 
 	\item \textbf{Random agent}: Agent that randomly chooses an action from the list of available actions at any given state
 		\begin{itemize}
-			\item In particular, an instance of the \emph{RandomAgent} class described in Section \ref{sec:Agents})
+			\item In particular, an instance of the \emph{RandomAgent} class described in Section \ref{sec:Agents}
 		\end{itemize}
 
 	\item \textbf{MC agent}: Agent that uses the on-policy $\varepsilon$-soft Monte Carlo control algorithm for learning
@@ -471,22 +505,26 @@ However, with some experimentation it becomes clear that there is another key fa
 
 \begin{figure}[htbp]
     \centering
-    \subfigure[Normal Tic-Tac-Toe]{\includegraphics[width=0.75\linewidth]{TicTacToeNormal_EpsilonResults_Wins_Comparison_no_title.png}}
-    \subfigure[Chung Toi]{\includegraphics[width=0.75\linewidth]{ChungToi_EpsilonResults_Wins_Comparison_no_title.png}}
-    \subfigure[Nim]{\includegraphics[width=0.75\linewidth]{Nim_EpsilonResults_Wins_Comparison_no_title.png} \label{fig:nim_win_comparison}}
-    \caption{Comparison of a MC agent's winning rate for 10,000 testing episodes after different numbers of training episodes, for each of the three games. In each graph, the x-axis shows the value of epsilon, the y-axis shows the percentage of testing episodes won, and the legend entries indicate the number of training episodes the agent played before testing.}
+    \subfigure[Normal Tic-Tac-Toe]{\includegraphics[width=0.75\linewidth]{TicTacToeNormal_EpsilonResults_Wins_Comparison.png}}
+    \subfigure[Chung Toi]{\includegraphics[width=0.75\linewidth]{ChungToi_EpsilonResults_Wins_Comparison.png}}
+    \subfigure[Nim]{\includegraphics[width=0.75\linewidth]{Nim_EpsilonResults_Wins_Comparison.png}}
+    \caption{Comparison of a MC agent's winning rate on testing episodes after different numbers of training episodes, for each of the three games. 10,000 testing episodes were run for Tic-Tac-Toe and Chung Toi and 1,000 were run for Nim. In each graph, the x-axis shows the value of epsilon, the y-axis shows the percentage of testing episodes won, and the legend entries indicate the number of training episodes the agent played before testing.}
     \label{epsilon-win-comparisons}
 \end{figure}
 
-As the number of training episodes increases, the highest winning rate increases and the value of epsilon that produces the highest winning rate decreases. In particular, if we look at the optimal value of epsilon for different numbers of training episodes and plot these results, we get graphs that looks like those in Figure \ref{nim-training-vs-opt-epsilon}, showing that there is an inverse relationship between the two. This means that if there are no time or computational limitations and therefore a lot of training episodes can be played, a smaller value of epsilon will produce a higher winning rate. In fact, as the number of training episodes approaches infinity, the optimal value of epsilon approaches zero. However, if the MC agent can only play a limited number of training episodes due to time or computational limitations, then a larger value of epsilon will produce better results.
+As a reference point, a paper that used an RL algorithm called TD($\lambda$) to train a neural network to play Chung Toi achieved a maximal winning rate of 90.4\% \cite{chung-toi-params}. Figure \ref{epsilon-win-comparisons} shows that the maximal winning rate achieved by the MC agent was around 75\% (after 1,280,000 training episodes). This was also the largest number of training episodes tried, so it is likely that with more training, the MC agent would perform even better. Thus, the MC agent is performing very satisfactorily given how simple the MC control algorithm is.
+
+As the number of training episodes increases, the highest winning rate increases and the value of epsilon that produces the highest winning rate decreases. In particular, if we look at the optimal value of epsilon for different numbers of training episodes and plot these results, we get graphs that looks like those in Figure \ref{training-vs-opt-epsilon}, showing that there is an inverse relationship between the two. This means that if there are no time or computational limitations and therefore a lot of training episodes can be played, a smaller value of epsilon will produce a higher winning rate. In fact, as the number of training episodes approaches infinity, the optimal value of epsilon approaches zero. However, if the MC agent can only play a limited number of training episodes due to time or computational limitations, then a larger value of epsilon will produce better results.
 
 \begin{figure}[htbp]
-	\begin{center}
-		\includegraphics[width=\linewidth]{Nim_OptimalEpsilon_vs_Training.png}
-		\caption{WIL INSERT THE SAME GRAPH FOR TIC-TAC-TOE AND CHUNG TOI HERE AS WELL. Graphs of the optimal epsilon values for different numbers of training episodes, showing an inverse relationship. These values were extracted from the CSV files produced by the epsilon experiments, where each experiment used a different number of training episodes -- call this $N$. The optimal value of epsilon for each experiment is the value for which the MC agent trained for $N$ episodes using that value of epsilon had the highest winning rate during the testing session. More intuitively, the datapoints correspond to the global maxima of the curves in \ref{fig:nim_win_comparison}. }
-		\label{nim-training-vs-opt-epsilon}
-	\end{center}
+    \centering
+    \subfigure[Normal Tic-Tac-Toe]{\includegraphics[width=0.48\linewidth]{NormalTicTacToe_OptimalEpsilon_vs_Training.png} \label{fig:ttt-optimal-epsilons}}
+    \subfigure[Chung Toi]{\includegraphics[width=0.48\linewidth]{ChungToi_OptimalEpsilon_vs_Training.png} \label{fig:ct-optimal-epsilons}}
+    \subfigure[Nim]{\includegraphics[width=0.48\linewidth]{Nim_OptimalEpsilon_vs_Training.png} \label{fig:nim-optimal-epsilons}}
+	\caption{Graphs of the optimal epsilon values for different numbers of training episodes, showing an inverse relationship. In each graph, the x-axis is the number of training episodes (order $10^4$ for \ref{fig:ttt-optimal-epsilons} and \ref{fig:ct-optimal-epsilons}, order $10^3$ for \ref{fig:nim-optimal-epsilons}) and the y-axis is the optimal value of epsilon. These values correspond to the global maxima of the curves in \ref{epsilon-win-comparisons}. }
+	\label{training-vs-opt-epsilon}
 \end{figure}
+
 
 This behaviour makes sense and should, in fact, be expected because of the role of $\varepsilon$ in the Monte Carlo control algorithm. As discussed in Section \ref{sec:MonteCarloAlgorithms}, $\varepsilon$ is used during policy improvement. In particular, the probability of choosing an action (other than the best action encountered so far) is $\frac{\varepsilon}{N}$ where $N$ is the number of available actions. On the other hand, the probability of choosing the best action encountered so far is  $1 - \epsilon + \frac{\varepsilon}{N}$. Thus, as $\varepsilon$ approaches 0, the probability of choosing the best action encountered so far approaches one.
 
