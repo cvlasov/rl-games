@@ -242,9 +242,10 @@ The project is written entirely in Java and is built in a modular way, using an 
 
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=\linewidth]{code_structure.png}
+		\noindent\makebox[\textwidth]{\includegraphics[width=0.75\paperwidth]{code_structure.png}}
 		\caption{Project's code structure. The boxes with a black outline indicate packages, whose names are written in black above them. The filenames with grey backgrounds are interfaces and those with italicised names are abstract classes. An arrow from A to B indicates that B implements or extends A, depending on whether A is an interface or abstract class, respectively. The colourful boxes around each file name indicates which interface it implements (or is) and is intended to visualise inheritance.}
 		\label{code-structure}
+		
 	\end{center}
 \end{figure}
 
@@ -275,6 +276,8 @@ As mentioned in Section \ref{sec:code-structure}, two learning agents were imple
 As its name suggests, \emph{RandomAgent} randomly selects an action from the available actions at any given state. In total, the logic for this agent is equivalent to one line of code and \emph{RandomAgent} is only used to train and test the MC agent.
 
 
+\newpage
+
 \section{Tic-Tac-Toe}
 \label{sec:TicTacToe}
 
@@ -291,7 +294,7 @@ The game consists of the players alternately placing their tokens in empty space
 
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=50mm]{tictactoe_grid_example.png}
+		\includegraphics[width=0.3\linewidth]{tictactoe_grid_example.png}
 		\caption{Example of a Tic-Tac-Toe grid. Each cell has three possible states: empty, X, or O.}
 		\label{tic-tac-toe-grid-example}
 	\end{center}
@@ -344,6 +347,8 @@ A Java \emph{HashMap} places key-value pairs in buckets depending on the value r
 In both Tic-Tac-Toe implementations, agents receive a return of 1 for an action resulting a win, -1 for an action resulting in a loss, and 0 for an action resulting in a draw or a non-terminal state.
 
 
+\newpage
+
 \section{Chung Toi}
 \label{sec:ChungToi}
 
@@ -359,7 +364,7 @@ Before the game begins, one of the players is randomly selected to use red token
 
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=40mm]{chung_toi_tokens.png}
+		\includegraphics[width=0.3\linewidth]{chung_toi_tokens.png}
 		\caption[Chung Toi tokens]{Red and white Chung Toi tokens in both possible orientations. The tokens in these orientations are referred to as: red-straight (top-left), red-diagonal (top-right), white-straight (bottom-left), and white-diagonal (bottom-right).}
 		\label{chung-toi-tokens}
 	\end{center}
@@ -390,7 +395,7 @@ Figure \ref{chung-toi-grid-example} is an example of a possible state of the gri
 
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=50mm]{chung_toi_grid_example.png}
+		\includegraphics[width=0.3\linewidth]{chung_toi_grid_example.png}
 		\caption{Example of a Chung Toi grid. Each cell has five possible states: empty, red-straight, red-diagonal, white-straight, or white-diagonal.}
 		\label{chung-toi-grid-example}
 	\end{center}
@@ -410,6 +415,8 @@ The role of Chung Toi in this project was to learn more about the effect of the 
 
 Just like in Tic-Tac-Toe, agents receive a return of 1 when they win, -1 when they lose, and 0 when the game ends in a draw or the game has not yet ended.
 
+
+\newpage
 
 \section{Nim}
 \label{sec:Nim}
@@ -488,7 +495,7 @@ Another decision was which values of epsilon to use for the epsilon experiments.
 As with any decision like this one, there is a point of ``diminishing returns'' after which having more detailed data does not enable more meaningful conclusions to be drawn. Thus, for the purposes of this project, the line was drawn at an epsilon precision of 0.01.
 
 
-\section{Optimal Value of $\varepsilon$}
+\section{Optimal Value of Epsilon}
 \label{sec:optimal_epsilon}
 
 It is not unreasonable to expect each game to have a specific value of epsilon that results in the fastest convergence of the MC agent's policy. If this was the case, then one would expect the graph of the winning rate produced by an epsilon experiment with $\varepsilon$ ranging from 0.0 to 1.0 (inclusive) to be convex with a global maximum. This belief is validated by running an epsilon experiment on any game for some number of training episodes. For example, Figure \ref{chung-toi-epsilon-160ktrain-10ktest} displays the results of 10,000 Chung Toi testing episodes after 160,000 training episodes.
@@ -496,7 +503,7 @@ It is not unreasonable to expect each game to have a specific value of epsilon t
 \begin{figure}[htbp]
 	\begin{center}
 		\includegraphics[width=\linewidth]{ChungToi_EpsilonResults_160kTrainingGames_10kTestingGames.png}
-		\caption{MC agent's performance on 10,000 Chung Toi testing episodes after 160,000 training episodes. There is a global maximum at $\varepsilon \approx 0.15$, which suggests that this is the best value of epsilon to use.}
+		\caption{MC agent's performance on 10,000 Chung Toi testing episodes after 160,000 training episodes. The x-axis shows the values of epsilon (the epsilon precision used was 0.01) and the y-axis shows the percentage of the testing episodes. There is a global maximum at $\varepsilon \approx 0.15$, which suggests that this is the best value of epsilon to use.}
 		\label{chung-toi-epsilon-160ktrain-10ktest}
 	\end{center}
 \end{figure}
@@ -505,9 +512,9 @@ However, with some experimentation it becomes clear that there is another key fa
 
 \begin{figure}[htbp]
     \centering
-    \subfigure[Normal Tic-Tac-Toe]{\includegraphics[width=0.75\linewidth]{TicTacToeNormal_EpsilonResults_Wins_Comparison.png}}
-    \subfigure[Chung Toi]{\includegraphics[width=0.75\linewidth]{ChungToi_EpsilonResults_Wins_Comparison.png}}
-    \subfigure[Nim]{\includegraphics[width=0.75\linewidth]{Nim_EpsilonResults_Wins_Comparison.png}}
+    \subfigure[Normal Tic-Tac-Toe]{\includegraphics[width=\linewidth]{TicTacToeNormal_EpsilonResults_Wins_Comparison.png}}
+    \subfigure[Chung Toi]{\includegraphics[width=\linewidth]{ChungToi_EpsilonResults_Wins_Comparison.png}}
+    \subfigure[Nim]{\includegraphics[width=\linewidth]{Nim_EpsilonResults_Wins_Comparison.png} \label{fig:nim-win-comparison}}
     \caption{Comparison of a MC agent's winning rate on testing episodes after different numbers of training episodes, for each of the three games. 10,000 testing episodes were run for Tic-Tac-Toe and Chung Toi and 1,000 were run for Nim. In each graph, the x-axis shows the value of epsilon, the y-axis shows the percentage of testing episodes won, and the legend entries indicate the number of training episodes the agent played before testing.}
     \label{epsilon-win-comparisons}
 \end{figure}
@@ -546,7 +553,7 @@ The policy of a MC agent only converges in the limit of infinitely many training
 
 It might also be natural to define a more concrete notion of convergence. For instance, one might consider the policy to have converged after $x$ training episodes if the agent's winning rate changes by less than 0.1\% after $x$ training episodes compared to after $x+1000$ training episodes. This technique was trialled, but the results did not provide any additional insight relative to visual inspection of the convergence experiment graphs, so they are omitted.
 
-As seen earlier in Figure \ref{fig:nim_win_comparison}, the agent's winning rate when playing Nim changes quite a bit as the number of training episodes increases. The best way to gain an intuition of how the policy converges for different epsilon value is to run convergence experiments with a few different values. Figure \ref{nim-convergence-comparison} shows the results of experiments run for $\varepsilon = 0.01, 0.02,..., 0.64$.
+As seen earlier in Figure \ref{fig:nim-win-comparison}, the agent's winning rate when playing Nim changes quite a bit as the number of training episodes increases. The best way to gain an intuition of how the policy converges for different epsilon value is to run convergence experiments with a few different values. Figure \ref{nim-convergence-comparison} shows the results of experiments run for $\varepsilon = 0.01, 0.02,..., 0.64$.
 
 \begin{figure}[htbp]
 	\begin{center}
@@ -562,9 +569,9 @@ In fact, Figure \ref{nim-convergence-comparison} turns out to be another way of 
 
 \begin{figure}[htbp]
     \centering
-    \subfigure[Nim winning rate for 1,000 testing episodes after 8,000 training episodes]{\includegraphics[height=0.15\paperheight]{Nim_EpsilonResults_8kTrainingGames_1kTestingGames.png} \label{nim-8k-epsilon-results}}
-    \subfigure[Results projected onto y-axis]{\includegraphics[height=0.15\paperheight]{Nim_EpsilonResults_8kTrainingGames_1kTestingGames_Flattened.png}  \label{nim-8k-epsilon-results-flattened}}
-    \caption{Flattening of Nim epsilon experiment results. \ref{nim-8k-epsilon-results} shows the winning rate from a Nim epsilon experiment for 8,000 training episodes. \ref{nim-8k-epsilon-results-flattened} shows the same results, but projected onto the y-axis. Each data point corresponds to a different value of epsilon.}
+    \subfigure[]{\includegraphics[height=0.15\paperheight]{Nim_EpsilonResults_8kTrainingGames_1kTestingGames.png} \label{nim-8k-epsilon-results}}
+    \subfigure[]{\includegraphics[height=0.15\paperheight]{Nim_EpsilonResults_8kTrainingGames_1kTestingGames_Flattened.png}  \label{nim-8k-epsilon-results-flattened}}
+    \caption{Flattening of Nim epsilon experiment results. \ref{nim-8k-epsilon-results} shows the winning rate from a Nim epsilon experiment with 8,000 training episodes and 1,000 testing episodes. \ref{nim-8k-epsilon-results-flattened} shows the same results, but projected onto the y-axis. Each data point corresponds to a different value of epsilon.}
     \label{nim-epsilon-flattening}
 \end{figure}
 
@@ -585,7 +592,7 @@ The game that is most conducive to applying the Monte Carlo with Exploring Start
 \begin{figure}[htbp]
 	\begin{center}
 		\includegraphics[width=\linewidth]{Nim_PerformanceResults_Comparison_001_to_064_and_ES.png}
-		\caption{Comparison of the results of convergence experiments for Nim with ES and normal Nim with different values of epsilon. This is identical to the graph in Figure \ref{nim-convergence-comparison} except that the curve for the Monte Carlo ES algorithm is superimposed.}
+		\caption{Comparison of the results of convergence experiments for Nim with ES and normal Nim with different values of epsilon. The x-axis is the number of training episodes (order $10^3$) and the y-axis is the percentage of episodes won. This is identical to the graph in Figure \ref{nim-convergence-comparison} except that the curve for the Monte Carlo ES algorithm is superimposed.}
 		\label{nim-convergence-comparison-with-ES}
 	\end{center}
 \end{figure}
