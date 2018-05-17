@@ -10,7 +10,7 @@
 \graphicspath{ {images/} }
 
 \author{Catherine Vlasov}
-\title{Optimizing Learning Parameters Used by Reinforcement Learning Algorithms}
+\title{Optimising Learning Parameters Used by Reinforcement Learning Algorithms}
 \date{17 May 2018}
 
 \newcommand{\argmax}{\mathop{\mathrm{arg\,max}}}
@@ -44,7 +44,11 @@
 
 %-----------------------
 \begin{abstract}
-This is my abstract
+
+This project investigates the best parameter settings for a class of reinforcement learning algorithms called Monte Carlo algorithms. The main goal is to determine whether there are optimal parameters for different games and how to go about finding such values. Three games -- Tic-Tac-Toe, Chung Toi, and Nim -- are studied and factors like the state space size, the speed of the algorithm's convergence, and the effect of breaking game symmetries are considered in the analysis.
+
+The project finds that there is no single optimal parameter value, but rather there is a balance between the value and the amount of training. This is an important result that should inform the application of Monte Carlo algorithms to reinforcement learning tasks in order to maximise the algorithm's success during testing.
+
 \end{abstract}
 
 
