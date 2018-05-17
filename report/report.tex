@@ -59,6 +59,7 @@ Over the last few decades, reinforcement learning has seen a large increase in p
 
 
 \section{Goals}
+\label{sec:goals}
 
 The specific Monte Carlo algorithm this project implements and investigates is called an ``on-policy $\varepsilon$-soft Monte Carlo control algorithm''. Section \ref{sec:Terminology} explains the basics of reinforcement learning as well as terminology used throughout this report, such as ``on-policy'' and ``$\varepsilon$-soft''. As the name suggests, the algorithm uses a parameter $\varepsilon$ to guide its learning. Effectively, it determines the balance between exploitation (choosing actions that are best, according to what it currently knows) and exploration (trying new actions). Thus, the chosen value of $\varepsilon$ can have a large effect on an agent's learning rate and therefore success at a particular task.
 
@@ -68,14 +69,13 @@ The simplicity of the algorithm, however, facilitates an interesting analysis of
 
 This project tackles a number of questions:
 
-\begin{itemize}
+\begin{enumerate}
 	\item Are there ``optimal'' values of $\varepsilon$ that maximise the algorithm's performance?
-	\item How quickly does the algorithm's policy converge? Does it converge to the theoretical optimal policy?
+	\item How quickly does the algorithm's policy converge? Does it converge to an optimal policy?
     \item How does the Monte Carlo with Exploring Starts algorithm (Monte Carlo ES \cite{rl-book}) affect the convergence rate of the policy?
-	\item When playing games where states have axes of symmetry, how does the agent's 
-performance and learning change when symmetry is eliminated?
+	\item When playing games where states have axes of symmetry, how does the agent's performance and learning change when symmetry is eliminated?
 	\item How does the performance of the algorithm differ for different games?
-\end{itemize}
+\end{enumerate}
 
 Three games were selected for this project: Tic-Tac-Toe, Chung Toi, and Nim. They are discussed in further detail in Section \ref{sec:DesignImpl}. They form an interesting mix since some have relatively long episodes, others can be used to investigate symmetry, and some with a similar state space can be compared against each other. Thus, it was possible to answer all of the above questions and derive some interesting results.
 
@@ -507,14 +507,14 @@ As we saw earlier in Figure \ref{fig:nim_win_comparison}, the agent's winning ra
 \begin{figure}[htbp]
 	\begin{center}
 		\includegraphics[width=\linewidth]{Nim_PerformanceResults_Comparison_001_to_064.png}
-		\caption{Changes in the agent's winning rate for Nim as the number of training episodes increases, for different values of epsilon. The legend entries indicate the values of epsilon used. The highlighted datapoints indicate the places where the policy converges.}
+		\caption{Changes in the agent's winning rate for Nim as the number of training episodes increases, for different values of epsilon. The legend entries indicate the values of epsilon used.}
 		\label{nim-convergence-comparison}
 	\end{center}
 \end{figure}
 
-Figure \ref{nim-convergence-comparison} does an excellent job of illustrating the impact of the value of epsilon on the winning rate. There is a very clear trend: as epsilon increases, the policy converges faster (i.e. after fewer training episodes). Also, for the most part, as epsilon increases, the stabilised winning rate decreases -- this trend is particularly clear for the larger value of epsilon.
+Figure \ref{nim-convergence-comparison} does an excellent job of illustrating the impact of the value of epsilon on the winning rate. There is a very clear trend: as epsilon increases, the policy converges faster (i.e. after fewer training episodes). Also, for the most part, as epsilon increases, the stabilised winning rate decreases -- this trend is particularly clear for the larger values of epsilon.
 
-In fact, Figure \ref{nim-convergence-comparison} also turns out to be another way of visualising the balance between the magnitude of epsilon and the number of training episodes that maximises the agent's winning rate. Suppose that performance experiments are run for all values of epsilon from 0 to 1, inclusive at intervals of 0.01 and that all the curves are plotted on the same graph. Consider a vertical ``slice'' of the graph -- namely the winning rate for each value of epsilon after a specific number of training episodes, say 8,000. This slice is actually a projection of the graph of the winning rates from an epsilon experiment for 8,000 training episodes onto the y-axis. Figure \ref{nim-epsilon-flattening} gives a visualisation of such a projection.
+In fact, Figure \ref{nim-convergence-comparison} also turns out to be another way of visualising the balance between the magnitude of epsilon and the number of training episodes that maximises the agent's winning rate. Suppose that convergence experiments are run for all values of epsilon from 0.0 to 1.0, inclusive at intervals of 0.01 and that all the curves are plotted on the same graph. Consider a vertical ``slice'' of the graph -- namely the winning rate for each value of epsilon after a specific number of training episodes, say 8,000. This slice is actually a projection of the graph of the winning rates from an epsilon experiment for 8,000 training episodes onto the y-axis. Figure \ref{nim-epsilon-flattening} gives a visualisation of such a projection.
 
 \begin{figure}[htbp]
     \centering
@@ -534,6 +534,7 @@ Overall, these results verify what was uncovered in Section \ref{sec:optimal_eps
 
 
 \section{Monte Carlo with Exploring Starts}
+\label{sec:exploring-starts}
 
 The game that is most conducive to applying the Monte Carlo with Exploring Starts (Monte Carlo ES) algorithm is Nim because it is easy to create a random starting state. Since Monte Carlo ES does not have any learning parameters like $\varepsilon$, the only relevant type of experiment is a convergence experiment. Normally, a convergence experiment takes a value of $\varepsilon$ as an argument, but since such a value is not used by an agent that implements the exploring starts algorithm, the argument is ignored. Thus, the only experiment parameter that can be modified is the total number of training episodes. For consistency with the other Nim experiments, the convergence experiment for Nim with ES was run 100,000 times and the results can be seen in Figure \ref{nim-convergence-comparison-with-ES}.
 
@@ -547,12 +548,13 @@ The game that is most conducive to applying the Monte Carlo with Exploring Start
 
 As we can see, Monte Carlo ES performs similarly to Monte Carlo with a relatively large value of epsilon (like $\varepsilon$ = 0.64 in Figure \ref{nim-convergence-comparison-with-ES}). This seems reasonable because as epsilon approaches 1, the agent chooses actions randomly more and more often. Thus, the agent is increasingly likely to choose actions that lead to sub-optimal or losing states (i.e. states where the other player can win in their next move), regardless of whether or not they know better. In a similar way, Monte Carlo ES forces the agent into certain states (right at the start of each episode), many of which are sub-optimal or losing states. This element of randomness when Monte Carlo ES determines the starting state appears to have a similar effect to the element of randomness that the on-policy $\varepsilon$-soft MC algorithm exhibits when epsilon is large.
 
-Clearly, Monte Carlo ES does converge to some policy, but it is clear that there are better policies since many values of epsilon cause an on-policy $\varepsilon$-soft MC agent to converge to a policy with a higher winning rate.
+In Figure \ref{nim-convergence-comparison-with-ES} we see that Monte Carlo ES does converge to some policy, but it is clear that there are better policies since many values of epsilon cause an on-policy $\varepsilon$-soft MC agent to converge to a policy with a higher winning rate.
 
 
 \section{Effect of Eliminating Symmetry}
+\label{sec:eliminate-symmetry}
 
-Tic-Tac-Toe is used to study the effect of eliminating all axes of symmetry from a game on a MC agent's performance. As discussed in Section \ref{sec:TicTacToeImplementation}, each Tic-Tac-Toe state can be symmetrical with up to seven other states. The game has four axes of symmetry (horizontal, vertical, and two diagonals) and reflecting states in one or more of them produces all possible reflections and rotations. The ``normal'' Tic-Tac-Toe implementation does not implement any symmetry-breaking, whereas the ``symmetric equality'' (SE) Tic-Tac-Toe implementation breaks all symmetry between states -- these are discussed in more detail in Section \ref{sec:TicTacToeImplementation}.
+Tic-Tac-Toe is used to study the effect of eliminating a game's axes of symmetry on a MC agent's performance. As discussed in Section \ref{sec:TicTacToeImplementation}, each Tic-Tac-Toe state can be symmetrical with up to seven other states. The game has four axes of symmetry (horizontal, vertical, and two diagonals) and reflecting states in one or more of them produces all possible reflections and rotations. The ``normal'' Tic-Tac-Toe implementation does not implement any symmetry-breaking, whereas the ``symmetric equality'' (SE) Tic-Tac-Toe implementation breaks all symmetry between states -- these are discussed in more detail in Section \ref{sec:TicTacToeImplementation}.
 
 Naturally, an implementation that breaks symmetries should be expected to perform better because it can combine its knowledge about symmetrical states and therefore produce a more accurate estimate $Q^{\pi}$ of the action-value function. This intuition is confirmed by running epsilon experiments for different numbers of training episodes for both normal Tic-Tac-Toe and SE Tic-Tac-Toe and the results are shown in Figure \ref{fig:tictactoe-normal-vs-symmetric-equality-epsilon}.
 
@@ -612,7 +614,7 @@ This seemed like a reasonable setup because the returns accurately reflected how
 
 The idea of using RL to learn good values for meta-parameters is not new -- in fact, a variety of research has been conducted on the topic of finding the right balance between exploration and exploitation in RL by finding good meta-parameters \cite{meta-optimization} \cite{meta-param-evolution} \cite{exploration-exploitation-meta-param} \cite{meta-learning-rl}. As a result, a number of algorithms have been developed in order to tailor meta-parameters that control this balance to the task at hand, including some based on genetic algorithms \cite{meta-param-evolution} for instance.
 
-In particular, one paper \cite{meta-learning-rl} studied use of the soft-max function to compute the probability of taking an action. The formula for this probability function involves a meta-parameter $\beta$ called the ``inverse temperature'' that controls the exploration-exploitation tradeoff, just like $\varepsilon$ in the MC algorithm. A low value of $\beta$ corresponds to high exploration and a high value corresponds to high exploitation. The paper found that the best results were produced when $\beta$ \emph{dynamically adjusted} during a training session. It was found that even if $\beta$ was given a high value initially, it would start by decreasing to enable large exploration and then as the number of training episodes increased and its learning progressed, $\beta$ would start increasing to minimise exploration.
+In particular, one paper \cite{meta-learning-rl} studied use of the soft-max function to compute the probability of taking an action. The formula for this probability function involves a meta-parameter $\beta$ called the ``inverse temperature'' that controls the exploration-exploitation trade off, just like $\varepsilon$ in the MC algorithm. A low value of $\beta$ corresponds to high exploration and a high value corresponds to high exploitation. The paper found that the best results were produced when $\beta$ \emph{dynamically adjusted} during a training session. It was found that even if $\beta$ was given a high value initially, it would start by decreasing to enable large exploration and then as the number of training episodes increased and its learning progressed, $\beta$ would start increasing to minimise exploration.
 
 This finding makes a lot of sense and corresponds exactly to the conclusions drawn at the end of Section \ref{sec:convergence-results}. Since in this project $\varepsilon$ was fixed throughout training/testing sessions, the conclusion drawn from epsilon and convergence experiments was that a large value of epsilon (which corresponds to high exploration) should be used when relatively few training episodes can be run and a small value should be used when relatively many can be run. Combining these two ideas together, for any number of training episodes, epsilon should ideally start off large and then start decreasing for the best possible performance.
 
@@ -632,17 +634,46 @@ Section \ref{sec:experiment-types} is intentionally vague about what a policy mi
 Having mentioned these two results, it is clear that the results of the convergence experiments described in Section \ref{sec:convergence-results} are not very conclusive because all they show is that the MC agent converges to \emph{some} policy after sufficient training episodes. Nevertheless, this is still a useful result because a reasonably quick convergence to a good policy is often preferable to a slow convergence to the optimal policy \cite{rl-a-survey}.
 
 
-\section{Alternative Tic-Tac-Toe Implementation That Breaks Symmetry}
+\section{Alternative Tic-Tac-Toe Implementation}
 
 Another way of eliminating symmetry in Tic-Tac-Toe was also considered: limiting the actions available from each state such that no two actions result in symmetrical states. An interesting result of this idea is that it would slightly alter the way the game is played. Suppose a random agent is asked to select a move from the game's initial state (i.e. empty grid). In the Normal implementation, there are nine possible actions: putting an \textbf{X} token in one of the nine grid cells. In this ``Limited Actions'' version, there are only three possible actions: putting an \textbf{X} token in a corner, in the middle of the grid, and in the middle of one of the sides. To give a specific example of how this would change the game, notice that the probability of the agent choosing the action that involves placing their token in the middle of the grid is $\frac{1}{9}$ in the Normal implementation and $\frac{1}{3}$ in the Limited Actions version. Thus, the agent will end up choosing this action three times as frequently in the latter version.
 
 In the limit of infinitely many games, however, the MC agent would encounter all states and choose all possible moves an equal number of times, thus computing an accurate expected return for each action. It would be interesting to compare the performance of such a Limited Actions implementation with the Symmetric Equality implementation. Both should perform equally well on any game given enough training, but it is possible that they might improve at different rates.
 
 
+\section{Training Episode Format}
+
+% make MC agent play against itself to double (?) training speed
+
+
 %-----------------------
 \chapter{Conclusion}
 
+This chapter summarises what was accomplished by this project, how and if the goals outlined in Section \ref{sec:goals} were achieved, and what was learned throughout the process.
 
+\section{Achievements}
+
+In order to assess this project's success, it is worth repeating the questions posed in Section \ref{sec:goals}: 
+
+\begin{enumerate}
+	\item Are there ``optimal'' values of $\varepsilon$ that maximise the algorithm's performance?
+	\item How quickly does the algorithm's policy converge? Does it converge to an optimal policy?
+    \item How does the Monte Carlo with Exploring Starts algorithm (Monte Carlo ES \cite{rl-book}) affect the convergence rate of the policy?
+	\item When playing games where states have axes of symmetry, how does the agent's performance and learning change when symmetry is eliminated?
+	\item How does the performance of the algorithm differ for different games?
+\end{enumerate}
+
+Indeed, this project answers all five questions.
+
+With regards to question 1, Section \ref{sec:optimal_epsilon} discusses the results of a variety of epsilon experiments, where different values of $\varepsilon$ are used for the three games in combination with different numbers of training episodes. It was found that a games does \emph{not} have one fixed value of epsilon that produces the best performance, which is measured by the winning rate. The value of epsilon that produces the highest winning rate varies with the number of training episodes: as the number of training episodes increases, the best value of epsilon to use \emph{for that number of training episodes} decreases. More specifically, an inverse relationship between the number of training episodes and the best epsilon for the tested numbers of training episodes was observed for the game of Nim. The conclusion drawn at the end of the section has to do with the fact that all games are different. Even if two MC agents are trained for the same number of training episodes to play two different games, they will very likely perform best if they use different values of epsilon during training. This is because games can vary in a number of different ways such as the state space size, average length of an episode, and average number of actions available from each state. For this reason, each game needs to be studied independently in order to achieve the best results.
+
+Question 2 was addressed in Section \ref{sec:convergence-results} and discussed further in Section \ref{sec:policy-optimality}. The conclusion drawn was that the MC algorithm does indeed converge after sufficient training episodes. However, it has not been proven that the MC algorithm used in this project converges to an optimal policy, so it is possible that the policy that it converges to is a local maximum or even on a ``plateau''. However, it is known that there \emph{exists} an optimal policy for all three games studied in this project (and, more generally, for all RL tasks that are finite MDP's).
+
+Section \ref{sec:exploring-starts} addresses question 3 by applying the Monte Carlo ES algorithm to Nim. The results showed that the policy still converges with Monte Carlo ES, though to a policy with a lower winning rate (relative to the best winning rate achieved by the normal MC algorithm). This was attributed to the randomness introduced at the beginning of each episode played by a Monte Carlo ES agent, where the episode is forced to start with a random state-action pair.
+
+The results described in Section \ref{sec:eliminate-symmetry} answer Question 4. In particular, eliminating all axes of symmetry in Tic-Tac-Toe resulted in a winning rate increase of over 10\% in the best cases. Since the implementation of symmetry-breaking used in this project effectively collapsed all symmetrical states into one state, the agent's policy also converged after fewer training episodes. Therefore a general result that is applicable to any RL task is that eliminating any game symmetries can reap very large rewards, especially when constrained in the number of training episodes that can be run.
+
+Finally, to answer question 5, all the experiments run and analysed in this report make it clear that no two games will require the same combination of epsilon value, number of training episodes, and number of testing episodes in order to achieve and demonstrate the same performance. The experiments described in Section \ref{sec:experiment-types} are general purpose and should be used whenever applying the $\varepsilon$-soft on-policy MC control algorithm to a game. Overall, the main take-away from this project is that a game does not have one single best epsilon value. There is, however, an important balance between the best epsilon value and the number of training episodes and the key to maximising performance is finding this balance.
 
 
 \section{Personal Reflections}
