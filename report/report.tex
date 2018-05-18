@@ -14,7 +14,7 @@
 \graphicspath{ {images/} }
 
 \author{Catherine Vlasov}
-\title{Optimising Learning Parameters Used by Reinforcement Learning Algorithms}
+\title{Optimising Parameters Used by Reinforcement Learning Algorithms}
 \date{17 May 2018}
 
 \newcommand{\argmax}{\mathop{\mathrm{arg\,max}}}
@@ -59,7 +59,7 @@
 
 This project investigates the best parameter settings for a class of reinforcement learning algorithms called Monte Carlo algorithms. The main goal is to determine whether there are optimal parameters for different games and how to go about finding such values. Three games -- Tic-Tac-Toe, Chung Toi, and Nim -- are implemented and studied. Factors like the state space size, the speed of the algorithm's convergence, and the effect of breaking game symmetries are considered in the analysis.
 
-It is found that there is no single optimal parameter value, but rather there is a balance between its value and the amount of training. This is an important result that should inform the application of Monte Carlo algorithms to any reinforcement learning task in order to maximise the algorithm's success.
+It is found that there is no single optimal parameter value, but rather there is a balance between the parameter value and the amount of training. This is an important result that should inform the application of Monte Carlo algorithms to any reinforcement learning task in order to maximise success.
 
 \end{abstract}
 
@@ -78,34 +78,32 @@ It is found that there is no single optimal parameter value, but rather there is
 %-----------------------
 \chapter{Introduction}
 
-Over the last few decades, reinforcement learning has seen a large increase in popularity. It amazes the world again and again, whether playing Go \cite{go}, Backgammon \cite{backgammon}, or Atari \cite{atari} games, and its potential continues to grow. These successes were not lucky, but rather they were a product of studying the nature, size, and complexity of each task, choosing the algorithm best suited to it, and then setting up the algorithm appropriately. The last of these steps is crucial to the success of reinforcement learning for a particular task and must be done carefully.
+Over the last few decades, reinforcement learning has seen a large increase in popularity. It amazes the world again and again, whether playing Go \cite{go}, Backgammon \cite{backgammon}, or Atari \cite{atari} games, and its potential continues to grow. These successes were not lucky, but rather they were a product of studying the nature, size, and complexity of each task, choosing the algorithm best suited to it, and setting up the algorithm appropriately. The last of these steps is crucial to the success of reinforcement learning applied to any task and must be done carefully.
 
 Thus, this project aims to elucidate how to set up a reinforcement learning algorithm by tuning its parameters, specifically for a class of algorithms called Monte Carlo algorithms.
 
 
 \section{Motivation}
 
-The specific Monte Carlo algorithm this project implements and investigates is called an ``on-policy $\varepsilon$-soft Monte Carlo control algorithm''. Section \ref{sec:Terminology} explains the basics of reinforcement learning as well as terminology used throughout this report, such as ``on-policy'' and ``$\varepsilon$-soft''. As the name suggests, the algorithm uses a parameter $\varepsilon$ to guide its learning. Effectively, it determines the balance between exploitation (choosing actions that are best, according to what it currently knows) and exploration (trying new actions). Thus, the chosen value of $\varepsilon$ can have a large effect on an agent's learning rate and therefore success at a particular task.
+The specific Monte Carlo algorithm this project implements and investigates is called an ``on-policy $\varepsilon$-soft Monte Carlo control algorithm''. Sections \ref{sec:RL} and \ref{sec:learning-algorithms} explain the basics of reinforcement learning as well as terminology such as ``on-policy'' and ``$\varepsilon$-soft''. As the name suggests, the algorithm uses a parameter $\varepsilon$ to guide its learning. Effectively, $\varepsilon$ determines the balance between exploitation (choosing actions that are best, according to what it currently knows) and exploration (trying new actions). Thus, its chosen value can have a large effect on the algorithm's learning rate and therefore success.
 
-The on-policy $\varepsilon$-soft Monte Carlo control algorithm is not the primary subject of many research papers since it is simple, relative to other popular reinforcement learning techniques. Consequently, there is a lack of guidance on how to apply the algorithm to real tasks and achieve the greatest success given constraints such as computing power and time.
+The on-policy $\varepsilon$-soft Monte Carlo control algorithm is not the primary subject of many research papers since it is simple, relative to other popular reinforcement learning techniques. Consequently, there is a lack of guidance on how to apply the algorithm to reinforcement learning tasks and achieve the greatest success given constraints such as computing power and time.
 
-The simplicity of the algorithm, however, facilitates an interesting analysis of the effect of the value of $\varepsilon$ on the algorithm's success. The overarching goal of this project is to develop general guidelines for tailoring the algorithm to any particular reinforcement learning task. These guidelines can then hopefully be extended to other reinforcement learning algorithms with parameters that need to configured.
+The overarching goal of this project is to develop general guidelines for tailoring the algorithm to any particular reinforcement learning task. These guidelines can then hopefully be extended to other reinforcement learning algorithms with parameters that need to configured.
 
 
 \section{Goals}
 \label{sec:goals}
 
-This project tackles a number of questions:
+This project tackles the following questions about the performance of the on-policy $\varepsilon$-soft Monte Carlo control algorithm:
 
 \begin{enumerate}
-	\item Are there ``optimal'' values of $\varepsilon$ that maximise the algorithm's performance?
-	\item How quickly does the algorithm's policy converge? Does it converge to an optimal policy?
-    \item How does the Monte Carlo with Exploring Starts algorithm \cite{rl-book} compare to the ``normal'' Monte Carlo algorithm in terms of its success and convergence rate?
-	\item When playing games where states have axes of symmetry, how does the agent's performance change when symmetry is eliminated?
-	\item How does the performance of the algorithm differ from game to game?
+	\item Are there optimal values of $\varepsilon$ that maximise performance?
+	\item Does performance converge? If so, how quickly does it converge and is the performance at convergence optimal?
+    \item How does the Monte Carlo with Exploring Starts algorithm \cite{rl-book} compare in terms of its success and convergence rate?
+	\item When playing games where states have axes of symmetry, how does performance change when symmetry is eliminated?
+	\item How does performance differ from game to game?
 \end{enumerate}
-
-Three games were selected for this project: Tic-Tac-Toe, Chung Toi, and Nim. They are discussed in further detail in Section \ref{sec:DesignImpl}. They form an interesting mix since some have relatively long episodes, others can be used to investigate symmetry, and some have state spaces of similar sizes and can be compared to each other. Thus, it was possible to answer all of the above questions and derive some interesting results.
 
 
 
@@ -119,7 +117,7 @@ This section provides an overview of the theory behind reinforcement learning an
 
 Reinforcement learning (RL) is an area of machine learning in which an agent interacts with an environment by choosing actions, with the goal of maximising the cumulative reward it receives for these actions.
 
-The beauty of RL is that the agent is not given any information about \emph{how} to solve a problem, but rather it has to find out what works and what does not through trial-and-error. For this reason, RL is different from supervised learning because the agent is not provided with any input-output pairs to learn from. Instead, it learns and improves purely based on its own experiences.
+The beauty of RL is that the agent is not given any information about \emph{how} to solve a problem, but rather it has to develop a strategy through trial-and-error. For this reason, RL is different from supervised learning because the agent is not provided with any input-output pairs to learn from. Instead, it learns and improves purely based on its own experiences.
 
 RL is now described more formally. An \emph{agent} is a learner and the \emph{environment} is everything outside the agent, namely the thing that the agent interacts with. These interactions occur at discrete time steps $t = 0, 1, 2, 3, ...$. An \emph{episode} is a natural sub-sequence of interactions, such as one game of Tic-Tac-Toe. There is a set of states $\mathcal{S}$ and a function $\mathcal{A}$ such that for any state $s \in \mathcal{S}$, $\mathcal{A}(s)$ is the set of actions that are available from state $s$. There is a function $\mathcal{R}$ that specifies the \emph{return} (or \emph{reward}) $r$ that an agent receives for choosing an action $a$ at a state $s$. The ultimate goal of an agent is to maximise the total sum of all the returns it receives. Based on its experience, an agent builds a \emph{policy} $\pi$, which maps each state $s$ to the probabilities of selecting each of the actions available from $s$.
 
@@ -134,46 +132,42 @@ It is worth making a quick digression to explain what a Markov Decision Process 
 	\mathbb{P}(s_{t+1} = s', r_{t+1} = r \mid s_t, a_t) \label{partial-prob-distr}
 \end{equation}
 
-A RL task has the Markov propety if and only if \ref{complete-prob-distr} and \ref{partial-prob-distr} are equal for all states $s'$, returns $r$, and all possible previous states, actions, and returns $s_t$, $a_t$, $r_t$, ... , $r_1$, $s_0$, $a_0$ \cite{rl-book}.
-
-More intuitively, having the Markov property means that the environment's response (i.e. state it transitions to and return it gives to the agent) at a particular time step should only depend on what happened during the previous time step. Thus, this response should be independent of what happened before the previous time step.
+A RL task has the Markov property if and only if \ref{complete-prob-distr} and \ref{partial-prob-distr} are equal for all states $s'$, returns $r$, and all possible previous states, actions, and returns $s_t$, $a_t$, $r_t$, ... , $r_1$, $s_0$, $a_0$ \cite{rl-book}. More intuitively, having the Markov property means that the environment's response (i.e. state it transitions to and return it gives to the agent) at a particular time step should only depend on what happened during the previous time step. Thus, this response should be independent of what happened before the previous time step.
 
 A task that satisfies the Markov property is called a MDP and if it has finitely many states and actions (i.e. $\mathcal{S}$ and $\mathcal{A}$ are both finite), then it is called a \emph{finite} MDP. 
 
-Since the games used in this project all have finite state spaces and action spaces, they are all finite MDP's. The reason finite MDP's are important is that they all have an optimal policy $\pi^{\ast}$ \cite{rl-book} \cite{mdp-convergence}. This result is very useful since it informs the study of the convergence of an agent's policy as it gains experience playing the games.
+Since all three games studied in this project have finite state spaces and action spaces, they are all finite MDP's. The reason finite MDP's are important is that they all have an optimal policy $\pi^{\ast}$ \cite{rl-book} \cite{mdp-convergence}. This result is very useful since it informs the study of the convergence of an agent's policy as it gains experience playing the games.
 
 
 \section{Learning Algorithms}
 \label{sec:learning-algorithms}
 
-One of the goals of RL algorithms is to estimate a \emph{state-value function} that indicates the ``strength'' of being in a particular state. This ``strength'' refers to the expected return the agent will receive from the environment if it follows a certain policy. Formally, the state-value function for a policy $\pi$ is $V^{\pi} : \mathcal{S} \rightarrow \mathbb{R}$.
+One of the goals of RL algorithms is to estimate a \emph{state-value function} that indicates the ``strength'' of being in a particular state. This strength refers to the expected return the agent will receive from the environment if it follows a certain policy. Formally, the state-value function for a policy $\pi$ is $V^{\pi} : \mathcal{S} \rightarrow \mathbb{R}$.
 
 Similarly, RL algorithms also estimate an \emph{action-value function} that indicates the ``strength'' of choosing a particular action from a particular state. The action-value function for a policy $\pi$ is $Q^{\pi} : \mathcal{S} \times \mathcal{A} \rightarrow \mathbb{R}$.
 
-RL algorithms estimate $V^{\pi}$ and $Q^{\pi}$ from experience and their goal is to build estimates as close to $V^{\ast}$ and $Q^{\ast}$ -- optimal state-value and action-value functions -- as possible. We know that such optimal functions exist because, as explained in Section \ref{sec:RL}, all finite MDP's have an optimal policy.
+RL algorithms estimate $V^{\pi}$ and $Q^{\pi}$ from experience and their goal is to build estimates as close to $V^{\ast}$ and $Q^{\ast}$ -- optimal state-value and action-value functions -- as possible. We know that such optimal functions exist because, as explained in Section \ref{sec:RL}, all finite MDP's have an optimal policy and therefore optimal state-value and action-value functions.
 
 A final distinction to make between RL algorithms is between \emph{on-policy} and \emph{off-policy} algorithms. On-policy algorithms update their estimates of  $V^{\pi}$ and  $Q^{\pi}$ solely using the experience they gain from interacting with the environment. On the other hand, off-policy algorithms update their estimates based on actions they might not even take.
 
-There are a number of well-known RL techniques that estimate $V^{\pi}$ and improve policies in different ways. One of the most popular and well-understood \cite{challenges-of-rl} algorithms is Q-learning \cite{q-learning}, an off-policy algorithm. Most notably, a variant of Q-learning was used to train a convolutional neural network to play Atari 2600 games, outperforming human experts \cite{atari}. Q-learning is based in part on a category of RL algorithms called Temporal Difference, which are on-policy algorithms. One called TD($\lambda$) gained notoriety when it was successfully used to train a neural network to play Backgammon at a level that surpassed other similar networks as well as human experts \cite{backgammon}. Temporal Difference, in turn, combines techniques from dynamic programming approaches to RL as well another category of algorithms called Monte Carlo, which are mostly on-policy algorithms. The latter category is the focus of this project since such algorithms are simple and intuitive, but still reveal a lot about how policies converge and how performance varies from game to game.
+There are a number of well-known RL techniques that estimate $V^{\pi}$ and improve policies in different ways. One of the most popular and well-understood \cite{challenges-of-rl} algorithms is Q-learning \cite{q-learning}, an off-policy algorithm. Most notably, a variant of Q-learning was used to train a convolutional neural network to play Atari 2600 games, outperforming human experts \cite{atari}. Q-learning is partially based on a class of RL algorithms called Temporal Difference, which are on-policy. One called TD($\lambda$) gained notoriety when it was successfully used to train a neural network to play Backgammon at a level that surpassed other similar networks as well as human experts \cite{backgammon}. Temporal Difference, in turn, combines techniques from dynamic programming approaches to RL as well another category of algorithms called Monte Carlo, which are mostly on-policy. The latter category is the focus of this project since such algorithms are simple and intuitive, but still reveal a lot about how policies converge and how performance varies from game to game.
 
 
 \subsection{Monte Carlo Algorithms}
 \label{sec:MonteCarloAlgorithms}
 
-Monte Carlo (MC) algorithms are online algorithms that try to solve RL problems by computing the averages of returns. The term \emph{online} means that as the agent gains new information by interacting with the environment, this new information is immediately put to use. In particular, MC algorithms update their value function estimates and policies at the end of each episode. For this reason, MC algorithms are only used for tasks that can be divided into discrete episodes that are guaranteed to terminate eventually.
+Monte Carlo (MC) algorithms are online algorithms that try to solve RL problems by computing the averages of returns. The term \emph{online} means that as the agent gains new information by interacting with the environment, this new information is immediately put to use. In particular, MC algorithms update $V^{\pi}$, $Q^{\pi}$, and their policy $\pi$ at the end of each episode. For this reason, MC algorithms are only used for tasks that can be divided into discrete episodes that are guaranteed to terminate eventually.
 
-MC learning works by saving the average of all returns received for choosing action $a$ from $s$, for each state $s$ and action $a$ available from $s$, over the course of all episodes. This is stored in the action-value function $Q^{\pi}$.
+MC learning works by averaging all returns received for choosing action $a$ from $s$, for each state $s$ and action $a$ available from $s$, during all episodes. The averages are stored in $Q^{\pi}$. There are two variations of MC with respect to averaging returns: \emph{every-visit} MC and \emph{first-visit} MC. Every-visit MC computes its estimate of each expected return $Q(s,a)$ using the average of the returns after \emph{all} the times $a$ was chosen from $s$. In contrast, first-visit MC does so using the returns received only after the \emph{first} time in each episode $a$ was chosen from $s$. Both versions converge to the true expected values in the limit of infinitely many encounters with each state-action pair, so the first-visit version was arbitrarily chosen for this project.
 
-There are two variations of MC with respect to averaging returns: \emph{every-visit} MC and \emph{first-visit} MC. Every-visit MC computes its estimate of each expected return $Q(s,a)$ using the average of the returns after \emph{all} the times $a$ was chosen from $s$. In contrast, first-visit MC does so using only the returns received the \emph{first} time in each episode $a$ was chosen from $s$. Both versions converge to the true expected values in the limit of infinitely many encounters with each state-action pair, so the first-visit version was arbitrarily chosen for this project.
+A problem arises when a policy is completely deterministic because many state-actions pairs will never be encountered, regardless of how many episodes take place. Specifically, for each state, only one action will ever be chosen when that state is encountered, so the algorithm will never improve. Thus, a concept called \emph{exploring starts} is assumed. This means that each episode begins with a random state-action pair, where all pairs have a non-zero probability of being selected. This way, all states and actions are guaranteed to be encountered infinitely many times over the course of infinitely many episodes.
 
-A problem arises when a policy is completely deterministic because many state-actions pairs will never be encountered, regardless of how many episodes take place. More specifically, for each state only one action will ever be chosen when that state is encountered, so the algorithm will never improve. Thus, a concept called \emph{exploring starts} is assumed. This means that each episode begins with a random state-action pair, where all pairs have a non-zero probability of being selected. In this way, all states and actions are guaranteed to be encountered infinitely many times over the course of infinitely many episodes.
-
-However, exploring starts cannot be assumed to hold for all RL tasks and one solution to this problem is an on-policy control method. Policies resulting from these methods are called \emph{$\varepsilon$-soft} if $\pi(s,a) > 0$ for all $s \in \mathcal{S}$ and all $a \in \mathcal{A}(s)$. A specific type of $\varepsilon$-soft policy is an $\varepsilon$-greedy policy and this is the type used in this project. The way they work is that the majority of the time, the agent chooses the best action, but with probability $\varepsilon$ it chooses an action randomly. Specifically, the best action is assigned a probability of $1 - \varepsilon + \frac{\varepsilon}{|\mathcal{A}(s)|}$ and all other actions are assigned a probability of $\frac{\varepsilon}{|\mathcal{A}(s)|}$ in the policy.
+However, exploring starts cannot be assumed to hold for all RL tasks and one solution is an on-policy control method. Policies resulting from these methods are called \emph{$\varepsilon$-soft} if $\pi(s,a) > 0$ for all $s \in \mathcal{S}$ and all $a \in \mathcal{A}(s)$. A specific type of $\varepsilon$-soft policy is an $\varepsilon$-greedy policy and this is the type used in this project. The way they work is that the majority of the time, the agent chooses the best action, but with probability $\varepsilon$ it chooses an action randomly. Specifically, the best action is assigned a probability of $1 - \varepsilon + \frac{\varepsilon}{|\mathcal{A}(s)|}$ and all other actions are assigned a probability of $\frac{\varepsilon}{|\mathcal{A}(s)|}$ in the policy.
 
 With all this in mind, we can now understand the on-policy $\varepsilon$-soft MC control algorithm used in this project:
 
 \begin{algorithm}
-    \caption{$\varepsilon$-soft on-policy Monte Carlo control algorithm} \label{sec:monteCarloPseudocode}
+    \caption{on-policy $\varepsilon$-soft Monte Carlo control algorithm} \label{sec:monteCarloPseudocode}
     \begin{algorithmic}[1]
         \Procedure{Monte Carlo}{}
         
@@ -225,14 +219,14 @@ In addition to the terms described in Section \ref{sec:RL}, the following terms 
 			\item In particular, it refers to an instance of the \emph{MonteCarloAgent} class described in Section \ref{sec:code-structure}
 		\end{itemize}
 
-	\item \textbf{Epsilon precision}: the difference between consecutive values of $\varepsilon$ used in experiments.
+	\item \textbf{Epsilon precision}: The difference between consecutive values of $\varepsilon$ used in experiments.
 		\begin{itemize}
 			\item For example, if the precision is 0.01, then the values of $\varepsilon$ used would be 0.0, 0.01, 0.02, ..., 0.99, and 1.0.
 		\end{itemize}
 
 	\item \textbf{Game}: Examples are Tic-Tac-Toe, Connect Four, and Chess
 
-	\item \textbf{Training episode}: Making a MC agent play one iteration of a game for the purposes of learning/training
+	\item \textbf{Training episode}: Making a MC agent play one iteration of a game for the purpose of learning/training
 
 	\item \textbf{Training session}: Running some number of training episodes consecutively (e.g. ten thousand, one million)
 
@@ -248,7 +242,7 @@ In addition to the terms described in Section \ref{sec:RL}, the following terms 
 \chapter{Design \& Implementation}
 \label{sec:DesignImpl}
 
-This section describes the structure of the code written for this project, the implementations of Tic-Tac-Toe, Chung Toi, and Nim, and the game-playing agents used in this project's experiments.
+This section describes the structure of the code, the implementations of the three games studied in this project, and the game-playing agents used in experiments.
 
 
 \section{Code Structure}
@@ -260,19 +254,19 @@ The project is written entirely in Java and is built in a modular way, using an 
 	\begin{center}
 		%\noindent\makebox[\textwidth]{\includegraphics[width=0.75\paperwidth]{code_structure.png}}
 		\includegraphics[width=\linewidth]{code_structure.png}
-		\caption{Project's code structure. The boxes with a black outline indicate packages, whose names are written in black above them. The filenames with grey backgrounds are interfaces and those with italicised names are abstract classes. An arrow from A to B indicates that B implements or extends A, depending on whether A is an interface or abstract class, respectively. The colourful boxes around each file name indicates which interface it implements (or is) and is intended to visualise inheritance.}
+		\caption{Project's code structure. The boxes with a black outline indicate packages, whose names are written in black above them. The file names with grey backgrounds are interfaces and those with italicised names are abstract classes. An arrow from A to B indicates that B implements or extends A, depending on whether A is an interface or abstract class, respectively. The colourful box around each file name indicates which interface it implements (or is) and is intended to visualise polymorphism and inheritance.}
 		\label{code-structure}
 		
 	\end{center}
 \end{figure}
 
-The \emph{general} package contains interfaces for agents, games, states, and actions, which serve as Facades for the implementations, which are often quite complex.
+The \emph{general} package contains interfaces for agents, games, states, and actions, which serve as Facades for the implementations, which are often complex.
 
-The \emph{tictactoe} package contains an abstract class \emph{TicTacToeGame} that implements the game logic. Two concrete classes, \emph{TicTacToeNormalGame} and \emph{TicTacToeGameWithSymmetricEquality} extend it and all they do is override the constructors in order to initialise the game's state to the right subclass of \emph{TicTacToeState}. Like \emph{TicTacToeGame}, \emph{TicTacToeState} is an abstract class that implements the necessary behaviours of a game state, such as providing a list of available actions and producing the result of applying an action to it. It has two concrete subclasses: \emph{TicTacToeNormalState}, which slightly modifies the constructors, and \emph{TicTacToeWithSymmetricEquality}, which implements the symmetry-breaking described in Section \ref{sec:TicTacToeImplementation}.
+The \emph{tictactoe} package contains an abstract class \emph{TicTacToeGame} that implements the game logic. Two concrete classes, \emph{TicTacToeNormalGame} and \emph{TicTacToeGameWithSymmetricEquality} extend it and all they do is override the constructors in order to initialise the game's state with the right subclass of \emph{TicTacToeState}. Like \emph{TicTacToeGame}, \emph{TicTacToeState} is an abstract class that implements the necessary behaviours of a game state, such as providing a list of available actions and producing the result of applying an action to it. It has two concrete subclasses: \emph{TicTacToeNormalState}, which slightly modifies the constructors, and \emph{TicTacToeWithSymmetricEquality}, which implements the symmetry-breaking described in Section \ref{sec:TicTacToeImplementation}.
 
-The \emph{chungtoi} package has three concrete classes that implement the \emph{Action} interface since Chung Toi involves three types of moves. The logic in \emph{ChungToiState} for producing a list of available actions is more complex than in the other two games due to the number of possible move combinations as well as the two game phases. All of this is described in more detail in Section \ref{sec:ChungToiRules}.
+The \emph{chungtoi} package has three concrete classes that implement the \emph{Action} interface since Chung Toi involves three types of actions. The logic in \emph{ChungToiState} for producing a list of available actions is more complex than in the other two games due to the number of possible move combinations as well as the two game phases. All of this is described in more detail in Section \ref{sec:ChungToiRules}.
 
-The \emph{nim} package is relatively simple and there are two classes that implement the \emph{Game} interface: \emph{NimGame} and \emph{NimGameES}. The game logic in the latter forces the game to start with a random state-action pair, as required by the Monte Carlo ES algorithm described in Section \ref{sec:MonteCarloAlgorithms}. Further implementation details can be found in Section \ref{sec:NimImplementation}.
+The \emph{nim} package is relatively simple and there are two classes that implement the \emph{Game} interface: \emph{NimGame} and \emph{NimGameES}. The game logic in the latter forces the game to start with a random state-action pair, as required by the Monte Carlo with exploring starts algorithm described in Section \ref{sec:MonteCarloAlgorithms}. Further implementation details can be found in Section \ref{sec:NimImplementation}.
 
 The \emph{agents} package has two classes (\emph{RandomAgent} and \emph{MonteCarloAgent}) that implement the \emph{Agent} interface. As Figure \ref{code-structure} clearly shows, the agent implementations are totally independent of the games. That is, agents do not distinguish between different games and only use methods defined in the general interfaces. This means that the \emph{MonteCarloAgent} class, for example, can be used to play all three games. This modularity provides a nice separation of concerns that enabled simpler testing and debugging.
 
@@ -288,7 +282,7 @@ In a way, a secondary goal of this project is to be flexible in order to provide
 
 As mentioned in Section \ref{sec:code-structure}, two learning agents were implemented: \emph{RandomAgent} and \emph{MonteCarloAgent}.
 
-\emph{MonteCarloAgent} implements the $\epsilon$-soft on-policy MC control algorithm, as discussed in Section \ref{sec:MonteCarloAlgorithms}. In its \emph{chooseAction(State s)} method, it chooses an action according to its policy for states it has encountered in previous games, and randomly otherwise. In its \emph{gameOver()} method it calls two private helper methods \emph{policyEvaluation()} and \emph{policyImprovement()} that update $Q^{\pi}$ and $\pi$, respectively, as described in Section \ref{sec:monteCarloPseudocode}. Hash maps are used to store $Q^{\pi}$ and $\pi$ for constant time access and insertion. This choice was important because accessing and updating $Q^{\pi}$ and $\pi$ are the algorithm's most computationally expensive tasks.
+\emph{MonteCarloAgent} implements the on-policy $\epsilon$-soft Monte Carlo control algorithm, as discussed in Section \ref{sec:MonteCarloAlgorithms}. In its \emph{chooseAction(State s)} method, it chooses an action according to its policy for states it has encountered in previous games, and randomly otherwise. In its \emph{gameOver()} method it calls two private helper methods \emph{policyEvaluation()} and \emph{policyImprovement()} that update $Q^{\pi}$ and $\pi$, respectively, as described in Section \ref{sec:monteCarloPseudocode}. Hash maps are used to store $Q^{\pi}$ and $\pi$ for constant time access and insertion. This choice was important because accessing and updating $Q^{\pi}$ and $\pi$ are the algorithm's most computationally expensive tasks.
 
 As its name suggests, \emph{RandomAgent} randomly selects an action from the available actions at any state. In total, the logic for this agent is equivalent to one line of code and it is only used to train and test the MC agent.
 
@@ -678,7 +672,7 @@ Thus, it would be very interesting to implement some of the algorithms developed
 Section \ref{sec:experiment-types} is intentionally vague about what a policy might converge to and whether it converges to an optimal policy. It is important to note two important results before continuing:
 
 \begin{itemize}
-    \item The $\varepsilon$-soft on-policy MC control algorithm studied in this project has \emph{not} yet been proven to converge to an optimal policy \cite{open-rl-questions}. This means that even if the curve produced by a convergence experiment clearly flattens, it may very well be that the agent has found some local maximum or a saddle point.
+    \item The on-policy $\varepsilon$-soft MC control algorithm studied in this project has \emph{not} yet been proven to converge to an optimal policy \cite{open-rl-questions}. This means that even if the curve produced by a convergence experiment clearly flattens, it may very well be that the agent has found some local maximum or a saddle point.
     \item There is a stationary deterministic optimal policy for every Markov Decision Process (MDP) \cite{mdp-convergence}, which means that, at the very least, there \emph{is} some optimal policy for all three games studied in this project. However, there is no way of knowing for sure whether this is the policy that the MC agent converges to.
 \end{itemize}
 
@@ -703,7 +697,7 @@ This chapter summarises what this project accomplished, how the goals outlined i
 In order to assess this project's success, it is worth spelling out the answers to the questions posed in Section \ref{sec:goals}: 
 
 \begin{enumerate}
-	\item Are there ``optimal'' values of $\varepsilon$ that maximise the algorithm's performance?
+	\item Are there optimal values of $\varepsilon$ that maximise performance?
 	\begin{itemize}
 	    \item 
 Section \ref{sec:optimal_epsilon} discusses the results of a variety of epsilon experiments run on all three games with different numbers of training episodes. It was found that a game does \emph{not} have one fixed value of epsilon that produces the best performance, which is measured by the winning rate. The value of epsilon that produces the highest winning rate varies with the number of training episodes: as the number of training episodes increases, the best value of epsilon to use \emph{for that number of training episodes} decreases. More specifically, an inverse relationship between the number of training episodes and the best epsilon for each number of training episodes was observed for all three games.
@@ -711,28 +705,28 @@ Section \ref{sec:optimal_epsilon} discusses the results of a variety of epsilon 
 The conclusion drawn at the end of the section has to do with the fact that all games are different. Even if two MC agents are trained for the same number of training episodes to play two different games, they will likely perform best if they use different values of epsilon during training. This is because games can vary in a number of different ways such as state space size, average episode length, and average number of actions available from each state. For this reason, each game needs to be studied independently in order to achieve the best results.
 	\end{itemize}
 	
-	\item How quickly does the algorithm's policy converge? Does it converge to an optimal policy?
+	\item Does performance converge? If so, how quickly does it converge and is the performance at convergence optimal?
 	\begin{itemize}
 	    \item 
 This was addressed in Section \ref{sec:convergence-results} and discussed further in Section \ref{sec:policy-optimality}. The conclusion was that the MC algorithm does indeed converge after sufficient training episodes. However, it has not been proven that the MC algorithm used in this project converges to an optimal policy, so it is possible that the policy that it converges to is a local maximum or even at a saddle point. However, it is known that there \emph{exists} an optimal policy for all three games studied in this project (and, more generally, for all RL tasks that are finite MDP's).
 	\end{itemize}
 	
-    \item How does the Monte Carlo with Exploring Starts algorithm (Monte Carlo ES \cite{rl-book}) affect the convergence rate of the policy?
+    \item How does the Monte Carlo with Exploring Starts algorithm \cite{rl-book} compare in terms of its success and convergence rate?
 	\begin{itemize}
 	    \item 
 Section \ref{sec:exploring-starts} addresses this by applying the Monte Carlo ES algorithm to Nim. The results showed that the policy still converges with Monte Carlo ES, though to a policy with a winning rate that is low relative to the best winning rate achieved by the normal MC algorithm. This was attributed to the randomness introduced at the beginning of each episode played by a Monte Carlo ES agent, where it is forced to start with a random state-action pair.
 	\end{itemize}
     
-	\item When playing games where states have axes of symmetry, how does the agent's performance and learning change when symmetry is eliminated?
+	\item When playing games where states have axes of symmetry, how does performance change when symmetry is eliminated?
 	\begin{itemize}
 	    \item 
 The results described in Section \ref{sec:eliminate-symmetry} answer this question. In particular, eliminating all axes of symmetry in Tic-Tac-Toe resulted in a winning rate increase of over 10\% in the best cases. Since the implementation of symmetry-breaking used in this project effectively collapsed all symmetrical states into one state, the agent's policy also converged after fewer training episodes. Therefore a general result that is applicable to any RL task is that eliminating game symmetries can reap very large rewards, especially when constrained by the number of training episodes that can be played.
 	\end{itemize}
 	
-	\item How does the performance of the algorithm differ for different games?
+	\item How does performance differ from game to game?
 	\begin{itemize}
 	    \item 
-All the experiments run and analysed in this report make it clear that no two games will require the same combination of epsilon value, number of training episodes, and number of testing episodes in order to achieve the same performance. The experiments described in Section \ref{sec:experiment-types} are general purpose and should be used whenever applying the $\varepsilon$-soft on-policy MC control algorithm to a game.
+All the experiments run and analysed in this report make it clear that no two games will require the same combination of epsilon value, number of training episodes, and number of testing episodes in order to achieve the same performance. The experiments described in Section \ref{sec:experiment-types} are general purpose and should be used whenever applying the on-policy $\varepsilon$-soft MC control algorithm to a game.
         \item 
 The main take-away from this project is that a game does not have one single best epsilon value. There is, however, an important balance between the best epsilon value and the number of training episodes and the key to maximising performance is finding this balance.
 	\end{itemize}
@@ -768,7 +762,7 @@ Overall, I really enjoyed learning about RL algorithms and exploring their appli
 
 I would like to thank my supervisor Dr. Irina Voiculescu for all her help over the past year. Her support and guidance as well as academic and personal advice were incredibly valuable throughout the process.
 
-I would also like to thank the students with whom I discussed my ideas and who helped me formulate my thoughts and find new ways to approach problems I encountered.
+I would also like to thank the friends with whom I discussed my ideas and who helped me formulate my thoughts and find new ways to approach problems I encountered.
 
 
 \newpage
