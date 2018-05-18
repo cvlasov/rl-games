@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper]{report}
+\documentclass[11pt,a4paper,twoside,openright]{report}
 
 \usepackage{hyperref}
 \usepackage{caption}
@@ -19,9 +19,12 @@
 
 \newcommand{\argmax}{\mathop{\mathrm{arg\,max}}}
 
+\addtolength{\oddsidemargin}{15mm}
+\addtolength{\evensidemargin}{-15mm}
+
 \begin{document}
 
-\shipout\null
+%\shipout\null
 
 \makeatletter
 	\begin{titlepage}
@@ -62,11 +65,15 @@ It is found that there is no single optimal parameter value, but rather there is
 
 
 \shipout\null
-
+\pagenumbering{roman}
 
 %-----------------------
 \tableofcontents
 
+
+\cleardoublepage
+\pagenumbering{arabic}
+\newpage
 
 %-----------------------
 \chapter{Introduction}
@@ -251,7 +258,8 @@ The project is written entirely in Java and is built in a modular way, using an 
 
 \begin{figure}[htbp]
 	\begin{center}
-		\noindent\makebox[\textwidth]{\includegraphics[width=0.75\paperwidth]{code_structure.png}}
+		%\noindent\makebox[\textwidth]{\includegraphics[width=0.75\paperwidth]{code_structure.png}}
+		\includegraphics[width=\linewidth]{code_structure.png}
 		\caption{Project's code structure. The boxes with a black outline indicate packages, whose names are written in black above them. The filenames with grey backgrounds are interfaces and those with italicised names are abstract classes. An arrow from A to B indicates that B implements or extends A, depending on whether A is an interface or abstract class, respectively. The colourful boxes around each file name indicates which interface it implements (or is) and is intended to visualise inheritance.}
 		\label{code-structure}
 		
@@ -756,12 +764,14 @@ To manage my project's dependencies, I used a build tool developed by Google cal
 Overall, I really enjoyed learning about RL algorithms and exploring their applications, all while developing strong programming skills that will help me throughout my career.
 
 
-%--------------------------------
-\chapter{Acknowledgements}
+\section{Acknowledgements}
 
 I would like to thank my supervisor Dr. Irina Voiculescu for all her help over the past year. Her support and guidance as well as academic and personal advice were incredibly valuable throughout the process.
 
 I would also like to thank the students with whom I discussed my ideas and who helped me formulate my thoughts and find new ways to approach problems I encountered.
+
+
+\newpage
 
 
 %--------------------------------
