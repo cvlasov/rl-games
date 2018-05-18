@@ -21,6 +21,8 @@
 
 \begin{document}
 
+\shipout\null
+
 \makeatletter
 	\begin{titlepage}
 		\vspace*{\fill}
@@ -46,14 +48,20 @@
 \makeatother
 
 
+\shipout\null
+
+
 %-----------------------
 \begin{abstract}
 
 This project investigates the best parameter settings for a class of reinforcement learning algorithms called Monte Carlo algorithms. The main goal is to determine whether there are optimal parameters for different games and how to go about finding such values. Three games -- Tic-Tac-Toe, Chung Toi, and Nim -- are implemented and studied. Factors like the state space size, the speed of the algorithm's convergence, and the effect of breaking game symmetries are considered in the analysis.
 
-It is found that there is no single optimal parameter value, but rather there is a balance between its value and the amount of training. This is an important result that should inform the application of Monte Carlo algorithms to any reinforcement learning task in order to maximise the algorithm's success during testing.
+It is found that there is no single optimal parameter value, but rather there is a balance between its value and the amount of training. This is an important result that should inform the application of Monte Carlo algorithms to any reinforcement learning task in order to maximise the algorithm's success.
 
 \end{abstract}
+
+
+\shipout\null
 
 
 %-----------------------
@@ -228,6 +236,7 @@ In addition to the terms described in Section \ref{sec:RL}, the following terms 
 \end{itemize}
 
 
+
 %-----------------------------------------
 \chapter{Design \& Implementation}
 \label{sec:DesignImpl}
@@ -273,7 +282,7 @@ As mentioned in Section \ref{sec:code-structure}, two learning agents were imple
 
 \emph{MonteCarloAgent} implements the $\epsilon$-soft on-policy MC control algorithm, as discussed in Section \ref{sec:MonteCarloAlgorithms}. In its \emph{chooseAction(State s)} method, it chooses an action according to its policy for states it has encountered in previous games, and randomly otherwise. In its \emph{gameOver()} method it calls two private helper methods \emph{policyEvaluation()} and \emph{policyImprovement()} that update $Q^{\pi}$ and $\pi$, respectively, as described in Section \ref{sec:monteCarloPseudocode}. Hash maps are used to store $Q^{\pi}$ and $\pi$ for constant time access and insertion. This choice was important because accessing and updating $Q^{\pi}$ and $\pi$ are the algorithm's most computationally expensive tasks.
 
-As its name suggests, \emph{RandomAgent} randomly selects an action from the available actions at any given state. In total, the logic for this agent is equivalent to one line of code and \emph{RandomAgent} is only used to train and test the MC agent.
+As its name suggests, \emph{RandomAgent} randomly selects an action from the available actions at any state. In total, the logic for this agent is equivalent to one line of code and it is only used to train and test the MC agent.
 
 
 \newpage
@@ -288,9 +297,7 @@ The first game used in this project is Tic-Tac-Toe. It was chosen because it has
 
 Although this is a widely-known game, the rules \cite{tic-tac-toe-rules} are still included here for reference and clarity.
 
-First, one of the two players is randomly selected to use X tokens (the other player uses O tokens). These players are referred to as the ``X-player'' and ``O-player'', respectively, and each has an unlimited number of their tokens at their disposal.
-
-The game consists of the players alternately placing their tokens in empty spaces on a 3x3 grid, starting with the X-player. Figure \ref{tic-tac-toe-grid-example} is an example of a possible grid state.
+First, one of the two players is randomly selected to use X tokens (the other player uses O tokens). These players are referred to as the ``X-player'' and ``O-player'', respectively, and each has an unlimited number of their tokens at their disposal. The game consists of the players alternately placing their tokens in empty spaces on a 3x3 grid, starting with the X-player. Figure \ref{tic-tac-toe-grid-example} is an example of a possible grid state. The winner is the first player to place three of their tokens in a horizontal, vertical, or diagonal row. If the grid is filled and neither player has won, it is a draw.
 
 \begin{figure}[htbp]
 	\begin{center}
@@ -299,8 +306,6 @@ The game consists of the players alternately placing their tokens in empty space
 		\label{tic-tac-toe-grid-example}
 	\end{center}
 \end{figure}
-
-The winner is the first player to place three of their tokens in a horizontal, vertical, or diagonal row. If the grid is filled and neither player has won, it is a draw.
 
 
 \subsection{State Space}
@@ -314,19 +319,7 @@ Preliminary experiments reveal that, in fact, only 4520 states are reachable wit
 \subsection{Implementation}
 \label{sec:TicTacToeImplementation}
 
-One of the aims of this project is to investigate the effect of eliminating a game's symmetries on the MC agent's learning rate and optimal learning parameters. In Tic-Tac-Toe, a state can have up to seven other symmetrical states as result of flipping it in the following ways:
-
-\begin{itemize}
-	\item horizontal axis
-	\item vertical axis
-	\item horizontal axis then vertical axis
-	\item major diagonal (i.e. top left to bottom right)
-	\item major diagonal then horizontal axis
-	\item minor diagonal (i.e. top right to bottom left)
-	\item minor diagonal then horizontal axis
-\end{itemize}
-
-Of course, for some states, the result of some of these flips are the same, which is why a state might have strictly less than seven other symmetrical states.
+One of the aims of this project is to investigate the effect of eliminating a game's symmetries on the MC agent's learning rate and optimal learning parameters. In Tic-Tac-Toe, a state can have up to seven other symmetrical states as result of flipping it along the horizontal or vertical axis, the horizontal \emph{and} vertical axes, one of the two diagonals, or one of the diagonals \emph{and} the horizontal axis. Of course, for some states, the result of some of these flips are the same, which is why a state might have strictly less than seven other symmetrical states.
 
 With the goal of studying game symmetries in mind, Tic-Tac-Toe was implemented in two ways:
 
@@ -352,51 +345,47 @@ In both Tic-Tac-Toe implementations, agents receive a return of 1 for an action 
 \section{Chung Toi}
 \label{sec:ChungToi}
 
-The second game used in the project is Chung Toi, a more complex version of Tic-Tac-Toe that has been studied in the context of reinforcement learning \cite{chung-toi-rl}. Its state space is larger than that of Tic-Tac-Toe which leads to interesting results.
+The second game in the project is Chung Toi, a more complex version of Tic-Tac-Toe that has been studied in the context of RL \cite{chung-toi-rl} \cite{chung-toi-params}.
 
 
 \subsection{Rules}
 \label{sec:ChungToiRules}
 
-The main idea behind Chung Toi \cite{chung-toi-rules} is the same as that behind Tic-Tac-Toe in the sense that the game is played on a 3x3 grid and each player's goal is to get three of their pieces in a row. However, that is the entire extent of their overlap. Although they may seem similar, finding a good strategy for Chung Toi is not at all intuitive, unlike for Tic-Tac-Toe.
+Chung Toi \cite{chung-toi-rules} and Tic-Tac-Toe are similar in the sense that the game is played on a 3x3 grid and each player's goal is to get three of their pieces in a row. However, that is the entire extent of their overlap.
 
-Before the game begins, one of the players is randomly selected to use red tokens (the other player uses white tokens). These players are referred to as the ``red player'' and ``white player'', respectively. Each player has three tokens at their disposal and each token can be used in two possible orientations, as shown in Figure \ref{chung-toi-tokens}.
+First, one of the players is randomly selected to use red tokens (the other uses white tokens). These players are referred to as the ``red player'' and ``white player'', respectively. Each player has three tokens of their colour and each token has two possible orientations, as shown in Figure \ref{chung-toi-tokens}.
 
 \begin{figure}[htbp]
 	\begin{center}
 		\includegraphics[width=0.3\linewidth]{chung_toi_tokens.png}
-		\caption[Chung Toi tokens]{Red and white Chung Toi tokens in both possible orientations. The tokens in these orientations are referred to as: red-straight (top-left), red-diagonal (top-right), white-straight (bottom-left), and white-diagonal (bottom-right).}
+		\caption[Chung Toi tokens]{Red and white Chung Toi tokens in both possible orientations.}
 		\label{chung-toi-tokens}
 	\end{center}
 \end{figure}
 
-The game consists of the players alternately making a move, starting with the red player. Throughout the game, the red player can only touch red tokens and the white player can only touch white tokens. The game has two phases and both players start in Phase 1. Once a player places all three of their tokens, that player proceeds to Phase 2. The following actions are available in each phase:
+The game consists of the players alternately making a move, starting with the red player. Throughout the game, the red player can only touch red tokens and the white player can only touch white tokens. The game has two phases and both players start in Phase 1. Once a player places all three of their tokens, that player proceeds to Phase 2. Players can opt to ``pass'' at any point and the following actions are also available:
 
 \begin{itemize}
 
 	\item \textbf{Phase 1}
 		\begin{itemize}
 			\item Place a token (in either orientation) in an empty grid cell
-			\item Pass
 		\end{itemize}
 
 	\item \textbf{Phase 2}
 		\begin{itemize}
-			\item Slide a token on the grid in the direction of any of the arrows on that token. When the token reaches the final cell, it can be rotated to switch its orientation if the player chooses to do so. \emph{(Note: all grid cells in the path from the original cell to the final cell must be empty, meaning that the token cannot ``jump'' over other tokens)}
+			\item Slide a token in the direction of any of the arrows on it. When the token reaches the final cell, it can be rotated to switch its orientation if the player chooses to do so. \emph{(Note: all grid cells in the path from the original cell to the final cell must be empty, meaning that the token cannot ``jump'' over other tokens)}
 			\item Rotate one token to switch its orientation
-			\item Pass
 		\end{itemize}
 
 \end{itemize}
 
-If both players pass on consecutive turns at any point, the game ends and is declared a draw. Otherwise, the game continues until one of the players makes their tokens form a horizontal, vertical, or diagonal row and that player is declared the winner. The orientation of the three tokens in the row does not matter.
-
-Figure \ref{chung-toi-grid-example} is an example of a possible state of the grid.
+If both players pass on consecutive turns at any point, the game ends and is declared a draw. Otherwise, the game continues until one of the players makes their tokens form a horizontal, vertical, or diagonal row and that player is declared the winner. The orientation of the three tokens in the row does not matter. Figure \ref{chung-toi-grid-example} is an example of a possible grid state.
 
 \begin{figure}[htbp]
 	\begin{center}
 		\includegraphics[width=0.3\linewidth]{chung_toi_grid_example.png}
-		\caption{Example of a Chung Toi grid. Each cell has five possible states: empty, red-straight, red-diagonal, white-straight, or white-diagonal.}
+		\caption{Example of a Chung Toi grid. Each cell has five possible states: empty, red, red (rotated), white, or white (rotated).}
 		\label{chung-toi-grid-example}
 	\end{center}
 \end{figure}
@@ -542,7 +531,7 @@ Overall, there is no single value of $\varepsilon$ that maximises an agent's win
 Of course, the same number of training episodes will have different optimal values of $\varepsilon$ for games with different state space sizes and even average episode lengths. The key point, however, is still the same and it is that a training episode count and epsilon combination that works well for one game is unlikely to work as well for another and so each game must be studied separately.
 
 
-\section{Convergence to the Optimal Policy}
+\section{Convergence of the Agent's Policy}
 \label{sec:convergence-results}
 
 In the context of training a MC agent to play a game, the ``speed'' at which the agent's policy converges is the number of training episodes the agent needs until its winning rate stagnates. Naturally, this varies depending on the value of $\varepsilon$ used by the agent.
@@ -602,12 +591,15 @@ As we can see, Monte Carlo ES performs similarly to a normal MC agent using a re
 In Figure \ref{nim-convergence-comparison-with-ES} we see that Monte Carlo ES does converge to \emph{some} policy, but it is clear that there are better policies since many values of epsilon cause an on-policy $\varepsilon$-soft MC agent to converge to a policy with a higher winning rate.
 
 
+\newpage
+
+
 \section{Effect of Eliminating Symmetry}
 \label{sec:eliminate-symmetry}
 
-Tic-Tac-Toe is used to study the effect of eliminating a game's axes of symmetry on a MC agent's performance. As discussed in Section \ref{sec:TicTacToeImplementation}, each Tic-Tac-Toe state can be symmetrical to up to seven other states. The game has four axes of symmetry (horizontal, vertical, and two diagonals) and reflecting states in one or more of them produces all possible reflections and rotations. The ``normal'' Tic-Tac-Toe implementation does not implement any symmetry-breaking, whereas the ``symmetric equality'' (SE) implementation breaks all symmetry between states -- these were discussed in more detail in Section \ref{sec:TicTacToeImplementation}.
+Tic-Tac-Toe is used to study the effect of breaking all game symmetries on a MC agent's performance. As discussed in Section \ref{sec:TicTacToeImplementation}, each Tic-Tac-Toe state can be symmetrical to up to seven other states. The game has four axes of symmetry (horizontal, vertical, and two diagonals) and reflecting states in one or more of them produces all possible reflections and rotations. The ``normal'' Tic-Tac-Toe implementation does not implement any symmetry-breaking, whereas the ``symmetric equality'' (SE) implementation breaks all symmetry -- these were discussed in Section \ref{sec:TicTacToeImplementation}.
 
-Naturally, an implementation that breaks symmetries should be expected to perform better because it can combine its knowledge about symmetrical states and therefore produce a more accurate estimate $Q^{\pi}$ of the action-value function. This intuition is confirmed by running epsilon experiments with different numbers of training episodes for both normal and SE Tic-Tac-Toe -- the results are shown in Figure \ref{fig:tictactoe-normal-vs-symmetric-equality-epsilon}.
+Naturally, an implementation that breaks symmetries should be expected to perform better because it can combine its knowledge about symmetrical states to produce a more accurate estimate $Q^{\pi}$ of the action-value function. This intuition is confirmed by running epsilon experiments with different numbers of training episodes for both normal and SE Tic-Tac-Toe. The results are shown in Figure \ref{fig:tictactoe-normal-vs-symmetric-equality-epsilon}.
 
 \begin{figure}
     \centering
@@ -625,9 +617,9 @@ Naturally, an implementation that breaks symmetries should be expected to perfor
     \label{fig:tictactoe-normal-vs-symmetric-equality-epsilon}
 \end{figure}
 
-In all eight experiments, the SE implementation outperformed the normal implementation by roughly 10\%. Upon closer inspection, the normal implementation's best winning rate is around 60\% after the agent was trained for only 10,000 episodes (Figure \ref{ttt-n-vs-se-10k}) and this increases to around 70\% after 1,280,000 training episodes (Figure \ref{ttt-n-vs-se-1280k}). On the other hand, the SE implementation already reaches a winning rate of around 80\% after only 10,000 episodes (Figure \ref{ttt-n-vs-se-10k}) and this only improves by a few percentage points after 1,280,000 training episodes (Figure \ref{ttt-n-vs-se-1280k}).
+In all eight experiments, the SE implementation outperformed the normal implementation by roughly 10\%. Upon closer inspection, the normal implementation's best winning rate is around 60\% after the agent was trained for only 10,000 episodes (Figure \ref{ttt-n-vs-se-10k}) and this increases to around 70\% after 1,280,000 training episodes (Figure \ref{ttt-n-vs-se-1280k}). On the other hand, the SE implementation already reaches a winning rate of around 80\% after only 10,000 episodes (Figure \ref{ttt-n-vs-se-10k}).
 
-This suggests that the SE implementation makes the MC agent's policy converge much faster. To test this, we run convergence experiments on both implementations for several values of epsilon and compare the results in Figure \ref{fig:tictactoe-normal-vs-symmetric-equality-performance}.
+This winning rate of 80\% only improves by a few percentage points after 1,280,000 training episodes (Figure \ref{ttt-n-vs-se-1280k}), which suggests that the SE implementation makes the MC agent's policy converge much faster. To test this, we run convergence experiments on both implementations for several values of epsilon and compare the results in Figure \ref{fig:tictactoe-normal-vs-symmetric-equality-performance}.
 
 \begin{figure}
     \centering
@@ -644,9 +636,9 @@ This suggests that the SE implementation makes the MC agent's policy converge mu
     \label{fig:tictactoe-normal-vs-symmetric-equality-performance}
 \end{figure}
 
-The results are very interesting because the two curves exhibit almost exactly the same trend in most of the seven experiments, particularly for the larger values of epsilon. In the first few experiments where epsilon is small, the normal implementation takes quite a bit longer to converge. This is particularly clear in Figures \ref{ttt-n-vs-se-0-01} and \ref{ttt-n-vs-se-0-02} because there is no visible ``elbow'' in the curve and the winning rate increases more gradually. This makes sense because when epsilon is small, more training episodes are needed in order for the agent to encounter more of the good/optimal state-action pairs. This effect is more subdued for the SE implementation because knowledge from symmetrical states is merged together, which has the same effect as playing more episodes.
+The results are interesting because the two curves exhibit almost exactly the same trend in most of the experiments, particularly for the larger values of epsilon. In the first few experiments where epsilon is small, the normal implementation takes longer to converge. This is particularly clear in Figures \ref{ttt-n-vs-se-0-01} and \ref{ttt-n-vs-se-0-02} because there is no visible ``elbow'' in the curve and the winning rate increases more gradually. This makes sense because when epsilon is small, more training episodes are needed in order for the agent to encounter more of the good/optimal state-action pairs. This effect is more subdued for the SE implementation because knowledge from symmetrical states is merged together, which has the same effect as playing more episodes.
 
-All in all, it is quite clear that breaking symmetries in RL tasks can be hugely beneficial in terms of the agent's winning rate (not to mention the reduced size of the state-value function). In the case of Tic-Tac-Toe, this can lead to a winning rate that is up to 10\% larger and for games or tasks with more axes of symmetry, it is reasonable to expect this figure to be even larger.
+All in all, it is clear that breaking symmetries in RL tasks can be hugely beneficial in terms of the agent's winning rate (not to mention the reduced size of the state-value function). In the case of Tic-Tac-Toe, this can lead to a winning rate that is up to 10\% larger and for games or tasks with more axes of symmetry, it is reasonable to expect this figure to be even larger.
 
 
 %-----------------------
