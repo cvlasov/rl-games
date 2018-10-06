@@ -94,7 +94,8 @@ public class NimState implements State {
     }
 
     final NimState other = (NimState) o;
-    return Arrays.equals(this.piles, other.piles);
+    return Arrays.equals(this.piles, other.piles)
+           && this.nextTurn == other.nextTurn;
   }
 
   @Override
