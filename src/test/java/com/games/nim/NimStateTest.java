@@ -1,7 +1,7 @@
 package com.games.nim;
 
 import static com.games.nim.NimHelper.NUM_PILES;
-import static com.games.nim.NimHelper.TOKENS_PER_PILE;
+import static com.games.nim.NimHelper.MAX_TOKENS_PER_PILE;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
@@ -29,7 +29,7 @@ public class NimStateTest {
   @Test
   public void testInequalityWithSamePilesAndDifferentNextTurn() {
     int[] piles = new int[NUM_PILES];
-    Arrays.fill(piles, TOKENS_PER_PILE);
+    Arrays.fill(piles, MAX_TOKENS_PER_PILE);
 
     NimState state1 = new NimState(Player.X, piles);
     NimState state2 = new NimState(Player.O, piles);
@@ -65,7 +65,7 @@ public class NimStateTest {
   @Test
   public void testIsTerminalStateIsFalseForGameWithoutAllPilesEmpty() {
     int[] piles = new int[NUM_PILES];
-    piles[0] = TOKENS_PER_PILE;
+    piles[0] = MAX_TOKENS_PER_PILE;
 
     NimState state = new NimState(Player.X, piles);
     assertFalse(state.isTerminalState());
