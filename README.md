@@ -85,7 +85,7 @@ A few notes about Step 3:
       ```
       bazel run src/main/java/com/games/experiments:epsilon_nim_deploy.jar
       ```
-   to produce a self-contained JAR file that can be run anywhere using `java -jar`.
+      to produce a self-contained JAR file that can be run anywhere using `java -jar`.
    - **[Ignore this if you're not using Windows]** On Windows, `bazel run` will run `epsilon_nim.exe` after successfully building the target. You may get an error that looks like this:
        ```
        INFO: Running command line: 'C:/users/Bob Smith/appdata/local/temp/_bazel_Bob Smith}/8fghcxhr/execroot/__main__/bazel-out/x64_windows-fastbuild/bin/src/main/java/com/games/experiments/epsilon_nim.exe'
@@ -93,4 +93,4 @@ A few notes about Step 3:
        operable program or batch file.
        ERROR: Non-zero return code '1' from command: Process exited with status 1
        ```
-   This is because Windows has issues handling file paths that contain whitespace. In this case, it will most likely be because your username (i.e. directory under `C:/Users/` on your computer) contains a space - for example "Bob Smith" like above. You can fix this by copy/pasting the file path of `epsilon_nim.exe`, surrounding the whole thing with double quotes (`"`), and running it.
+       This is because Windows has issues handling file paths that contain whitespace. In this case, it will most likely be because your username (i.e. directory under `C:/Users/` on your computer) contains a space - for example "Bob Smith" like above. You can fix this by copy/pasting the file path of `epsilon_nim.exe`, surrounding the whole thing with double quotes (`"`), and running it.
